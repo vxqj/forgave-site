@@ -261,6 +261,25 @@ html, body {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+/* ── Like button ── */
+#like-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(255,255,255,0.25);
+  font-family: "DM Mono", monospace;
+  font-size: .72rem;
+  transition: color .2s, transform .15s;
+  user-select: none;
+}
+#like-btn:hover { color: rgba(255,255,255,0.55); transform: scale(1.1); }
+#like-btn.liked { color: #fff; }
+#like-btn svg { width: 20px; height: 20px; fill: currentColor; display: block; }
+#like-num { font-size: .70rem; line-height: 1; }
 
 /* ── Overlay ── */
 #overlay {
@@ -336,7 +355,16 @@ html, body {
     <div class="meta-line" id="discord-line" style="display:none">discord — <span id="discord-val"></span></div>
 
     <div class="spacer"></div>
-    <div class="icon-links" id="links-container"></div>
+    <div class="icon-links" style="display:flex;align-items:center;gap:12px;">
+      <div id="links-container" style="display:contents;"></div>
+      <button id="like-btn" title="like">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3v11z"/>
+        </svg>
+        <span id="like-num">...</span>
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -357,8 +385,7 @@ const C = {
   ],
   bgVideo: {
     urls: [
-      "https://files.catbox.moe/aned1c.mp4",
-      "https://files.catbox.moe/asnmz4.mp4"
+      "https://files.catbox.moe/aned1c.mp4"
     ],
     opacity: 0.45,
   },
@@ -520,6 +547,75 @@ function drawTrail() {
   requestAnimationFrame(drawTrail);
 }
 drawTrail();
+
+/* ── Likes (Supabase) ── */
+const SUPA_URL = "https://xqqwyugfyntgbgohzqcz.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxcXd5dWdmeW50Z2Jnb2h6cWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MjI1NTQsImV4cCI6MjA5NTE5ODU1NH0.Y-Z5HawSgxraigCep2BHINLvev98b3m3BGsI1DT_LQY";
+const PAGE_ID = "forgave.lol";
+const likeBtn = document.getElementById("like-btn");
+const likeNum = document.getElementById("like-num");
+let hasLiked = localStorage.getItem("liked_forgave") === "1";
+if (hasLiked) { likeBtn.classList.add("liked");  }
+
+async function fetchLikes() {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${PAGE_ID}&select=count`, {
+      headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
+    });
+    const data = await res.json();
+    likeNum.textContent = data[0]?.count ?? 0;
+  } catch { likeNum.textContent = "?"; }
+}
+
+async function incrementLike() {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${PAGE_ID}&select=count`, {
+      headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
+    });
+    const data = await res.json();
+    const newCount = (data[0]?.count ?? 0) + 1;
+    await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${PAGE_ID}`, {
+      method: "PATCH",
+      headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ count: newCount })
+    });
+    likeNum.textContent = newCount;
+  } catch {}
+}
+
+async function decrementLike() {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${PAGE_ID}&select=count`, {
+      headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
+    });
+    const data = await res.json();
+    const newCount = Math.max(0, (data[0]?.count ?? 1) - 1);
+    await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${PAGE_ID}`, {
+      method: "PATCH",
+      headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ count: newCount })
+    });
+    likeNum.textContent = newCount;
+  } catch {}
+}
+
+likeBtn.addEventListener("click", () => {
+  if (!hasLiked) {
+    hasLiked = true;
+    localStorage.setItem("liked_forgave", "1");
+    likeBtn.classList.add("liked");
+    
+    incrementLike();
+  } else {
+    hasLiked = false;
+    localStorage.removeItem("liked_forgave");
+    likeBtn.classList.remove("liked");
+    
+    decrementLike();
+  }
+});
+
+fetchLikes();
 </script>
 </body>
 </html>
