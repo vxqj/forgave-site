@@ -336,7 +336,7 @@ if (C) {
   (C.badges || []).forEach(b => {
     const d = document.createElement("div");
     d.className = "badge";
-    d.innerHTML = `${b.svg}<span class="tip">${b.tip}</span>`;
+    d.innerHTML = `${b.svg || `<img src="${b.img}" style="width:13px;height:13px;">`}<span class="tip">${b.tip}</span>`;
     usernameRow.appendChild(d);
   });
 
