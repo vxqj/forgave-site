@@ -229,7 +229,7 @@ const MAIN = {
   uid:        "0",
   badges: [
     { tip: "owner", img: "https://files.catbox.moe/h0f65g.png" },
-    { tip: "developer", img: "https://cdn3.emoji.gg/emojis/8995-staff-icon.png" },
+    { tip: "developer", img: "https://cdn3.emoji.gg/emojis/8995-staff-icon.png", size: 13 }
   ],
   lines: [
     "@factor / on tiktok",
@@ -336,7 +336,7 @@ if (C) {
   (C.badges || []).forEach(b => {
     const d = document.createElement("div");
     d.className = "badge";
-    d.innerHTML = `${b.svg || `<img src="${b.img}" style="width:18px;height:18px;filter:brightness(0) invert(1);opacity:0.55;">`}<span class="tip">${b.tip}</span>`;
+    d.innerHTML = `${b.svg || `<img src="${b.img}" style="width:${b.size || 18}px;height:${b.size || 18}px;filter:brightness(0) invert(1);opacity:0.55;">`}<span class="tip">${b.tip}</span>`;
     usernameRow.appendChild(d);
   });
 
