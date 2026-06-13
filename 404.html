@@ -695,6 +695,8 @@ html, body {
   text-align: center; margin-top: 8px; font-style: italic;
 }
 
+/* ── MOBILE: dashboard sidebar goes horizontal ── */
+@media (max-width: 600px) {
   #dash-modal .modal { width: calc(100vw - 24px); }
   .dash-body { flex-direction: column; }
   .dash-sidebar {
@@ -878,9 +880,7 @@ html, body {
         <!-- BADGES -->
         <div class="dash-panel" id="panel-badges">
           <div class="dash-panel-title">badges</div>
-          <div class="badge-grid" id="badge-grid">
-            <!-- Rendered by JS -->
-          </div>
+          <div class="badge-grid" id="badge-grid"></div>
         </div>
 
         <!-- ALIAS -->
@@ -1024,6 +1024,7 @@ const MAIN = {
   bgWords:["forgave","frgv","</>","///"], wordCount:26, wordSpeed:[1.0,2.5],
   wordSize:[9,28], wordSpin:0.007, wordColor:"rgba(180,180,200,",
   music:{ url:"", volume:0.4 },
+  aliases: [],
 };
 
 const STATIC_USERS = {
@@ -1034,6 +1035,7 @@ const STATIC_USERS = {
     bgVideo:{ urls:["https://files.catbox.moe/aned1c.mp4"], opacity:0.45 },
     bgWords:["prada","</>"], wordCount:26, wordSpeed:[1.0,2.5], wordSize:[9,28],
     wordSpin:0.007, wordColor:"rgba(180,180,200,", music:{ url:"", volume:0.4 },
+    aliases: [],
   },
   "btc": {
     siteName:"forgave.lol", lastChange:"25 May 2026", username:"btc", uid:"2",
@@ -1043,6 +1045,7 @@ const STATIC_USERS = {
     bgVideo:{ urls:["https://files.catbox.moe/rstzft.mp4"], opacity:0.45 },
     bgWords:["btc","</>","///"], wordCount:26, wordSpeed:[1.0,2.5], wordSize:[9,28],
     wordSpin:0.007, wordColor:"rgba(180,180,200,", music:{ url:"", volume:0.4 },
+    aliases: [],
   },
   "7": {
     siteName:"forgave.lol", lastChange:"26th May 2026", username:"7", uid:"3",
@@ -1051,6 +1054,7 @@ const STATIC_USERS = {
     bgVideo:{ urls:["https://files.catbox.moe/0kwj0d.mp4"], opacity:0.45 },
     bgWords:["7","</>","///"], wordCount:26, wordSpeed:[1.0,2.5], wordSize:[9,28],
     wordSpin:0.007, wordColor:"rgba(180,180,200,", music:{ url:"", volume:0.4 },
+    aliases: [],
   },
 };
 
@@ -1069,20 +1073,16 @@ const ICONS = {
 };
 
 /* ════════════════════════════════════════
-   OG BADGE SVG — custom hand-crafted
+   OG BADGE SVG
 ════════════════════════════════════════ */
 const OG_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Shield body -->
   <path d="M13 2L4 5.5V12c0 5 3.8 9.4 9 10.9C18.2 21.4 22 17 22 12V5.5L13 2Z" fill="url(#og-shield-fill)" stroke="url(#og-shield-stroke)" stroke-width="0.8"/>
-  <!-- Star burst rays -->
   <g opacity="0.55">
     <line x1="13" y1="5" x2="13" y2="3.5" stroke="#FFD97A" stroke-width="0.7" stroke-linecap="round"/>
     <line x1="16.5" y1="6.2" x2="17.5" y2="5" stroke="#FFD97A" stroke-width="0.7" stroke-linecap="round"/>
     <line x1="9.5" y1="6.2" x2="8.5" y2="5" stroke="#FFD97A" stroke-width="0.7" stroke-linecap="round"/>
   </g>
-  <!-- OG text -->
   <text x="13" y="14.5" text-anchor="middle" font-family="'DM Mono', monospace" font-size="5.5" font-weight="500" letter-spacing="0.5" fill="url(#og-text-fill)">OG</text>
-  <!-- Shine overlay -->
   <path d="M13 2L4 5.5V9c3.5-0.5 7-2 9-4.5C15 7 18.5 8.5 22 9V5.5L13 2Z" fill="url(#og-shine)" opacity="0.25"/>
   <defs>
     <linearGradient id="og-shield-fill" x1="13" y1="2" x2="13" y2="23" gradientUnits="userSpaceOnUse">
@@ -1129,7 +1129,6 @@ async function resolveRoute() {
       isDynamicUser = true;
       const equippedBadges = u.equipped_badges || [];
       const cardBadges = [];
-      // OG badge: uid <= 50 and equipped
       if (parseInt(u.uid, 10) <= 50 && equippedBadges.includes("og")) {
         cardBadges.push({
           tip: "OG Member",
@@ -1137,6 +1136,13 @@ async function resolveRoute() {
           isOG: true,
         });
       }
+
+      // FIX: Ensure aliases is always a proper array
+      let aliases = [];
+      if (Array.isArray(u.aliases)) {
+        aliases = u.aliases.filter(a => typeof a === "string" && a.length > 0);
+      }
+
       C = {
         siteName:   "forgave.lol",
         lastChange: u.last_change || u.created_at?.slice(0,10) || "",
@@ -1151,7 +1157,7 @@ async function resolveRoute() {
         wordCount:  26, wordSpeed:[1.0,2.5], wordSize:[9,28], wordSpin:0.007,
         wordColor:  "rgba(180,180,200,",
         music:      { url:"", volume:0.4 },
-        aliases:    u.aliases || [],
+        aliases:    aliases,
       };
       likeId = "forgave.lol/" + slug;
       return;
@@ -1183,7 +1189,6 @@ function renderCard() {
     const d = document.createElement("div");
     d.className = "badge";
     if (b.isOG) {
-      // Inline SVG badge — sized down for the card row
       const wrapper = document.createElement("div");
       wrapper.style.cssText = "width:15px;height:15px;display:flex;align-items:center;justify-content:center;opacity:0.85;";
       wrapper.innerHTML = OG_BADGE_SVG.replace('class="og-badge-svg"', 'style="width:15px;height:15px;display:block;"');
@@ -1198,16 +1203,17 @@ function renderCard() {
     usernameRow.appendChild(d);
   });
 
-  // Alias row
+  // FIX: Alias row — always treat as array, show if non-empty
   const aliasRow = document.getElementById("alias-row");
-  const aliases = C.aliases || [];
+  const aliases = Array.isArray(C.aliases) ? C.aliases.filter(a => a && a.length > 0) : [];
   if (aliases.length > 0) {
-    aliasRow.style.display = "";
+    aliasRow.style.display = "block";
     aliasRow.innerHTML = "also known as: " + aliases.map((a, i) =>
       `<a href="https://forgave.lol/${a}" target="_blank" rel="noopener">${a}</a>${i < aliases.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`
     ).join("");
   } else {
     aliasRow.style.display = "none";
+    aliasRow.innerHTML = "";
   }
 
   ["line1","line2","line3"].forEach((id, i) => {
@@ -1444,6 +1450,7 @@ document.getElementById("su-submit").addEventListener("click", async () => {
       lines: ["","",""], discord:"", links:[],
       bg_video_urls:[], bg_video_opacity:0.45,
       bg_words:["</>","///"], last_change: now,
+      aliases: [],
     });
 
     if (result && result[0]) {
@@ -1508,7 +1515,6 @@ document.getElementById("user-pill-logout").addEventListener("click", () => {
 /* ════════════════════════════════════════
    DASHBOARD — SIDE-TAB NAV
 ════════════════════════════════════════ */
-// Wire up sidebar nav
 document.querySelectorAll(".dash-nav-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".dash-nav-btn").forEach(b => b.classList.remove("active"));
@@ -1523,7 +1529,6 @@ async function openDashboard() {
   closeModal(authModal);
   document.getElementById("dash-username-label").textContent = session.username;
 
-  // Reset to bio tab
   document.querySelectorAll(".dash-nav-btn").forEach(b => b.classList.remove("active"));
   document.querySelectorAll(".dash-panel").forEach(p => p.classList.remove("active"));
   document.querySelector('.dash-nav-btn[data-panel="bio"]').classList.add("active");
@@ -1541,7 +1546,7 @@ async function openDashboard() {
       document.getElementById("d-bgwords").value = (u.bg_words || []).join(", ");
       renderDashLinks(u.links || []);
       renderBadges(u.uid, u.equipped_badges || []);
-      dashAliases = u.aliases ? [...u.aliases] : [];
+      dashAliases = Array.isArray(u.aliases) ? u.aliases.filter(a => a && a.length > 0) : [];
       renderAliasList();
     }
   } catch {}
@@ -1553,8 +1558,6 @@ async function openDashboard() {
    BADGES PANEL
 ════════════════════════════════════════ */
 const OG_UID_THRESHOLD = 50;
-
-// Tracks which badges are currently equipped in the dashboard session
 let dashEquipped = [];
 
 function renderBadges(uid, equippedList) {
@@ -1606,7 +1609,7 @@ function renderBadges(uid, equippedList) {
    ALIASES
 ════════════════════════════════════════ */
 const ALIAS_MAX = 3;
-let dashAliases = []; // array of verified usernames
+let dashAliases = [];
 
 function renderAliasList() {
   const list = document.getElementById("alias-list");
@@ -1630,7 +1633,6 @@ function renderAliasList() {
     list.appendChild(entry);
   });
 
-  // Hide add trigger if at max
   trigger.style.display = dashAliases.length >= ALIAS_MAX ? "none" : "";
 }
 
@@ -1648,7 +1650,7 @@ function openAliasForm() {
 
 function closeAliasForm() {
   document.getElementById("alias-add-form").classList.remove("open");
-  renderAliasList(); // restore trigger visibility
+  renderAliasList();
 }
 
 document.getElementById("alias-add-trigger").addEventListener("click", openAliasForm);
@@ -1672,7 +1674,6 @@ document.getElementById("alias-verify-btn").addEventListener("click", async () =
   btn.disabled = true; btn.textContent = "verifying...";
 
   try {
-    // Check static users first
     if (STATIC_USERS[user]) {
       hint.className = "alias-form-hint error";
       hint.textContent = "can't verify static profiles";
@@ -1692,7 +1693,6 @@ document.getElementById("alias-verify-btn").addEventListener("click", async () =
       btn.disabled = false; btn.textContent = "verify & add"; return;
     }
 
-    // Verified ✓
     dashAliases.push(user);
     hint.className = "alias-form-hint success"; hint.textContent = "verified ✓";
     setTimeout(() => closeAliasForm(), 700);
@@ -1701,7 +1701,6 @@ document.getElementById("alias-verify-btn").addEventListener("click", async () =
   }
   btn.disabled = false; btn.textContent = "verify & add";
 });
-
 
 function renderDashLinks(links) {
   const list = document.getElementById("d-links-list");
