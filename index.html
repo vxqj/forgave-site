@@ -1058,7 +1058,7 @@ const ICONS = {
 };
 
 /* ════════════════════════════════════════
-   OG BADGE SVG
+   BADGE SVGs
 ════════════════════════════════════════ */
 const OG_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M13 2L4 5.5V12c0 5 3.8 9.4 9 10.9C18.2 21.4 22 17 22 12V5.5L13 2Z" fill="url(#og-shield-fill)" stroke="url(#og-shield-stroke)" stroke-width="0.8"/>
@@ -1146,7 +1146,16 @@ const POPULAR_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="n
     </linearGradient>
   </defs>
 </svg>`;
-  
+
+/* Map badge id → SVG string */
+const BADGE_SVGS = {
+  og_plus:  OG_PLUS_BADGE_SVG,
+  og:       OG_BADGE_SVG,
+  early:    EARLY_BADGE_SVG,
+  loved:    LOVED_BADGE_SVG,
+  popular:  POPULAR_BADGE_SVG,
+};
+
 /* ════════════════════════════════════════
    ROUTING
 ════════════════════════════════════════ */
@@ -1171,19 +1180,21 @@ async function resolveRoute() {
       isDynamicUser = true;
       const equippedBadges = u.equipped_badges || [];
       const cardBadges = [];
+
       const badgeDefs = [
-  { id:"og_plus", tip:"OG+", svg: OG_PLUS_BADGE_SVG, check: n => n <= 25 },
-  { id:"og",     tip:"OG Member", svg: OG_BADGE_SVG, check: n => n <= 50 },
-  { id:"early",  tip:"Early", svg: EARLY_BADGE_SVG, check: n => n <= 100 },
-  { id:"loved",  tip:"Loved", svg: LOVED_BADGE_SVG, check: () => (u.like_count||0) >= 50 },
-  { id:"popular",tip:"Popular", svg: POPULAR_BADGE_SVG, check: () => (u.like_count||0) >= 100 },
-];
-const numUid = parseInt(u.uid, 10);
-badgeDefs.forEach(b => {
-  if (equippedBadges.includes(b.id) && b.check(numUid)) {
-    cardBadges.push({ tip: b.tip, svgInline: b.svg, isOG: true });
-  }
-});
+        { id:"og_plus", tip:"OG+",      check: n => n <= 25 },
+        { id:"og",      tip:"OG Member", check: n => n <= 50 },
+        { id:"early",   tip:"Early",     check: n => n <= 100 },
+        { id:"loved",   tip:"Loved",     check: () => (u.like_count||0) >= 50 },
+        { id:"popular", tip:"Popular",   check: () => (u.like_count||0) >= 100 },
+      ];
+
+      const numUid = parseInt(u.uid, 10);
+      badgeDefs.forEach(b => {
+        if (equippedBadges.includes(b.id) && b.check(numUid)) {
+          cardBadges.push({ tip: b.tip, svgInline: BADGE_SVGS[b.id], isOG: true });
+        }
+      });
 
       let aliases = [];
       if (Array.isArray(u.aliases)) {
@@ -1230,21 +1241,31 @@ function renderCard() {
 
   const usernameRow = document.getElementById("username-row");
   usernameRow.innerHTML = "";
+
   const unSpan = document.createElement("span");
   unSpan.className = "username";
   unSpan.innerHTML = `${C.username}<span class="tip">UID: ${C.uid}</span>`;
   usernameRow.appendChild(unSpan);
+
   (C.badges || []).forEach(b => {
     const d = document.createElement("div");
     d.className = "badge";
-    if (b.isOG) {
+
+    if (b.isOG && b.svgInline) {
+      /* ── FIX: use b.svgInline, not the hardcoded OG_BADGE_SVG ── */
       const wrapper = document.createElement("div");
       wrapper.style.cssText = "width:15px;height:15px;display:flex;align-items:center;justify-content:center;opacity:0.85;";
-      wrapper.innerHTML = OG_BADGE_SVG.replace('class="og-badge-svg"', 'style="width:15px;height:15px;display:block;"');
+      wrapper.innerHTML = b.svgInline.replace('class="og-badge-svg"', 'style="width:15px;height:15px;display:block;"');
       d.appendChild(wrapper);
-    } else {
-      d.innerHTML = `${b.svg || `<img src="${b.img}" style="width:${b.size||18}px;height:${b.size||18}px;filter:brightness(0) invert(1);opacity:0.45;">`}`;
+    } else if (b.svg) {
+      d.innerHTML = b.svg;
+    } else if (b.img) {
+      const img = document.createElement("img");
+      img.src = b.img;
+      img.style.cssText = `width:${b.size||18}px;height:${b.size||18}px;filter:brightness(0) invert(1);opacity:0.45;`;
+      d.appendChild(img);
     }
+
     const tip = document.createElement("span");
     tip.className = "tip";
     tip.textContent = b.tip;
@@ -1252,7 +1273,7 @@ function renderCard() {
     usernameRow.appendChild(d);
   });
 
-  // Render alias row
+  /* Alias row */
   const aliasRow = document.getElementById("alias-row");
   const aliases = Array.isArray(C.aliases) ? C.aliases.filter(a => a && a.trim().length > 0) : [];
   if (aliases.length > 0) {
@@ -1269,9 +1290,13 @@ function renderCard() {
     const el = document.getElementById(id);
     if (el) el.textContent = C.lines[i] || "";
   });
+
+  const discordLine = document.getElementById("discord-line");
   if (C.discord) {
-    document.getElementById("discord-line").style.display = "";
+    discordLine.style.display = "";
     document.getElementById("discord-val").textContent = C.discord;
+  } else {
+    discordLine.style.display = "none";
   }
 
   const lc = document.getElementById("links-container");
@@ -1284,28 +1309,30 @@ function renderCard() {
     lc.appendChild(a);
   });
 
+  /* Typewriter */
   const nameEl = document.getElementById("site-name");
   const typeText = C.siteName;
   let ti = 0, deleting = false;
   function typeStep() {
     if (!deleting) {
       nameEl.textContent = typeText.slice(0, ++ti);
-      if (ti === typeText.length) { deleting=true; setTimeout(typeStep,2200); }
-      else setTimeout(typeStep,85);
+      if (ti === typeText.length) { deleting = true; setTimeout(typeStep, 2200); }
+      else setTimeout(typeStep, 85);
     } else {
-      nameEl.textContent = typeText.slice(0,--ti);
-      if (ti===0) { deleting=false; setTimeout(typeStep,500); }
-      else setTimeout(typeStep,50);
+      nameEl.textContent = typeText.slice(0, --ti);
+      if (ti === 0) { deleting = false; setTimeout(typeStep, 500); }
+      else setTimeout(typeStep, 50);
     }
   }
   setTimeout(typeStep, 700);
 
+  /* Background */
   const bgvideo = document.getElementById("bgvideo");
   const canvas  = document.getElementById("wordfield");
   const ctx     = canvas.getContext("2d");
   const hasVideo = C.bgVideo.urls && C.bgVideo.urls.length > 0;
   if (hasVideo) {
-    bgvideo.src = C.bgVideo.urls[Math.floor(Math.random()*C.bgVideo.urls.length)];
+    bgvideo.src = C.bgVideo.urls[Math.floor(Math.random() * C.bgVideo.urls.length)];
     bgvideo.style.display = "block";
     bgvideo.style.opacity = C.bgVideo.opacity;
     canvas.style.display  = "none";
@@ -1315,101 +1342,123 @@ function renderCard() {
   const overlay = document.getElementById("overlay");
   overlay.addEventListener("click", () => {
     overlay.classList.add("hide");
-    setTimeout(()=>overlay.remove(),700);
-    if (hasVideo) bgvideo.play().catch(()=>{});
-    if (C.music?.url) { audio.src=C.music.url; audio.volume=C.music.volume; audio.play().catch(()=>{}); }
+    setTimeout(() => overlay.remove(), 700);
+    if (hasVideo) bgvideo.play().catch(() => {});
+    if (C.music?.url) { audio.src = C.music.url; audio.volume = C.music.volume; audio.play().catch(() => {}); }
   });
 
-  function resize() { canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
   resize();
-  window.addEventListener("resize",()=>{ resize(); initWords(); });
-  const words=[];
-  function randWord(){ return C.bgWords[Math.floor(Math.random()*C.bgWords.length)]; }
+  window.addEventListener("resize", () => { resize(); initWords(); });
+
+  const words = [];
+  function randWord() { return C.bgWords[Math.floor(Math.random() * C.bgWords.length)]; }
   function makeWord(top) {
-    const depth=Math.random(), size=C.wordSize[0]+depth*(C.wordSize[1]-C.wordSize[0]);
-    const speed=C.wordSpeed[0]+depth*(C.wordSpeed[1]-C.wordSpeed[0]);
-    return { text:randWord(), x:Math.random()*canvas.width,
-      y:top?-(size*2+Math.random()*80):Math.random()*canvas.height,
-      size,speed,depth, rot:(Math.random()-.5)*Math.PI*2,
-      rotSpeed:(Math.random()>.5?1:-1)*(0.002+Math.random()*C.wordSpin),
-      drift:(Math.random()-.5)*0.15, opacity:0.03+depth*0.20 };
+    const depth = Math.random();
+    const size  = C.wordSize[0] + depth * (C.wordSize[1] - C.wordSize[0]);
+    const speed = C.wordSpeed[0] + depth * (C.wordSpeed[1] - C.wordSpeed[0]);
+    return {
+      text: randWord(), x: Math.random() * canvas.width,
+      y: top ? -(size * 2 + Math.random() * 80) : Math.random() * canvas.height,
+      size, speed, depth,
+      rot: (Math.random() - .5) * Math.PI * 2,
+      rotSpeed: (Math.random() > .5 ? 1 : -1) * (0.002 + Math.random() * C.wordSpin),
+      drift: (Math.random() - .5) * 0.15,
+      opacity: 0.03 + depth * 0.20
+    };
   }
-  function initWords(){ words.length=0; for(let i=0;i<C.wordCount;i++) words.push(makeWord(false)); }
+  function initWords() { words.length = 0; for (let i = 0; i < C.wordCount; i++) words.push(makeWord(false)); }
   initWords();
   function draw() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    for(const w of words){
-      ctx.save(); ctx.translate(w.x,w.y); ctx.rotate(w.rot);
-      ctx.font=`300 ${w.size}px "DM Mono","Courier New",monospace`;
-      ctx.fillStyle=C.wordColor+w.opacity+")"; ctx.fillText(w.text,0,0); ctx.restore();
-      w.y+=w.speed; w.x+=w.drift; w.rot+=w.rotSpeed;
-      if(w.y>canvas.height+w.size*3){ Object.assign(w,makeWord(true)); w.x=Math.random()*canvas.width; }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const w of words) {
+      ctx.save(); ctx.translate(w.x, w.y); ctx.rotate(w.rot);
+      ctx.font = `300 ${w.size}px "DM Mono","Courier New",monospace`;
+      ctx.fillStyle = C.wordColor + w.opacity + ")"; ctx.fillText(w.text, 0, 0); ctx.restore();
+      w.y += w.speed; w.x += w.drift; w.rot += w.rotSpeed;
+      if (w.y > canvas.height + w.size * 3) { Object.assign(w, makeWord(true)); w.x = Math.random() * canvas.width; }
     }
     requestAnimationFrame(draw);
   }
   draw();
 
-  const trail=document.getElementById("trail"), tCtx=trail.getContext("2d");
-  trail.width=window.innerWidth; trail.height=window.innerHeight;
-  window.addEventListener("resize",()=>{ trail.width=window.innerWidth; trail.height=window.innerHeight; });
-  let mx=window.innerWidth/2, my=window.innerHeight/2;
-  const ghosts=[
-    {x:mx,y:my,lag:.18,alpha:.20,scale:.95},{x:mx,y:my,lag:.10,alpha:.12,scale:.90},
-    {x:mx,y:my,lag:.06,alpha:.06,scale:.85},
+  /* Trail */
+  const trail = document.getElementById("trail"), tCtx = trail.getContext("2d");
+  trail.width = window.innerWidth; trail.height = window.innerHeight;
+  window.addEventListener("resize", () => { trail.width = window.innerWidth; trail.height = window.innerHeight; });
+  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+  const ghosts = [
+    { x: mx, y: my, lag: .18, alpha: .20, scale: .95 },
+    { x: mx, y: my, lag: .10, alpha: .12, scale: .90 },
+    { x: mx, y: my, lag: .06, alpha: .06, scale: .85 },
   ];
-  window.addEventListener("mousemove",e=>{ mx=e.clientX; my=e.clientY; });
-  function drawArrow(x,y,alpha,scale){
-    tCtx.save(); tCtx.translate(x,y); tCtx.scale(scale,scale);
+  window.addEventListener("mousemove", e => { mx = e.clientX; my = e.clientY; });
+  function drawArrow(x, y, alpha, scale) {
+    tCtx.save(); tCtx.translate(x, y); tCtx.scale(scale, scale);
     tCtx.beginPath();
-    tCtx.moveTo(0,0);tCtx.lineTo(0,16);tCtx.lineTo(3.5,12.5);tCtx.lineTo(6,18);
-    tCtx.lineTo(8,17);tCtx.lineTo(5.5,11.5);tCtx.lineTo(10,11.5);tCtx.closePath();
-    tCtx.fillStyle=`rgba(255,255,255,${alpha})`;tCtx.fill();
-    tCtx.strokeStyle=`rgba(0,0,0,${alpha*.5})`;tCtx.lineWidth=0.8;tCtx.stroke();tCtx.restore();
+    tCtx.moveTo(0, 0); tCtx.lineTo(0, 16); tCtx.lineTo(3.5, 12.5);
+    tCtx.lineTo(6, 18); tCtx.lineTo(8, 17); tCtx.lineTo(5.5, 11.5);
+    tCtx.lineTo(10, 11.5); tCtx.closePath();
+    tCtx.fillStyle = `rgba(255,255,255,${alpha})`; tCtx.fill();
+    tCtx.strokeStyle = `rgba(0,0,0,${alpha * .5})`; tCtx.lineWidth = 0.8; tCtx.stroke(); tCtx.restore();
   }
-  function drawTrail(){
-    tCtx.clearRect(0,0,trail.width,trail.height);
-    for(const g of ghosts){ g.x+=(mx-g.x)*g.lag; g.y+=(my-g.y)*g.lag; drawArrow(g.x,g.y,g.alpha,g.scale); }
+  function drawTrail() {
+    tCtx.clearRect(0, 0, trail.width, trail.height);
+    for (const g of ghosts) { g.x += (mx - g.x) * g.lag; g.y += (my - g.y) * g.lag; drawArrow(g.x, g.y, g.alpha, g.scale); }
     requestAnimationFrame(drawTrail);
   }
   drawTrail();
 
-  const likeBtn=document.getElementById("like-btn"), likeNum=document.getElementById("like-num");
-  const likeKey="liked_"+likeId.replace(/\//g,"_");
-  let hasLiked=localStorage.getItem(likeKey)==="1";
-  if(hasLiked) likeBtn.classList.add("liked");
+  /* Likes */
+  const likeBtn = document.getElementById("like-btn");
+  const likeNum = document.getElementById("like-num");
+  const likeKey = "liked_" + likeId.replace(/\//g, "_");
+  let hasLiked = localStorage.getItem(likeKey) === "1";
+  if (hasLiked) likeBtn.classList.add("liked");
 
-  async function fetchLikes(){
-    try{
-      const res=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`,{
-        headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}
+  async function fetchLikes() {
+    try {
+      const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`, {
+        headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
       });
-      const data=await res.json();
-      if(!data[0]){
-        await fetch(`${SUPA_URL}/rest/v1/likes`,{
-          method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},
-          body:JSON.stringify({id:likeId,count:0})
+      const data = await res.json();
+      if (!data[0]) {
+        await fetch(`${SUPA_URL}/rest/v1/likes`, {
+          method: "POST",
+          headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ id: likeId, count: 0 })
         });
-        likeNum.textContent=0;
-      } else { likeNum.textContent=data[0].count; }
-    } catch { likeNum.textContent="?"; }
+        likeNum.textContent = 0;
+      } else {
+        likeNum.textContent = data[0].count;
+      }
+    } catch { likeNum.textContent = "?"; }
   }
-  async function updateLike(delta){
-    try{
-      const res=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`,{
-        headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}
+
+  async function updateLike(delta) {
+    try {
+      const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`, {
+        headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
       });
-      const data=await res.json();
-      const nc=Math.max(0,(data[0]?.count??0)+delta);
-      await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}`,{
-        method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},
-        body:JSON.stringify({count:nc})
+      const data = await res.json();
+      const nc = Math.max(0, (data[0]?.count ?? 0) + delta);
+      await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}`, {
+        method: "PATCH",
+        headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ count: nc })
       });
-      likeNum.textContent=nc;
+      likeNum.textContent = nc;
     } catch {}
   }
-  likeBtn.addEventListener("click",()=>{
-    if(!hasLiked){ hasLiked=true; localStorage.setItem(likeKey,"1"); likeBtn.classList.add("liked"); updateLike(1); }
-    else{ hasLiked=false; localStorage.removeItem(likeKey); likeBtn.classList.remove("liked"); updateLike(-1); }
+
+  likeBtn.addEventListener("click", () => {
+    if (!hasLiked) {
+      hasLiked = true; localStorage.setItem(likeKey, "1");
+      likeBtn.classList.add("liked"); updateLike(1);
+    } else {
+      hasLiked = false; localStorage.removeItem(likeKey);
+      likeBtn.classList.remove("liked"); updateLike(-1);
+    }
   });
   fetchLikes();
 }
@@ -1422,14 +1471,14 @@ const dashModal = document.getElementById("dash-modal");
 const authBtn   = document.getElementById("auth-btn");
 const userPill  = document.getElementById("user-pill");
 
-function openModal(m) { m.classList.add("open"); }
+function openModal(m)  { m.classList.add("open"); }
 function closeModal(m) { m.classList.remove("open"); }
 
 authBtn.addEventListener("click", () => openModal(authModal));
 document.getElementById("auth-close").addEventListener("click", () => closeModal(authModal));
 document.getElementById("dash-close").addEventListener("click", () => { saveDashboard(true); closeModal(dashModal); });
-authModal.addEventListener("click", e => { if(e.target===authModal) closeModal(authModal); });
-dashModal.addEventListener("click", e => { if(e.target===dashModal) { saveDashboard(true); closeModal(dashModal); } });
+authModal.addEventListener("click", e => { if (e.target === authModal) closeModal(authModal); });
+dashModal.addEventListener("click", e => { if (e.target === dashModal) { saveDashboard(true); closeModal(dashModal); } });
 
 document.getElementById("tab-signup").addEventListener("click", () => switchTab("signup"));
 document.getElementById("tab-login").addEventListener("click",  () => switchTab("login"));
@@ -1437,32 +1486,33 @@ document.getElementById("sw-to-login").addEventListener("click",  () => switchTa
 document.getElementById("sw-to-signup").addEventListener("click", () => switchTab("signup"));
 
 function switchTab(t) {
-  document.getElementById("panel-signup").style.display = t==="signup"?"":"none";
-  document.getElementById("panel-login").style.display  = t==="login" ?"":"none";
-  document.getElementById("tab-signup").classList.toggle("active", t==="signup");
-  document.getElementById("tab-login").classList.toggle("active",  t==="login");
+  document.getElementById("panel-signup").style.display = t === "signup" ? "" : "none";
+  document.getElementById("panel-login").style.display  = t === "login"  ? "" : "none";
+  document.getElementById("tab-signup").classList.toggle("active", t === "signup");
+  document.getElementById("tab-login").classList.toggle("active",  t === "login");
 }
 
+/* Username availability check */
 let checkTimer = null;
 document.getElementById("su-username").addEventListener("input", e => {
-  const val = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g,"");
+  const val = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "");
   e.target.value = val;
   const hint = document.getElementById("su-username-hint");
-  if (!val || val.length < 2) { hint.textContent=""; hint.className="field-hint"; return; }
-  if (STATIC_USERS[val] || val==="chloryl") {
-    hint.textContent="taken"; hint.className="field-hint error"; return;
+  if (!val || val.length < 2) { hint.textContent = ""; hint.className = "field-hint"; return; }
+  if (STATIC_USERS[val] || val === "chloryl") {
+    hint.textContent = "taken"; hint.className = "field-hint error"; return;
   }
-  hint.textContent="checking..."; hint.className="field-hint";
+  hint.textContent = "checking..."; hint.className = "field-hint";
   clearTimeout(checkTimer);
   checkTimer = setTimeout(async () => {
     try {
       const rows = await supa.get("users", `username=eq.${encodeURIComponent(val)}`);
       if (rows && rows.length > 0) {
-        hint.textContent="taken"; hint.className="field-hint error";
+        hint.textContent = "taken"; hint.className = "field-hint error";
       } else {
-        hint.textContent="available ✓"; hint.className="field-hint success";
+        hint.textContent = "available ✓"; hint.className = "field-hint success";
       }
-    } catch { hint.textContent=""; }
+    } catch { hint.textContent = ""; }
   }, 400);
 });
 
@@ -1473,29 +1523,26 @@ document.getElementById("su-submit").addEventListener("click", async () => {
   const pw       = document.getElementById("su-password").value;
   const confirm  = document.getElementById("su-confirm").value;
   const err      = document.getElementById("su-error");
-
   err.textContent = "";
 
-  if (!username || username.length < 1) { err.textContent="username too short"; return; }
-  if (STATIC_USERS[username] || username==="chloryl") { err.textContent="username taken"; return; }
-  if (pw.length < 6) { err.textContent="password must be 6+ chars"; return; }
-  if (pw !== confirm) { err.textContent="passwords don't match"; return; }
+  if (!username || username.length < 1) { err.textContent = "username too short"; return; }
+  if (STATIC_USERS[username] || username === "chloryl") { err.textContent = "username taken"; return; }
+  if (pw.length < 6) { err.textContent = "password must be 6+ chars"; return; }
+  if (pw !== confirm) { err.textContent = "passwords don't match"; return; }
 
   const hint = document.getElementById("su-username-hint");
-  if (hint.classList.contains("error")) { err.textContent="username taken"; return; }
+  if (hint.classList.contains("error")) { err.textContent = "username taken"; return; }
 
-  btn.disabled=true; btn.textContent="creating...";
+  btn.disabled = true; btn.textContent = "creating...";
 
   try {
-    // Double-check username not taken
     const existing = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
     if (existing && existing.length > 0) {
-      err.textContent="username already taken";
-      btn.disabled=false; btn.textContent="create account";
+      err.textContent = "username already taken";
+      btn.disabled = false; btn.textContent = "create account";
       return;
     }
 
-    // Get next UID
     let nextUid = STATIC_UID_START;
     try {
       const allUsers = await supa.get("users", "order=uid.desc&limit=1");
@@ -1503,7 +1550,7 @@ document.getElementById("su-submit").addEventListener("click", async () => {
     } catch {}
 
     const hash = await hashPassword(pw);
-    const now  = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+    const now  = new Date().toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
 
     const result = await supa.post("users", {
       username,
@@ -1527,7 +1574,6 @@ document.getElementById("su-submit").addEventListener("click", async () => {
       updateAuthUI();
       openDashboard();
     } else {
-      // result came back but empty — shouldn't happen with throw above, just in case
       err.textContent = "something went wrong — check Supabase RLS policies";
     }
   } catch(e) {
@@ -1535,7 +1581,7 @@ document.getElementById("su-submit").addEventListener("click", async () => {
     err.textContent = e.message?.includes("duplicate") ? "username taken" : "error — check console";
   }
 
-  btn.disabled=false; btn.textContent="create account";
+  btn.disabled = false; btn.textContent = "create account";
 });
 
 /* ── LOG IN ── */
@@ -1544,27 +1590,24 @@ document.getElementById("li-submit").addEventListener("click", async () => {
   const username = document.getElementById("li-username").value.trim().toLowerCase();
   const pw       = document.getElementById("li-password").value;
   const err      = document.getElementById("li-error");
-
   err.textContent = "";
-  if (!username || !pw) { err.textContent="fill in all fields"; return; }
 
-  btn.disabled=true; btn.textContent="logging in...";
+  if (!username || !pw) { err.textContent = "fill in all fields"; return; }
+  btn.disabled = true; btn.textContent = "logging in...";
 
   try {
     const rows = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
     if (!rows || rows.length === 0) {
-      err.textContent="user not found";
-      btn.disabled=false; btn.textContent="log in";
+      err.textContent = "user not found";
+      btn.disabled = false; btn.textContent = "log in";
       return;
     }
-
     const hash = await hashPassword(pw);
     if (rows[0].password_hash !== hash) {
-      err.textContent="wrong password";
-      btn.disabled=false; btn.textContent="log in";
+      err.textContent = "wrong password";
+      btn.disabled = false; btn.textContent = "log in";
       return;
     }
-
     saveSession({ username, uid: rows[0].uid });
     closeModal(authModal);
     updateAuthUI();
@@ -1573,16 +1616,16 @@ document.getElementById("li-submit").addEventListener("click", async () => {
     err.textContent = "error — try again";
   }
 
-  btn.disabled=false; btn.textContent="log in";
+  btn.disabled = false; btn.textContent = "log in";
 });
 
 function updateAuthUI() {
   if (session) {
-    authBtn.style.display="none";
+    authBtn.style.display = "none";
     userPill.classList.add("visible");
     document.getElementById("user-pill-name").textContent = session.username;
   } else {
-    authBtn.style.display="";
+    authBtn.style.display = "";
     userPill.classList.remove("visible");
   }
 }
@@ -1603,6 +1646,8 @@ document.querySelectorAll(".dash-nav-btn").forEach(btn => {
     document.getElementById("panel-" + btn.dataset.panel).classList.add("active");
   });
 });
+
+let dashEquipped = [];
 
 async function openDashboard() {
   if (!session) return;
@@ -1625,12 +1670,18 @@ async function openDashboard() {
       document.getElementById("d-bgvideo").value = u.bg_video_urls?.[0] || "";
       document.getElementById("d-bgwords").value = (u.bg_words || []).join(", ");
       renderDashLinks(u.links || []);
-const likeRes = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/" + session.username)}&select=count`, {
-  headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
-});
-const likeData = await likeRes.json();
-const likeCount = likeData?.[0]?.count || 0;
-renderBadges(u.uid, u.equipped_badges || [], likeCount);      dashAliases = Array.isArray(u.aliases) ? u.aliases.filter(a => typeof a === "string" && a.trim().length > 0) : [];
+
+      const likeRes = await fetch(
+        `${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/" + session.username)}&select=count`,
+        { headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY } }
+      );
+      const likeData = await likeRes.json();
+      const likeCount = likeData?.[0]?.count || 0;
+
+      renderBadges(u.uid, u.equipped_badges || [], likeCount);
+      dashAliases = Array.isArray(u.aliases)
+        ? u.aliases.filter(a => typeof a === "string" && a.trim().length > 0)
+        : [];
       renderAliasList();
     }
   } catch(e) {
@@ -1641,7 +1692,7 @@ renderBadges(u.uid, u.equipped_badges || [], likeCount);      dashAliases = Arra
 }
 
 /* ════════════════════════════════════════
-   BADGES
+   BADGES (DASHBOARD)
 ════════════════════════════════════════ */
 function renderBadges(uid, equippedList, likeCount) {
   dashEquipped = equippedList ? [...equippedList] : [];
@@ -1650,41 +1701,11 @@ function renderBadges(uid, equippedList, likeCount) {
   const numUid = parseInt(uid, 10);
 
   const allBadges = [
-    {
-      id: "og_plus",
-      name: "OG+",
-      desc: "One of the first 25 members on forgave.lol.",
-      svg: OG_PLUS_BADGE_SVG,
-      unlocked: !isNaN(numUid) && numUid <= 25,
-    },
-    {
-      id: "og",
-      name: "OG Member",
-      desc: "One of the first 50 members on forgave.lol.",
-      svg: OG_BADGE_SVG,
-      unlocked: !isNaN(numUid) && numUid <= 50,
-    },
-    {
-      id: "early",
-      name: "Early",
-      desc: "Joined within the first 100 members.",
-      svg: EARLY_BADGE_SVG,
-      unlocked: !isNaN(numUid) && numUid <= 100,
-    },
-    {
-      id: "loved",
-      name: "Loved",
-      desc: "Your profile has received 50+ likes.",
-      svg: LOVED_BADGE_SVG,
-      unlocked: (likeCount || 0) >= 50,
-    },
-    {
-      id: "popular",
-      name: "Popular",
-      desc: "Your profile has received 100+ likes.",
-      svg: POPULAR_BADGE_SVG,
-      unlocked: (likeCount || 0) >= 100,
-    },
+    { id:"og_plus",  name:"OG+",       desc:"One of the first 25 members on forgave.lol.",   svg: OG_PLUS_BADGE_SVG,  unlocked: !isNaN(numUid) && numUid <= 25 },
+    { id:"og",       name:"OG Member", desc:"One of the first 50 members on forgave.lol.",   svg: OG_BADGE_SVG,       unlocked: !isNaN(numUid) && numUid <= 50 },
+    { id:"early",    name:"Early",     desc:"Joined within the first 100 members.",           svg: EARLY_BADGE_SVG,    unlocked: !isNaN(numUid) && numUid <= 100 },
+    { id:"loved",    name:"Loved",     desc:"Your profile has received 50+ likes.",           svg: LOVED_BADGE_SVG,    unlocked: (likeCount || 0) >= 50 },
+    { id:"popular",  name:"Popular",   desc:"Your profile has received 100+ likes.",          svg: POPULAR_BADGE_SVG,  unlocked: (likeCount || 0) >= 100 },
   ];
 
   allBadges.forEach(b => {
@@ -1704,8 +1725,8 @@ function renderBadges(uid, equippedList, likeCount) {
     `;
     if (b.unlocked) {
       card.querySelector(".badge-equip-btn").addEventListener("click", function() {
-        const equipped = dashEquipped.includes(b.id);
-        if (equipped) {
+        const isNowEquipped = dashEquipped.includes(b.id);
+        if (isNowEquipped) {
           dashEquipped = dashEquipped.filter(x => x !== b.id);
           this.textContent = "equip";
           this.classList.remove("equipped");
@@ -1778,45 +1799,45 @@ document.getElementById("alias-verify-btn").addEventListener("click", async () =
   hint.className = "alias-form-hint";
   hint.textContent = "";
 
-  if (!user) { hint.className="alias-form-hint error"; hint.textContent="enter a username"; return; }
-  if (!pw)   { hint.className="alias-form-hint error"; hint.textContent="enter the password"; return; }
-  if (user === session?.username) { hint.className="alias-form-hint error"; hint.textContent="that's your own account"; return; }
-  if (dashAliases.includes(user)) { hint.className="alias-form-hint error"; hint.textContent="already added"; return; }
-  if (dashAliases.length >= ALIAS_MAX) { hint.className="alias-form-hint error"; hint.textContent="max 3 aliases reached"; return; }
+  if (!user) { hint.className = "alias-form-hint error"; hint.textContent = "enter a username"; return; }
+  if (!pw)   { hint.className = "alias-form-hint error"; hint.textContent = "enter the password"; return; }
+  if (user === session?.username) { hint.className = "alias-form-hint error"; hint.textContent = "that's your own account"; return; }
+  if (dashAliases.includes(user)) { hint.className = "alias-form-hint error"; hint.textContent = "already added"; return; }
+  if (dashAliases.length >= ALIAS_MAX) { hint.className = "alias-form-hint error"; hint.textContent = "max 3 aliases reached"; return; }
 
-  btn.disabled=true; btn.textContent="verifying...";
+  btn.disabled = true; btn.textContent = "verifying...";
 
   try {
     if (STATIC_USERS[user]) {
-      hint.className="alias-form-hint error";
-      hint.textContent="can't verify static profiles";
-      btn.disabled=false; btn.textContent="verify & add";
+      hint.className = "alias-form-hint error";
+      hint.textContent = "can't verify static profiles";
+      btn.disabled = false; btn.textContent = "verify & add";
       return;
     }
 
     const rows = await supa.get("users", `username=eq.${encodeURIComponent(user)}`);
     if (!rows || rows.length === 0) {
-      hint.className="alias-form-hint error"; hint.textContent="account not found";
-      btn.disabled=false; btn.textContent="verify & add";
+      hint.className = "alias-form-hint error"; hint.textContent = "account not found";
+      btn.disabled = false; btn.textContent = "verify & add";
       return;
     }
 
     const hash = await hashPassword(pw);
     if (rows[0].password_hash !== hash) {
-      hint.className="alias-form-hint error"; hint.textContent="wrong password";
-      btn.disabled=false; btn.textContent="verify & add";
+      hint.className = "alias-form-hint error"; hint.textContent = "wrong password";
+      btn.disabled = false; btn.textContent = "verify & add";
       return;
     }
 
     dashAliases.push(user);
-    hint.className="alias-form-hint success"; hint.textContent="verified ✓";
+    hint.className = "alias-form-hint success"; hint.textContent = "verified ✓";
     setTimeout(() => closeAliasForm(), 700);
   } catch(e) {
     console.error("[alias-verify]", e);
-    hint.className="alias-form-hint error"; hint.textContent="error — try again";
+    hint.className = "alias-form-hint error"; hint.textContent = "error — try again";
   }
 
-  btn.disabled=false; btn.textContent="verify & add";
+  btn.disabled = false; btn.textContent = "verify & add";
 });
 
 /* ════════════════════════════════════════
@@ -1824,8 +1845,8 @@ document.getElementById("alias-verify-btn").addEventListener("click", async () =
 ════════════════════════════════════════ */
 function renderDashLinks(links) {
   const list = document.getElementById("d-links-list");
-  list.innerHTML="";
-  links.forEach((lk, i) => addDashLinkRow(lk.label||"", lk.url||"", lk.icon||"tiktok", i));
+  list.innerHTML = "";
+  links.forEach((lk, i) => addDashLinkRow(lk.label || "", lk.url || "", lk.icon || "tiktok", i));
 }
 
 function addDashLinkRow(label, url, icon, idx) {
@@ -1836,7 +1857,7 @@ function addDashLinkRow(label, url, icon, idx) {
   row.innerHTML = `
     <select class="dl-icon" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 10px;color:rgba(255,255,255,.8);font-family:'DM Mono',monospace;font-size:.72rem;outline:none;">
       ${["tiktok","discord","twitter","youtube","instagram","roblox"].map(ic =>
-        `<option value="${ic}" ${ic===icon?"selected":""}>${ic}</option>`
+        `<option value="${ic}" ${ic === icon ? "selected" : ""}>${ic}</option>`
       ).join("")}
     </select>
     <input class="dl-url" type="text" placeholder="https://..." value="${url}" style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 12px;color:rgba(255,255,255,.8);font-family:'DM Mono',monospace;font-size:.72rem;outline:none;"/>
@@ -1847,7 +1868,7 @@ function addDashLinkRow(label, url, icon, idx) {
 }
 
 document.getElementById("d-add-link").addEventListener("click", () => {
-  addDashLinkRow("","","tiktok", document.getElementById("d-links-list").children.length);
+  addDashLinkRow("", "", "tiktok", document.getElementById("d-links-list").children.length);
 });
 
 /* ════════════════════════════════════════
@@ -1857,7 +1878,7 @@ async function saveDashboard(silent = false) {
   if (!session) return;
   const btn    = document.getElementById("d-save");
   const status = document.getElementById("d-save-status");
-  if (!silent) { btn.disabled=true; btn.textContent="saving..."; status.textContent=""; }
+  if (!silent) { btn.disabled = true; btn.textContent = "saving..."; status.textContent = ""; }
 
   const lines = [
     document.getElementById("d-line1").value.trim(),
@@ -1868,7 +1889,7 @@ async function saveDashboard(silent = false) {
   const bgVideoRaw = document.getElementById("d-bgvideo").value.trim();
   const bgWordsRaw = document.getElementById("d-bgwords").value.trim();
   const bg_video_urls = bgVideoRaw ? [bgVideoRaw] : [];
-  const bg_words = bgWordsRaw.split(",").map(w=>w.trim()).filter(Boolean);
+  const bg_words = bgWordsRaw.split(",").map(w => w.trim()).filter(Boolean);
 
   const linkRows = document.querySelectorAll(".dash-link-row");
   const links = [];
@@ -1878,7 +1899,7 @@ async function saveDashboard(silent = false) {
     if (url) links.push({ label: icon, url, icon });
   });
 
-  const now = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+  const now = new Date().toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
   const cleanAliases = dashAliases.filter(a => typeof a === "string" && a.trim().length > 0);
 
   const payload = {
@@ -1890,8 +1911,6 @@ async function saveDashboard(silent = false) {
 
   try {
     await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
-
-    // Update alias row on card immediately
     updateAliasRowOnCard(cleanAliases);
 
     if (!silent) {
@@ -1909,7 +1928,7 @@ async function saveDashboard(silent = false) {
     }
   }
 
-  if (!silent) { btn.disabled=false; btn.textContent="save changes"; }
+  if (!silent) { btn.disabled = false; btn.textContent = "save changes"; }
 }
 
 function updateAliasRowOnCard(aliases) {
@@ -1933,9 +1952,7 @@ document.getElementById("d-save").addEventListener("click", () => saveDashboard(
    BOOT
 ════════════════════════════════════════ */
 updateAuthUI();
-resolveRoute().then(() => {
-  renderCard();
-});
+resolveRoute().then(() => renderCard());
 </script>
 </body>
 </html>
