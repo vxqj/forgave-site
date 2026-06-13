@@ -566,6 +566,46 @@ html, body {
   border: 1px solid rgba(255,255,255,.07);
 }
 
+/* Equip button */
+.badge-equip-btn {
+  font-family: "DM Mono", monospace;
+  font-size: .58rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  border-radius: 7px;
+  padding: 5px 11px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.5);
+  transition: background .15s, color .15s, border-color .15s;
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+.badge-equip-btn:hover {
+  background: rgba(255,255,255,.1);
+  color: rgba(255,255,255,.85);
+  border-color: rgba(255,255,255,.22);
+}
+.badge-equip-btn.equipped {
+  background: rgba(255,200,80,.12);
+  color: rgba(255,220,120,.9);
+  border-color: rgba(255,200,80,.3);
+}
+.badge-equip-btn.equipped:hover {
+  background: rgba(255,80,80,.1);
+  color: rgba(255,120,120,.85);
+  border-color: rgba(255,80,80,.25);
+}
+
+.badge-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
 /* OG badge custom SVG colors */
 .og-badge-svg { width: 26px; height: 26px; display: block; }
 
@@ -735,7 +775,10 @@ html, body {
           <div class="dash-panel-title">background</div>
           <div class="dash-section">
             <div class="dash-section-label">video url</div>
-            <div class="field"><input type="text" id="d-bgvideo" placeholder="https://files.catbox.moe/....mp4"/></div>
+            <div class="field">
+              <input type="text" id="d-bgvideo" placeholder="https://files.catbox.moe/....mp4"/>
+              <div class="field-hint" style="margin-top:5px;">upload your video at <a href="https://catbox.moe/" target="_blank" rel="noopener" style="color:rgba(255,255,255,.35);text-decoration:underline;text-underline-offset:2px;transition:color .15s;" onmouseover="this.style.color='rgba(255,255,255,.7)'" onmouseout="this.style.color='rgba(255,255,255,.35)'">catbox.moe</a> to get a link</div>
+            </div>
           </div>
           <div class="dash-section">
             <div class="dash-section-label">floating words <span style="color:rgba(255,255,255,.1);font-style:italic;">comma separated</span></div>
@@ -968,12 +1011,22 @@ async function resolveRoute() {
     if (rows && rows[0]) {
       const u = rows[0];
       isDynamicUser = true;
+      const equippedBadges = u.equipped_badges || [];
+      const cardBadges = [];
+      // OG badge: uid <= 50 and equipped
+      if (parseInt(u.uid, 10) <= 50 && equippedBadges.includes("og")) {
+        cardBadges.push({
+          tip: "OG Member",
+          svgInline: OG_BADGE_SVG,
+          isOG: true,
+        });
+      }
       C = {
         siteName:   "forgave.lol",
         lastChange: u.last_change || u.created_at?.slice(0,10) || "",
         username:   u.username,
         uid:        String(u.uid),
-        badges:     [],
+        badges:     cardBadges,
         lines:      u.lines || ["","",""],
         discord:    u.discord || "",
         links:      u.links || [],
@@ -1012,7 +1065,19 @@ function renderCard() {
   (C.badges || []).forEach(b => {
     const d = document.createElement("div");
     d.className = "badge";
-    d.innerHTML = `${b.svg || `<img src="${b.img}" style="width:${b.size||18}px;height:${b.size||18}px;filter:brightness(0) invert(1);opacity:0.45;">`}<span class="tip">${b.tip}</span>`;
+    if (b.isOG) {
+      // Inline SVG badge — sized down for the card row
+      const wrapper = document.createElement("div");
+      wrapper.style.cssText = "width:15px;height:15px;display:flex;align-items:center;justify-content:center;opacity:0.85;";
+      wrapper.innerHTML = OG_BADGE_SVG.replace('class="og-badge-svg"', 'style="width:15px;height:15px;display:block;"');
+      d.appendChild(wrapper);
+    } else {
+      d.innerHTML = `${b.svg || `<img src="${b.img}" style="width:${b.size||18}px;height:${b.size||18}px;filter:brightness(0) invert(1);opacity:0.45;">`}`;
+    }
+    const tip = document.createElement("span");
+    tip.className = "tip";
+    tip.textContent = b.tip;
+    d.appendChild(tip);
     usernameRow.appendChild(d);
   });
 
@@ -1346,7 +1411,7 @@ async function openDashboard() {
       document.getElementById("d-bgvideo").value = u.bg_video_urls?.[0] || "";
       document.getElementById("d-bgwords").value = (u.bg_words || []).join(", ");
       renderDashLinks(u.links || []);
-      renderBadges(u.uid);
+      renderBadges(u.uid, u.equipped_badges || []);
     }
   } catch {}
 
@@ -1358,30 +1423,52 @@ async function openDashboard() {
 ════════════════════════════════════════ */
 const OG_UID_THRESHOLD = 50;
 
-function renderBadges(uid) {
+// Tracks which badges are currently equipped in the dashboard session
+let dashEquipped = [];
+
+function renderBadges(uid, equippedList) {
+  dashEquipped = equippedList ? [...equippedList] : [];
   const grid = document.getElementById("badge-grid");
   const numUid = parseInt(uid, 10);
   const isOG = !isNaN(numUid) && numUid <= OG_UID_THRESHOLD;
+  const ogEquipped = dashEquipped.includes("og");
 
-  grid.innerHTML = `
-    <div class="badge-card ${isOG ? "unlocked" : "locked"}">
-      <div class="badge-icon-wrap">
-        ${OG_BADGE_SVG}
+  const card = document.createElement("div");
+  card.className = `badge-card ${isOG ? "unlocked" : "locked"}`;
+  card.innerHTML = `
+    <div class="badge-icon-wrap">${OG_BADGE_SVG}</div>
+    <div class="badge-info">
+      <div class="badge-name">OG Member</div>
+      <div class="badge-desc">
+        ${isOG
+          ? "you were one of the first 50 members on forgave.lol. respect."
+          : `awarded to the first 50 members. you joined as #${isNaN(numUid) ? "?" : numUid}.`
+        }
       </div>
-      <div class="badge-info">
-        <div class="badge-name">OG Member</div>
-        <div class="badge-desc">
-          ${isOG
-            ? "you were one of the first 50 members on forgave.lol. respect."
-            : `awarded to the first 50 members. you joined as #${isNaN(numUid) ? "?" : numUid}.`
-          }
-        </div>
-      </div>
-      <span class="badge-status ${isOG ? "unlocked" : "locked"}">
-        ${isOG ? "unlocked" : "locked"}
-      </span>
+    </div>
+    <div class="badge-card-right">
+      <span class="badge-status ${isOG ? "unlocked" : "locked"}">${isOG ? "unlocked" : "locked"}</span>
+      ${isOG ? `<button class="badge-equip-btn ${ogEquipped ? "equipped" : ""}" data-badge="og">${ogEquipped ? "unequip" : "equip"}</button>` : ""}
     </div>
   `;
+
+  grid.innerHTML = "";
+  grid.appendChild(card);
+
+  if (isOG) {
+    card.querySelector(".badge-equip-btn").addEventListener("click", function() {
+      const isEquipped = dashEquipped.includes("og");
+      if (isEquipped) {
+        dashEquipped = dashEquipped.filter(b => b !== "og");
+        this.textContent = "equip";
+        this.classList.remove("equipped");
+      } else {
+        dashEquipped.push("og");
+        this.textContent = "unequip";
+        this.classList.add("equipped");
+      }
+    });
+  }
 }
 
 /* ════════════════════════════════════════
@@ -1448,6 +1535,7 @@ document.getElementById("d-save").addEventListener("click", async () => {
   try {
     await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, {
       lines, discord, links, bg_video_urls, bg_words, last_change: now,
+      equipped_badges: dashEquipped,
     });
     status.textContent="saved ✓";
     if (slug === session.username) {
