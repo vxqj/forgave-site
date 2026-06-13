@@ -1378,9 +1378,9 @@ function closeModal(m) { m.classList.remove("open"); }
 
 authBtn.addEventListener("click", () => openModal(authModal));
 document.getElementById("auth-close").addEventListener("click", () => closeModal(authModal));
-document.getElementById("dash-close").addEventListener("click", () => closeModal(dashModal));
+document.getElementById("dash-close").addEventListener("click", () => { saveDashboard(true); closeModal(dashModal); });
 authModal.addEventListener("click", e => { if(e.target===authModal) closeModal(authModal); });
-dashModal.addEventListener("click", e => { if(e.target===dashModal) closeModal(dashModal); });
+dashModal.addEventListener("click", e => { if(e.target===dashModal) { saveDashboard(true); closeModal(dashModal); } });
 
 document.getElementById("tab-signup").addEventListener("click", () => switchTab("signup"));
 document.getElementById("tab-login").addEventListener("click",  () => switchTab("login"));
@@ -1733,10 +1733,11 @@ document.getElementById("d-add-link").addEventListener("click", () => {
 /* ════════════════════════════════════════
    SAVE
 ════════════════════════════════════════ */
-document.getElementById("d-save").addEventListener("click", async () => {
+async function saveDashboard(silent = false) {
+  if (!session) return;
   const btn    = document.getElementById("d-save");
   const status = document.getElementById("d-save-status");
-  btn.disabled=true; btn.textContent="saving..."; status.textContent="";
+  if (!silent) { btn.disabled=true; btn.textContent="saving..."; status.textContent=""; }
 
   const lines = [
     document.getElementById("d-line1").value.trim(),
@@ -1766,15 +1767,19 @@ document.getElementById("d-save").addEventListener("click", async () => {
       equipped_badges: dashEquipped,
       aliases: dashAliases,
     });
-    status.textContent="saved ✓";
-    if (slug === session.username) {
-      location.reload();
+    if (!silent) {
+      status.textContent="saved ✓";
+      if (slug === session.username) location.reload();
+    } else {
+      if (slug === session.username) location.reload();
     }
   } catch {
-    status.textContent="error saving";
+    if (!silent) status.textContent="error saving";
   }
-  btn.disabled=false; btn.textContent="save changes";
-});
+  if (!silent) { btn.disabled=false; btn.textContent="save changes"; }
+}
+
+document.getElementById("d-save").addEventListener("click", () => saveDashboard(false));
 
 /* ════════════════════════════════════════
    BOOT
