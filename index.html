@@ -1090,6 +1090,62 @@ const OG_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" 
   </defs>
 </svg>`;
 
+  const OG_PLUS_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M13 3L10.5 8.5L4.5 9.5L9 13.5L7.5 19.5L13 16.5L18.5 19.5L17 13.5L21.5 9.5L15.5 8.5Z" fill="url(#diamond-fill)" stroke="url(#diamond-stroke)" stroke-width="0.8" stroke-linejoin="round"/>
+  <defs>
+    <linearGradient id="diamond-fill" x1="13" y1="3" x2="13" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#a8edff"/>
+      <stop offset="100%" stop-color="#1a8cff"/>
+    </linearGradient>
+    <linearGradient id="diamond-stroke" x1="4" y1="3" x2="22" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e0f7ff"/>
+      <stop offset="100%" stop-color="#1a8cff"/>
+    </linearGradient>
+  </defs>
+</svg>`;
+
+const EARLY_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M13 3L15.5 9.5L22.5 10L17.5 14.5L19.5 21.5L13 18L6.5 21.5L8.5 14.5L3.5 10L10.5 9.5Z" fill="url(#star-fill)" stroke="url(#star-stroke)" stroke-width="0.8" stroke-linejoin="round"/>
+  <defs>
+    <linearGradient id="star-fill" x1="13" y1="3" x2="13" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fffba0"/>
+      <stop offset="100%" stop-color="#f0a500"/>
+    </linearGradient>
+    <linearGradient id="star-stroke" x1="3" y1="3" x2="23" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fff5c0"/>
+      <stop offset="100%" stop-color="#c87000"/>
+    </linearGradient>
+  </defs>
+</svg>`;
+
+const LOVED_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M13 20.5C13 20.5 4 14.5 4 8.5C4 6 6 4 8.5 4C10.5 4 12 5.5 13 6.5C14 5.5 15.5 4 17.5 4C20 4 22 6 22 8.5C22 14.5 13 20.5 13 20.5Z" fill="url(#heart-fill)" stroke="url(#heart-stroke)" stroke-width="0.8"/>
+  <defs>
+    <linearGradient id="heart-fill" x1="13" y1="4" x2="13" y2="21" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffb0c8"/>
+      <stop offset="100%" stop-color="#ff3366"/>
+    </linearGradient>
+    <linearGradient id="heart-stroke" x1="4" y1="4" x2="22" y2="21" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffd0e0"/>
+      <stop offset="100%" stop-color="#cc0044"/>
+    </linearGradient>
+  </defs>
+</svg>`;
+
+const POPULAR_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M13 3C13 3 16 8 16 11C16 11 18 9 18 7C18 7 21 10 21 14C21 18 17.5 22 13 22C8.5 22 5 18 5 14C5 10 8 7 8 7C8 9 10 11 10 11C10 8 13 3 13 3Z" fill="url(#flame-fill)" stroke="url(#flame-stroke)" stroke-width="0.8"/>
+  <defs>
+    <linearGradient id="flame-fill" x1="13" y1="3" x2="13" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fff0a0"/>
+      <stop offset="40%" stop-color="#ff8800"/>
+      <stop offset="100%" stop-color="#ff2200"/>
+    </linearGradient>
+    <linearGradient id="flame-stroke" x1="5" y1="3" x2="21" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffe080"/>
+      <stop offset="100%" stop-color="#cc1100"/>
+    </linearGradient>
+  </defs>
+</svg>`;
 /* ════════════════════════════════════════
    ROUTING
 ════════════════════════════════════════ */
@@ -1114,9 +1170,19 @@ async function resolveRoute() {
       isDynamicUser = true;
       const equippedBadges = u.equipped_badges || [];
       const cardBadges = [];
-      if (parseInt(u.uid, 10) <= 50 && equippedBadges.includes("og")) {
-        cardBadges.push({ tip: "OG Member", svgInline: OG_BADGE_SVG, isOG: true });
-      }
+      const badgeDefs = [
+  { id:"og_plus", tip:"OG+", svg: OG_PLUS_BADGE_SVG, check: n => n <= 25 },
+  { id:"og",     tip:"OG Member", svg: OG_BADGE_SVG, check: n => n <= 50 },
+  { id:"early",  tip:"Early", svg: EARLY_BADGE_SVG, check: n => n <= 100 },
+  { id:"loved",  tip:"Loved", svg: LOVED_BADGE_SVG, check: () => (u.like_count||0) >= 50 },
+  { id:"popular",tip:"Popular", svg: POPULAR_BADGE_SVG, check: () => (u.like_count||0) >= 100 },
+];
+const numUid = parseInt(u.uid, 10);
+badgeDefs.forEach(b => {
+  if (equippedBadges.includes(b.id) && b.check(numUid)) {
+    cardBadges.push({ tip: b.tip, svgInline: b.svg, isOG: true });
+  }
+});
 
       let aliases = [];
       if (Array.isArray(u.aliases)) {
@@ -1558,8 +1624,12 @@ async function openDashboard() {
       document.getElementById("d-bgvideo").value = u.bg_video_urls?.[0] || "";
       document.getElementById("d-bgwords").value = (u.bg_words || []).join(", ");
       renderDashLinks(u.links || []);
-      renderBadges(u.uid, u.equipped_badges || []);
-      dashAliases = Array.isArray(u.aliases) ? u.aliases.filter(a => typeof a === "string" && a.trim().length > 0) : [];
+const likeRes = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/" + session.username)}&select=count`, {
+  headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
+});
+const likeData = await likeRes.json();
+const likeCount = likeData?.[0]?.count || 0;
+renderBadges(u.uid, u.equipped_badges || [], likeCount);      dashAliases = Array.isArray(u.aliases) ? u.aliases.filter(a => typeof a === "string" && a.trim().length > 0) : [];
       renderAliasList();
     }
   } catch(e) {
@@ -1575,48 +1645,81 @@ async function openDashboard() {
 const OG_UID_THRESHOLD = 50;
 let dashEquipped = [];
 
-function renderBadges(uid, equippedList) {
+function renderBadges(uid, equippedList, likeCount) {
   dashEquipped = equippedList ? [...equippedList] : [];
   const grid = document.getElementById("badge-grid");
-  const numUid = parseInt(uid, 10);
-  const isOG = !isNaN(numUid) && numUid <= OG_UID_THRESHOLD;
-  const ogEquipped = dashEquipped.includes("og");
-
-  const card = document.createElement("div");
-  card.className = `badge-card ${isOG ? "unlocked" : "locked"}`;
-  card.innerHTML = `
-    <div class="badge-icon-wrap">${OG_BADGE_SVG}</div>
-    <div class="badge-info">
-      <div class="badge-name">OG Member</div>
-      <div class="badge-desc">
-        ${isOG
-          ? "you were one of the first 50 members on forgave.lol. respect."
-          : `awarded to the first 50 members. you joined as #${isNaN(numUid) ? "?" : numUid}.`}
-      </div>
-    </div>
-    <div class="badge-card-right">
-      <span class="badge-status ${isOG ? "unlocked" : "locked"}">${isOG ? "unlocked" : "locked"}</span>
-      ${isOG ? `<button class="badge-equip-btn ${ogEquipped ? "equipped" : ""}" data-badge="og">${ogEquipped ? "unequip" : "equip"}</button>` : ""}
-    </div>
-  `;
-
   grid.innerHTML = "";
-  grid.appendChild(card);
+  const numUid = parseInt(uid, 10);
 
-  if (isOG) {
-    card.querySelector(".badge-equip-btn").addEventListener("click", function() {
-      const isEquipped = dashEquipped.includes("og");
-      if (isEquipped) {
-        dashEquipped = dashEquipped.filter(b => b !== "og");
-        this.textContent = "equip";
-        this.classList.remove("equipped");
-      } else {
-        dashEquipped.push("og");
-        this.textContent = "unequip";
-        this.classList.add("equipped");
-      }
-    });
-  }
+  const allBadges = [
+    {
+      id: "og_plus",
+      name: "OG+",
+      desc: "One of the first 25 members on forgave.lol.",
+      svg: OG_PLUS_BADGE_SVG,
+      unlocked: !isNaN(numUid) && numUid <= 25,
+    },
+    {
+      id: "og",
+      name: "OG Member",
+      desc: "One of the first 50 members on forgave.lol.",
+      svg: OG_BADGE_SVG,
+      unlocked: !isNaN(numUid) && numUid <= 50,
+    },
+    {
+      id: "early",
+      name: "Early",
+      desc: "Joined within the first 100 members.",
+      svg: EARLY_BADGE_SVG,
+      unlocked: !isNaN(numUid) && numUid <= 100,
+    },
+    {
+      id: "loved",
+      name: "Loved",
+      desc: "Your profile has received 50+ likes.",
+      svg: LOVED_BADGE_SVG,
+      unlocked: (likeCount || 0) >= 50,
+    },
+    {
+      id: "popular",
+      name: "Popular",
+      desc: "Your profile has received 100+ likes.",
+      svg: POPULAR_BADGE_SVG,
+      unlocked: (likeCount || 0) >= 100,
+    },
+  ];
+
+  allBadges.forEach(b => {
+    const isEquipped = dashEquipped.includes(b.id);
+    const card = document.createElement("div");
+    card.className = `badge-card ${b.unlocked ? "unlocked" : "locked"}`;
+    card.innerHTML = `
+      <div class="badge-icon-wrap">${b.svg}</div>
+      <div class="badge-info">
+        <div class="badge-name">${b.name}</div>
+        <div class="badge-desc">${b.desc}</div>
+      </div>
+      <div class="badge-card-right">
+        <span class="badge-status ${b.unlocked ? "unlocked" : "locked"}">${b.unlocked ? "unlocked" : "locked"}</span>
+        ${b.unlocked ? `<button class="badge-equip-btn ${isEquipped ? "equipped" : ""}" data-badge="${b.id}">${isEquipped ? "unequip" : "equip"}</button>` : ""}
+      </div>
+    `;
+    if (b.unlocked) {
+      card.querySelector(".badge-equip-btn").addEventListener("click", function() {
+        const equipped = dashEquipped.includes(b.id);
+        if (equipped) {
+          dashEquipped = dashEquipped.filter(x => x !== b.id);
+          this.textContent = "equip";
+          this.classList.remove("equipped");
+        } else {
+          dashEquipped.push(b.id);
+          this.textContent = "unequip";
+          this.classList.add("equipped");
+        }
+      });
+    }
+    grid.appendChild(card);
+  });
 }
 
 /* ════════════════════════════════════════
