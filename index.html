@@ -11,9 +11,10 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://files.catbox.moe/fjrfis.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 html, body {
   width: 100%; height: 100%;
   background: #000;
@@ -21,6 +22,7 @@ html, body {
   font-family: "DM Mono", "Courier New", monospace;
   color: #fff;
 }
+
 #bgvideo {
   display: none;
   position: fixed;
@@ -30,155 +32,345 @@ html, body {
   z-index: 0;
   pointer-events: none;
 }
+
 #wordfield {
   position: fixed; inset: 0; z-index: 1; pointer-events: none;
 }
+
 #trail {
   position: fixed; inset: 0; z-index: 5; pointer-events: none;
 }
+
+/* ── Card positioning ── */
 #card-stack {
   position: fixed;
-  top: 36px; left: 40px;
+  top: 40px;
+  left: 44px;
   z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 320px;
+  width: 300px;
 }
+
+@media (max-width: 500px) {
+  #card-stack {
+    top: auto;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100vw - 32px);
+    max-width: 360px;
+  }
+}
+
+/* ── Main card ── */
 #content {
   position: relative;
   z-index: 10;
-  background: rgba(255,255,255,0.03);
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 16px;
-  padding: 24px 28px 22px 28px;
-  box-shadow: 0 12px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
+  background: rgba(12, 12, 14, 0.55);
+  backdrop-filter: blur(32px) saturate(160%) brightness(1.05);
+  -webkit-backdrop-filter: blur(32px) saturate(160%) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top-color: rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  padding: 22px 24px 20px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.07) inset,
+    0 0 0 1px rgba(0,0,0,0.5),
+    0 24px 64px rgba(0,0,0,0.7),
+    0 8px 20px rgba(0,0,0,0.4);
   opacity: 0;
-  transform: translateY(-14px) scale(0.98);
-  animation: cardIn 0.65s cubic-bezier(0.22,1,0.36,1) forwards;
-  animation-delay: 0.2s;
-  display: flex;
-  flex-direction: column;
+  transform: translateY(-10px) scale(0.985);
+  animation: cardIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.15s;
 }
-@keyframes cardIn { to { opacity:1; transform:translateY(0) scale(1); } }
-#content::before {
-  content:"";
-  position:absolute;
-  top:0; left:20px; right:20px;
-  height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);
-  border-radius:999px;
-  pointer-events:none;
+
+@keyframes cardIn {
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* subtle inner noise/grain feel via repeating gradient */
+#content::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at 30% 0%, rgba(255,255,255,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ── Header area ── */
+.card-header {
+  margin-bottom: 18px;
+  opacity: 0;
+  animation: fadeUp 0.45s ease forwards;
+  animation-delay: 0.5s;
+}
+
 .site-name {
-  font-size:1.25rem; font-weight:500; letter-spacing:-0.3px;
-  color:#fff; margin-bottom:5px; line-height:1; min-height:1.25rem;
-  opacity:0; animation:fadeUp 0.5s ease forwards; animation-delay:0.55s;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  color: rgba(255,255,255,0.92);
+  line-height: 1;
+  min-height: 1.05rem;
+  margin-bottom: 7px;
 }
-.site-name::after { content:"|"; animation:blink .65s step-end infinite; margin-left:1px; opacity:0.5; }
-@keyframes blink { 0%,100%{opacity:.5} 50%{opacity:0} }
+
+.site-name::after {
+  content: "|";
+  animation: blink 0.65s step-end infinite;
+  margin-left: 1px;
+  opacity: 0.4;
+}
+
+@keyframes blink { 0%,100%{opacity:.4} 50%{opacity:0} }
+
 .username-row {
-  display:flex; align-items:center; gap:5px; margin-bottom:20px;
-  line-height:1; opacity:0; animation:fadeUp 0.5s ease forwards; animation-delay:0.65s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1;
 }
+
 .username {
-  font-size:.72rem; color:rgba(255,255,255,.35); letter-spacing:.8px;
-  position:relative; cursor:default; display:flex; align-items:center;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.28);
+  letter-spacing: 0.9px;
+  position: relative;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
 }
-.username:hover { color:rgba(255,255,255,.6); }
-.username .tip {
-  position:absolute; bottom:calc(100% + 6px); left:50%;
-  transform:translateX(-50%) translateY(4px);
-  background:rgba(8,8,8,.97); border:1px solid rgba(255,255,255,.12);
-  color:#fff; font-size:.6rem; font-family:"DM Mono",monospace;
-  letter-spacing:1.5px; padding:3px 8px; border-radius:4px;
-  white-space:nowrap; opacity:0; pointer-events:none;
-  transition:opacity .15s,transform .15s; z-index:20;
-}
-.username:hover .tip { opacity:1; transform:translateX(-50%) translateY(0); }
-.badge {
-  position:relative; display:flex; align-items:center; justify-content:center;
-  width:16px; height:16px; flex-shrink:0; cursor:default;
-}
-.badge svg { width:13px; height:13px; color:rgba(255,255,255,.55); transition:transform .15s,color .15s; display:block; }
-.badge:hover svg { transform:scale(1.2); color:#fff; }
+
+.username:hover { color: rgba(255,255,255,0.55); }
+
+.username .tip,
 .badge .tip {
-  position:absolute; bottom:calc(100% + 6px); left:50%;
-  transform:translateX(-50%) translateY(4px);
-  background:rgba(8,8,8,.97); border:1px solid rgba(255,255,255,.12);
-  color:#fff; font-size:.6rem; font-family:"DM Mono",monospace;
-  letter-spacing:1.5px; padding:3px 8px; border-radius:4px;
-  white-space:nowrap; opacity:0; pointer-events:none;
-  transition:opacity .15s,transform .15s; z-index:20;
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(6,6,8,0.98);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.8);
+  font-size: 0.58rem;
+  font-family: "DM Mono", monospace;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 20;
 }
-.badge:hover .tip { opacity:1; transform:translateX(-50%) translateY(0); }
+
+.username:hover .tip,
+.badge:hover .tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.badge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  cursor: default;
+}
+
+.badge svg { width: 13px; height: 13px; color: rgba(255,255,255,.45); transition: transform .15s,color .15s; display: block; }
+.badge:hover svg { transform: scale(1.2); color: #fff; }
+
+/* ── Divider ── */
 .divider {
-  height:1px; background:rgba(255,255,255,.07); margin-bottom:16px;
-  opacity:0; animation:fadeUp 0.5s ease forwards; animation-delay:0.72s;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07) 30%, rgba(255,255,255,0.07) 70%, transparent);
+  margin-bottom: 15px;
+  opacity: 0;
+  animation: fadeUp 0.4s ease forwards;
+  animation-delay: 0.6s;
 }
+
+/* ── Meta section ── */
+.meta-section {
+  margin-bottom: 15px;
+}
+
 .meta-label {
-  font-size:.68rem; font-weight:500; color:rgba(255,255,255,.3);
-  letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;
-  opacity:0; animation:fadeUp 0.5s ease forwards; animation-delay:0.75s;
+  font-size: 0.6rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  margin-bottom: 9px;
+  font-style: italic;
+  opacity: 0;
+  animation: fadeUp 0.4s ease forwards;
+  animation-delay: 0.65s;
 }
+
 .meta-line {
-  font-size:.76rem; color:rgba(255,255,255,.55); margin-bottom:4px;
-  line-height:1.6; opacity:0; animation:fadeUp 0.5s ease forwards;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.48);
+  margin-bottom: 3px;
+  line-height: 1.65;
+  opacity: 0;
+  animation: fadeUp 0.4s ease forwards;
 }
-.meta-line:nth-of-type(1){animation-delay:0.82s;}
-.meta-line:nth-of-type(2){animation-delay:0.89s;}
-.meta-line:nth-of-type(3){animation-delay:0.96s;}
-.meta-line:nth-of-type(4){animation-delay:1.03s;}
-.spacer { height:16px; }
+
+.meta-line:nth-of-type(1) { animation-delay: 0.72s; }
+.meta-line:nth-of-type(2) { animation-delay: 0.79s; }
+.meta-line:nth-of-type(3) { animation-delay: 0.86s; }
+.meta-line:nth-of-type(4) { animation-delay: 0.93s; }
+
+.meta-line:empty { display: none; }
+
+/* ── Footer / icon row ── */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  opacity: 0;
+  animation: fadeUp 0.4s ease forwards;
+  animation-delay: 1.0s;
+  margin-top: 4px;
+}
+
 .icon-links {
-  display:flex; gap:12px; align-items:center;
-  opacity:0; animation:fadeUp 0.5s ease forwards; animation-delay:1.1s;
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }
+
 .icon-link {
-  display:flex; align-items:center; justify-content:center;
-  color:rgba(255,255,255,.45); transition:color .2s,transform .2s; text-decoration:none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.35);
+  transition: color 0.18s, background 0.18s;
+  text-decoration: none;
+  background: rgba(255,255,255,0.0);
 }
-.icon-link:hover { color:#fff; transform:scale(1.15); }
-.icon-link svg { width:22px; height:22px; fill:currentColor; display:block; }
-@keyframes fadeUp { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
+
+.icon-link:hover {
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.07);
+}
+
+.icon-link svg {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+  display: block;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* ── Like button ── */
 #like-btn {
-  display:flex; align-items:center; gap:5px;
-  background:none; border:none; padding:0; cursor:pointer;
-  color:rgba(255,255,255,0.25); font-family:"DM Mono",monospace;
-  font-size:.72rem; transition:color .2s,transform .15s; user-select:none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 4px 8px 4px 6px;
+  border-radius: 7px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.22);
+  font-family: "DM Mono", monospace;
+  font-size: 0.68rem;
+  transition: color 0.18s, background 0.18s;
+  user-select: none;
+  letter-spacing: 0.3px;
 }
-#like-btn:hover { color:rgba(255,255,255,0.55); transform:scale(1.1); }
-#like-btn.liked { color:#fff; }
-#like-btn svg { width:20px; height:20px; fill:currentColor; display:block; }
-#like-num { font-size:.70rem; line-height:1; }
+
+#like-btn:hover {
+  color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.06);
+}
+
+#like-btn.liked {
+  color: rgba(255,255,255,0.85);
+}
+
+#like-btn svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+  display: block;
+  flex-shrink: 0;
+}
+
+#like-num {
+  font-size: 0.66rem;
+  line-height: 1;
+  min-width: 14px;
+}
 
 /* ── 404 ── */
 #not-found {
-  position:fixed; inset:0; display:none;
-  align-items:center; justify-content:center; flex-direction:column; gap:8px;
-  z-index:10;
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 7px;
+  z-index: 10;
 }
-#not-found.show { display:flex; }
-#not-found .nf-title { font-size:1.1rem; color:rgba(255,255,255,.7); }
-#not-found .nf-sub { font-size:.72rem; color:rgba(255,255,255,.25); letter-spacing:1px; }
+
+#not-found.show { display: flex; }
+
+#not-found .nf-title {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: -0.2px;
+}
+
+#not-found .nf-sub {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 1px;
+}
 
 /* ── Overlay ── */
 #overlay {
-  position:fixed; inset:0; z-index:100; background:#000;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; transition:opacity .6s ease;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.55s ease;
 }
-#overlay.hide { opacity:0; pointer-events:none; }
+
+#overlay.hide { opacity: 0; pointer-events: none; }
+
 #overlay-text {
-  font-family:"DM Mono",monospace; font-size:.75rem;
-  color:rgba(255,255,255,.25); letter-spacing:3px; text-transform:uppercase;
-  animation:pulse 2.5s ease-in-out infinite;
+  font-family: "DM Mono", monospace;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  animation: pulse 2.8s ease-in-out infinite;
 }
-@keyframes pulse { 0%,100%{opacity:.25;} 50%{opacity:.7;} }
+
+@keyframes pulse {
+  0%,100% { opacity: 0.2; }
+  50%      { opacity: 0.6; }
+}
 </style>
 </head>
 <body>
@@ -192,17 +384,25 @@ html, body {
 
 <div id="card-stack">
   <div id="content">
-    <div class="site-name" id="site-name"></div>
-    <div class="username-row" id="username-row"></div>
+    <div class="card-header">
+      <div class="site-name" id="site-name"></div>
+      <div class="username-row" id="username-row"></div>
+    </div>
+
     <div class="divider"></div>
-    <div class="meta-label">last change: <span id="last-change-date"></span></div>
-    <div class="meta-line" id="line1"></div>
-    <div class="meta-line" id="line2"></div>
-    <div class="meta-line" id="line3"></div>
-    <div class="meta-line" id="discord-line" style="display:none">discord — <span id="discord-val"></span></div>
-    <div class="spacer"></div>
-    <div class="icon-links" style="display:flex;align-items:center;gap:12px;">
-      <div id="links-container" style="display:contents;"></div>
+
+    <div class="meta-section">
+      <div class="meta-label">last change: <span id="last-change-date"></span></div>
+      <div class="meta-line" id="line1"></div>
+      <div class="meta-line" id="line2"></div>
+      <div class="meta-line" id="line3"></div>
+      <div class="meta-line" id="discord-line" style="display:none">discord — <span id="discord-val"></span></div>
+    </div>
+
+    <div class="card-footer">
+      <div class="icon-links">
+        <div id="links-container" style="display:contents;"></div>
+      </div>
       <button id="like-btn" title="like">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3v11z"/>
@@ -258,93 +458,81 @@ const MAIN = {
 };
 
 /* ═══════════════════════════════════════════
-   USER PAGES  (forgave.lol/username)
-   Duplicate a block below to add a new user.
+   USER PAGES
 ═══════════════════════════════════════════ */
 const USERS = {
 
-  // ── example user ──
-   "prada": {
-     siteName:   "forgave.lol",
-     lastChange: "25 May 2026",
-     username:   "prada",
-     uid:        "1",
-     badges: [],
-     lines: ["@juliasfanboy / on discord", "rich", "take risks"],
-     discord: "",
-     links: [
-       { label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok" },
-     ],
-     bgVideo: {
-       urls: [ "https://files.catbox.moe/aned1c.mp4" ],
-       opacity: 0.45,
-     },
-     bgWords: ["prada", "</>"],
-     wordCount: 26, wordSpeed: [1.0,2.5], wordSize: [9,28], wordSpin: 0.007,
-     wordColor: "rgba(180,180,200,",
-     music: { url: "", volume: 0.4 },
-   },
+  "prada": {
+    siteName:   "forgave.lol",
+    lastChange: "25 May 2026",
+    username:   "prada",
+    uid:        "1",
+    badges: [],
+    lines: ["@juliasfanboy / on discord", "rich", "take risks"],
+    discord: "",
+    links: [
+      { label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok" },
+    ],
+    bgVideo: {
+      urls: [ "https://files.catbox.moe/aned1c.mp4" ],
+      opacity: 0.45,
+    },
+    bgWords: ["prada", "</>"],
+    wordCount: 26, wordSpeed: [1.0,2.5], wordSize: [9,28], wordSpin: 0.007,
+    wordColor: "rgba(180,180,200,",
+    music: { url: "", volume: 0.4 },
+  },
 
   "btc": {
-  siteName:   "forgave.lol",
-  lastChange: "25 May 2026",
-  username:   "btc",
-  uid:        "2",
-  badges: [
-    { tip: "btc", img: "https://files.catbox.moe/mdlopx.png" },
-  ],
-  lines: [
-    "",
-    "",
-    "",
-  ],
-  discord: "",
-  links: [
-    { label: "roblox", url: "https://www.roblox.com/users/418312507/profile?friendshipSourceType=PlayerSearch", icon: "roblox" },
-  ],
-  bgVideo: {
-    urls: [ "https://files.catbox.moe/rstzft.mp4" ],
-    opacity: 0.45,
-  },
-  bgWords: ["btc", "</>", "///"],
-  wordCount: 26,
-  wordSpeed: [1.0, 2.5],
-  wordSize:  [9, 28],
-  wordSpin:  0.007,
-  wordColor: "rgba(180,180,200,",
-  music: { url: "", volume: 0.4 },
+    siteName:   "forgave.lol",
+    lastChange: "25 May 2026",
+    username:   "btc",
+    uid:        "2",
+    badges: [
+      { tip: "btc", img: "https://files.catbox.moe/mdlopx.png" },
+    ],
+    lines: ["","",""],
+    discord: "",
+    links: [
+      { label: "roblox", url: "https://www.roblox.com/users/418312507/profile?friendshipSourceType=PlayerSearch", icon: "roblox" },
+    ],
+    bgVideo: {
+      urls: [ "https://files.catbox.moe/rstzft.mp4" ],
+      opacity: 0.45,
+    },
+    bgWords: ["btc", "</>", "///"],
+    wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007,
+    wordColor: "rgba(180,180,200,",
+    music: { url: "", volume: 0.4 },
   },
 
-"7": {
-  siteName:   "forgave.lol",
-  lastChange: "26th May 2026",
-  username:   "7",
-  uid:        "3",
-  badges: [],
-  lines: [
-    "@u3ls (1263468060317188097) / on discord",
-    "",
-    "",
-  ],
-  discord: "",
-  links: [],
-  bgVideo: {
-    urls: [ "https://files.catbox.moe/0kwj0d.mp4" ],
-    opacity: 0.45,
+  "7": {
+    siteName:   "forgave.lol",
+    lastChange: "26th May 2026",
+    username:   "7",
+    uid:        "3",
+    badges: [],
+    lines: [
+      "@u3ls (1263468060317188097) / on discord",
+      "",
+      "",
+    ],
+    discord: "",
+    links: [],
+    bgVideo: {
+      urls: [ "https://files.catbox.moe/0kwj0d.mp4" ],
+      opacity: 0.45,
+    },
+    bgWords: ["btc", "</>", "///"],
+    wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007,
+    wordColor: "rgba(180,180,200,",
+    music: { url: "", volume: 0.4 },
   },
-  bgWords: ["btc", "</>", "///"],
-  wordCount: 26,
-  wordSpeed: [1.0, 2.5],
-  wordSize:  [9, 28],
-  wordSpin:  0.007,
-  wordColor: "rgba(180,180,200,",
-  music: { url: "", volume: 0.4 },
-  },
-  
+
 };
 
 /* ═══════════════════════════════════════════
-   ROUTING — reads the URL path
+   ROUTING
 ═══════════════════════════════════════════ */
 const slug = location.pathname.replace(/^\//, "").toLowerCase().trim();
 let C = null;
@@ -357,7 +545,6 @@ if (!slug || slug === "") {
   C = USERS[slug];
   likeId = "forgave.lol/" + slug;
 } else {
-  // 404
   document.getElementById("card-stack").style.display = "none";
   document.getElementById("not-found").classList.add("show");
   document.getElementById("nf-slug").textContent = slug;
@@ -393,7 +580,7 @@ if (C) {
   (C.badges || []).forEach(b => {
     const d = document.createElement("div");
     d.className = "badge";
-    d.innerHTML = `${b.svg || `<img src="${b.img}" style="width:${b.size || 18}px;height:${b.size || 18}px;filter:brightness(0) invert(1);opacity:0.55;">`}<span class="tip">${b.tip}</span>`;
+    d.innerHTML = `${b.svg || `<img src="${b.img}" style="width:${b.size || 18}px;height:${b.size || 18}px;filter:brightness(0) invert(1);opacity:0.45;">`}<span class="tip">${b.tip}</span>`;
     usernameRow.appendChild(d);
   });
 
@@ -423,15 +610,15 @@ if (C) {
   function typeStep() {
     if (!deleting) {
       nameEl.textContent = typeText.slice(0, ++ti);
-      if (ti === typeText.length) { deleting = true; setTimeout(typeStep, 2000); }
-      else setTimeout(typeStep, 90);
+      if (ti === typeText.length) { deleting = true; setTimeout(typeStep, 2200); }
+      else setTimeout(typeStep, 85);
     } else {
       nameEl.textContent = typeText.slice(0, --ti);
       if (ti === 0) { deleting = false; setTimeout(typeStep, 500); }
-      else setTimeout(typeStep, 55);
+      else setTimeout(typeStep, 50);
     }
   }
-  setTimeout(typeStep, 700);
+  setTimeout(typeStep, 650);
 
   // video
   const bgvideo = document.getElementById("bgvideo");
@@ -496,16 +683,16 @@ if (C) {
   }
   draw();
 
-  // cursor trail
+  // cursor trail (desktop only)
   const trail = document.getElementById("trail");
   const tCtx  = trail.getContext("2d");
   trail.width  = window.innerWidth; trail.height = window.innerHeight;
   window.addEventListener("resize", () => { trail.width = window.innerWidth; trail.height = window.innerHeight; });
   let mx = window.innerWidth / 2, my = window.innerHeight / 2;
   const ghosts = [
-    { x: mx, y: my, lag: 0.18, alpha: 0.22, scale: 0.95 },
-    { x: mx, y: my, lag: 0.10, alpha: 0.13, scale: 0.90 },
-    { x: mx, y: my, lag: 0.06, alpha: 0.07, scale: 0.85 },
+    { x: mx, y: my, lag: 0.18, alpha: 0.20, scale: 0.95 },
+    { x: mx, y: my, lag: 0.10, alpha: 0.12, scale: 0.90 },
+    { x: mx, y: my, lag: 0.06, alpha: 0.06, scale: 0.85 },
   ];
   window.addEventListener("mousemove", e => { mx = e.clientX; my = e.clientY; });
   function drawArrow(x, y, alpha, scale) {
@@ -529,7 +716,7 @@ if (C) {
   }
   drawTrail();
 
-  // likes
+  // likes (Supabase)
   const SUPA_URL = "https://xqqwyugfyntgbgohzqcz.supabase.co";
   const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxcXd5dWdmeW50Z2Jnb2h6cWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MjI1NTQsImV4cCI6MjA5NTE5ODU1NH0.Y-Z5HawSgxraigCep2BHINLvev98b3m3BGsI1DT_LQY";
   const likeBtn = document.getElementById("like-btn");
@@ -545,7 +732,6 @@ if (C) {
       });
       const data = await res.json();
       if (!data[0]) {
-        // row doesn't exist yet, insert it
         await fetch(`${SUPA_URL}/rest/v1/likes`, {
           method: "POST",
           headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" },
