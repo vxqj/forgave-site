@@ -526,6 +526,32 @@ const supa = {
 };
 
 /* ════════════════════════════════════════
+   DISCORD WEBHOOK
+════════════════════════════════════════ */
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1515356595700105296/J_aBVGYSHGNQ_E5pRtlVkx-xg7oS1CLhpfiobYtLss1QTfh9ynUbRN2n4QZnrTWiDuBf";
+
+async function notifyDiscord(username, uid) {
+  try {
+    await fetch(DISCORD_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [{
+          title: "new account created",
+          color: 0x5865F2,
+          fields: [
+            { name: "username", value: username, inline: true },
+            { name: "uid",      value: String(uid), inline: true },
+            { name: "profile",  value: `https://forgave.lol/${username}`, inline: false },
+          ],
+          timestamp: new Date().toISOString(),
+        }]
+      })
+    });
+  } catch {}
+}
+
+/* ════════════════════════════════════════
    SIMPLE PASSWORD HASH (SHA-256 via WebCrypto)
 ════════════════════════════════════════ */
 async function hashPassword(pw) {
@@ -599,7 +625,6 @@ const STATIC_USERS = {
   },
 };
 
-// Static users take UIDs 0-3, dynamic start at 4
 const STATIC_UID_START = 4;
 
 /* ════════════════════════════════════════
@@ -631,7 +656,6 @@ async function resolveRoute() {
     C = STATIC_USERS[slug]; likeId = "forgave.lol/" + slug;
     return;
   }
-  // try dynamic user from DB
   try {
     const rows = await supa.get("users", `username=eq.${encodeURIComponent(slug)}`);
     if (rows && rows[0]) {
@@ -656,7 +680,6 @@ async function resolveRoute() {
       return;
     }
   } catch {}
-  // 404
   C = null;
 }
 
@@ -705,7 +728,6 @@ function renderCard() {
     lc.appendChild(a);
   });
 
-  // typewriter
   const nameEl = document.getElementById("site-name");
   const typeText = C.siteName;
   let ti = 0, deleting = false;
@@ -722,7 +744,6 @@ function renderCard() {
   }
   setTimeout(typeStep, 700);
 
-  // video / canvas
   const bgvideo = document.getElementById("bgvideo");
   const canvas  = document.getElementById("wordfield");
   const ctx     = canvas.getContext("2d");
@@ -734,7 +755,6 @@ function renderCard() {
     canvas.style.display  = "none";
   }
 
-  // overlay
   const audio   = document.getElementById("audio");
   const overlay = document.getElementById("overlay");
   overlay.addEventListener("click", () => {
@@ -744,7 +764,6 @@ function renderCard() {
     if (C.music?.url) { audio.src=C.music.url; audio.volume=C.music.volume; audio.play().catch(()=>{}); }
   });
 
-  // falling words
   function resize() { canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
   resize();
   window.addEventListener("resize",()=>{ resize(); initWords(); });
@@ -774,7 +793,6 @@ function renderCard() {
   }
   draw();
 
-  // cursor trail
   const trail=document.getElementById("trail"), tCtx=trail.getContext("2d");
   trail.width=window.innerWidth; trail.height=window.innerHeight;
   window.addEventListener("resize",()=>{ trail.width=window.innerWidth; trail.height=window.innerHeight; });
@@ -799,7 +817,6 @@ function renderCard() {
   }
   drawTrail();
 
-  // likes
   const likeBtn=document.getElementById("like-btn"), likeNum=document.getElementById("like-num");
   const likeKey="liked_"+likeId.replace(/\//g,"_");
   let hasLiked=localStorage.getItem(likeKey)==="1";
@@ -858,7 +875,6 @@ document.getElementById("dash-close").addEventListener("click", () => closeModal
 authModal.addEventListener("click", e => { if(e.target===authModal) closeModal(authModal); });
 dashModal.addEventListener("click", e => { if(e.target===dashModal) closeModal(dashModal); });
 
-// tabs
 document.getElementById("tab-signup").addEventListener("click", () => switchTab("signup"));
 document.getElementById("tab-login").addEventListener("click",  () => switchTab("login"));
 document.getElementById("sw-to-login").addEventListener("click",  () => switchTab("login"));
@@ -871,7 +887,6 @@ function switchTab(t) {
   document.getElementById("tab-login").classList.toggle("active",  t==="login");
 }
 
-// username availability check
 let checkTimer = null;
 document.getElementById("su-username").addEventListener("input", e => {
   const val = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g,"");
@@ -914,11 +929,9 @@ document.getElementById("su-submit").addEventListener("click", async () => {
   btn.disabled=true; btn.textContent="creating..."; err.textContent="";
 
   try {
-    // check again server-side
     const existing = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
     if (existing && existing.length > 0) { err.textContent="username taken"; btn.disabled=false; btn.textContent="create account"; return; }
 
-    // get next UID
     const allUsers = await supa.get("users", "order=uid.desc&limit=1");
     const nextUid  = allUsers && allUsers.length > 0 ? allUsers[0].uid + 1 : STATIC_UID_START;
 
@@ -933,6 +946,9 @@ document.getElementById("su-submit").addEventListener("click", async () => {
     });
 
     if (result && result[0]) {
+      // ── notify Discord ──
+      notifyDiscord(username, nextUid);
+
       saveSession({ username, uid: nextUid });
       closeModal(authModal);
       updateAuthUI();
@@ -974,7 +990,6 @@ document.getElementById("li-submit").addEventListener("click", async () => {
   btn.disabled=false; btn.textContent="log in";
 });
 
-// auth UI state
 function updateAuthUI() {
   if (session) {
     authBtn.style.display="none";
@@ -999,7 +1014,6 @@ async function openDashboard() {
   closeModal(authModal);
   document.getElementById("dash-username-label").textContent = session.username;
 
-  // load current data
   try {
     const rows = await supa.get("users", `username=eq.${encodeURIComponent(session.username)}`);
     if (rows && rows[0]) {
@@ -1077,7 +1091,6 @@ document.getElementById("d-save").addEventListener("click", async () => {
       lines, discord, links, bg_video_urls, bg_words, last_change: now,
     });
     status.textContent="saved ✓";
-    // if viewing own page, refresh card live
     if (slug === session.username) {
       location.reload();
     }
