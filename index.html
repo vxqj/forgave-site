@@ -330,7 +330,7 @@ html, body {
 #user-pill-logout svg { width: 16px; height: 16px; fill: currentColor; display: block; }
 
 /* ══════════════════════════════════════════
-   DASHBOARD MODAL — FULL REDESIGN
+   DASHBOARD MODAL
 ══════════════════════════════════════════ */
 #dash-modal .modal {
   width: 680px;
@@ -343,7 +343,6 @@ html, body {
   max-height: calc(100vh - 48px);
 }
 
-/* Header bar */
 .dash-header {
   display: flex;
   align-items: center;
@@ -370,7 +369,6 @@ html, body {
   margin-left: 14px;
 }
 
-/* Body = sidebar + panel */
 .dash-body {
   display: flex;
   flex: 1;
@@ -378,7 +376,6 @@ html, body {
   min-height: 0;
 }
 
-/* Sidebar */
 .dash-sidebar {
   width: 140px;
   flex-shrink: 0;
@@ -424,7 +421,6 @@ html, body {
 }
 .dash-nav-btn.active svg { opacity: 1; }
 
-/* Panels */
 .dash-panels {
   flex: 1;
   overflow-y: auto;
@@ -443,7 +439,6 @@ html, body {
   font-style: italic;
 }
 
-/* Section grouping inside panels */
 .dash-section { margin-bottom: 22px; }
 .dash-section-label {
   font-size: .56rem;
@@ -454,7 +449,6 @@ html, body {
   font-style: italic;
 }
 
-/* Links list */
 .dash-links-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 8px; }
 .dash-link-row { display: flex; gap: 6px; align-items: center; }
 .dash-link-row input { flex: 1; }
@@ -472,7 +466,6 @@ html, body {
 }
 .dash-add-link:hover { border-color: rgba(255,255,255,.25); color: rgba(255,255,255,.5); }
 
-/* Save bar */
 .dash-footer {
   padding: 14px 22px;
   border-top: 1px solid rgba(255,255,255,.06);
@@ -493,7 +486,7 @@ html, body {
   flex-shrink: 0;
 }
 
-/* ── Badge panel ── */
+/* Badge panel */
 .badge-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -514,9 +507,7 @@ html, body {
   border-color: rgba(255,210,100,.15);
   background: rgba(255,200,80,.03);
 }
-.badge-card.locked {
-  opacity: .55;
-}
+.badge-card.locked { opacity: .55; }
 
 .badge-icon-wrap {
   width: 42px; height: 42px;
@@ -566,7 +557,6 @@ html, body {
   border: 1px solid rgba(255,255,255,.07);
 }
 
-/* Equip button */
 .badge-equip-btn {
   font-family: "DM Mono", monospace;
   font-size: .58rem;
@@ -606,10 +596,9 @@ html, body {
   flex-shrink: 0;
 }
 
-/* OG badge custom SVG colors */
 .og-badge-svg { width: 26px; height: 26px; display: block; }
 
-/* ── Alias row on card ── */
+/* Alias row on card */
 .alias-row {
   font-size: .62rem;
   color: rgba(255,255,255,.22);
@@ -625,7 +614,7 @@ html, body {
 .alias-row a:hover { color: rgba(255,255,255,.7); }
 .alias-row .alias-sep { margin: 0 3px; opacity: .4; }
 
-/* ── Alias dashboard panel ── */
+/* Alias dashboard panel */
 .alias-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
 
 .alias-entry {
@@ -695,7 +684,6 @@ html, body {
   text-align: center; margin-top: 8px; font-style: italic;
 }
 
-/* ── MOBILE: dashboard sidebar goes horizontal ── */
 @media (max-width: 600px) {
   #dash-modal .modal { width: calc(100vw - 24px); }
   .dash-body { flex-direction: column; }
@@ -718,17 +706,14 @@ html, body {
 <div id="overlay"><span id="overlay-text">click to enter</span></div>
 <audio id="audio" loop></audio>
 
-<!-- Auth button (shown when logged out) -->
 <button id="auth-btn" title="sign up"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></button>
 
-<!-- Logged-in pill -->
 <div id="user-pill">
   <span id="user-pill-name"></span>
   <button id="user-pill-settings" title="settings"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.06 7.06 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54a7.4 7.4 0 0 0-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.36 1.04.67 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54a7.4 7.4 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.03-1.58zM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2z"/></svg></button>
   <button id="user-pill-logout" title="sign out"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5a2 2 0 0 0-2 2v4h2V5h14v14H5v-4H3v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/></svg></button>
 </div>
 
-<!-- Card -->
 <div id="card-stack">
   <div id="content">
     <div class="card-header">
@@ -759,7 +744,7 @@ html, body {
   <div class="nf-sub">forgave.lol/<span id="nf-slug"></span></div>
 </div>
 
-<!-- ── Auth Modal ── -->
+<!-- Auth Modal -->
 <div class="modal-bg" id="auth-modal">
   <div class="modal">
     <button class="modal-close" id="auth-close">✕</button>
@@ -804,21 +789,15 @@ html, body {
   </div>
 </div>
 
-<!-- ── Dashboard Modal ── -->
+<!-- Dashboard Modal -->
 <div class="modal-bg" id="dash-modal">
   <div class="modal">
-
-    <!-- Header -->
     <div class="dash-header">
       <span class="dash-header-title">dashboard</span>
       <span class="dash-header-user" id="dash-username-label"></span>
       <button class="modal-close" id="dash-close">✕</button>
     </div>
-
-    <!-- Body -->
     <div class="dash-body">
-
-      <!-- Sidebar nav -->
       <nav class="dash-sidebar">
         <button class="dash-nav-btn active" data-panel="bio">
           <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
@@ -842,10 +821,7 @@ html, body {
         </button>
       </nav>
 
-      <!-- Panels -->
       <div class="dash-panels">
-
-        <!-- BIO -->
         <div class="dash-panel active" id="panel-bio">
           <div class="dash-panel-title">bio lines</div>
           <div class="field"><label>line 1</label><input type="text" id="d-line1" placeholder="something about you" maxlength="60"/></div>
@@ -854,14 +830,12 @@ html, body {
           <div class="field"><label>discord tag</label><input type="text" id="d-discord" placeholder="username (id)" maxlength="80"/></div>
         </div>
 
-        <!-- SOCIALS -->
         <div class="dash-panel" id="panel-socials">
           <div class="dash-panel-title">links</div>
           <div class="dash-links-list" id="d-links-list"></div>
           <button class="dash-add-link" id="d-add-link">+ add link</button>
         </div>
 
-        <!-- BACKGROUND -->
         <div class="dash-panel" id="panel-background">
           <div class="dash-panel-title">background</div>
           <div class="dash-section">
@@ -877,13 +851,11 @@ html, body {
           </div>
         </div>
 
-        <!-- BADGES -->
         <div class="dash-panel" id="panel-badges">
           <div class="dash-panel-title">badges</div>
           <div class="badge-grid" id="badge-grid"></div>
         </div>
 
-        <!-- ALIAS -->
         <div class="dash-panel" id="panel-alias">
           <div class="dash-panel-title">aliases</div>
           <div style="font-size:.62rem;color:rgba(255,255,255,.2);letter-spacing:.5px;line-height:1.7;margin-bottom:16px;">
@@ -909,16 +881,13 @@ html, body {
           <button class="alias-add-trigger" id="alias-add-trigger">+ add alias</button>
           <div class="alias-limit-note">max 3 aliases</div>
         </div>
+      </div>
+    </div>
 
-      </div><!-- /panels -->
-    </div><!-- /body -->
-
-    <!-- Footer save bar -->
     <div class="dash-footer">
       <span class="dash-save-status" id="d-save-status"></span>
       <button class="modal-btn" id="d-save">save changes</button>
     </div>
-
   </div>
 </div>
 
@@ -934,23 +903,49 @@ const supa = {
     const r = await fetch(`${SUPA_URL}/rest/v1/${table}?${query}&select=*`, {
       headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
     });
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      throw new Error(err.message || `GET ${table} failed: ${r.status}`);
+    }
     return r.json();
   },
+
   async post(table, body) {
     const r = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
       method: "POST",
-      headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json", "Prefer": "return=representation" },
+      headers: {
+        apikey: SUPA_KEY,
+        Authorization: "Bearer " + SUPA_KEY,
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+      },
       body: JSON.stringify(body)
     });
-    return r.json();
+    const data = await r.json();
+    if (!r.ok) {
+      console.error("[supa.post] error:", r.status, data);
+      throw new Error(data?.message || data?.error || `POST failed: ${r.status}`);
+    }
+    return data;
   },
+
   async patch(table, query, body) {
     const r = await fetch(`${SUPA_URL}/rest/v1/${table}?${query}`, {
       method: "PATCH",
-      headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json", "Prefer": "return=representation" },
+      headers: {
+        apikey: SUPA_KEY,
+        Authorization: "Bearer " + SUPA_KEY,
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+      },
       body: JSON.stringify(body)
     });
-    return r.json();
+    const data = await r.json();
+    if (!r.ok) {
+      console.error("[supa.patch] error:", r.status, data);
+      throw new Error(data?.message || data?.error || `PATCH failed: ${r.status}`);
+    }
+    return data;
   }
 };
 
@@ -981,7 +976,7 @@ async function notifyDiscord(username, uid) {
 }
 
 /* ════════════════════════════════════════
-   SIMPLE PASSWORD HASH (SHA-256 via WebCrypto)
+   PASSWORD HASH
 ════════════════════════════════════════ */
 async function hashPassword(pw) {
   const enc = new TextEncoder();
@@ -990,7 +985,7 @@ async function hashPassword(pw) {
 }
 
 /* ════════════════════════════════════════
-   SESSION (localStorage)
+   SESSION
 ════════════════════════════════════════ */
 let session = null;
 try { session = JSON.parse(localStorage.getItem("frgv_session")); } catch {}
@@ -1005,7 +1000,7 @@ function clearSession() {
 }
 
 /* ════════════════════════════════════════
-   HARDCODED MAIN + STATIC USERS
+   HARDCODED USERS
 ════════════════════════════════════════ */
 const MAIN = {
   siteName: "forgave.lol", lastChange: "14 June 2026",
@@ -1130,20 +1125,13 @@ async function resolveRoute() {
       const equippedBadges = u.equipped_badges || [];
       const cardBadges = [];
       if (parseInt(u.uid, 10) <= 50 && equippedBadges.includes("og")) {
-        cardBadges.push({
-          tip: "OG Member",
-          svgInline: OG_BADGE_SVG,
-          isOG: true,
-        });
+        cardBadges.push({ tip: "OG Member", svgInline: OG_BADGE_SVG, isOG: true });
       }
 
-      // Ensure aliases is always a proper array
       let aliases = [];
-      console.log("[route] raw u.aliases from DB:", JSON.stringify(u.aliases));
       if (Array.isArray(u.aliases)) {
-        aliases = u.aliases.filter(a => typeof a === "string" && a.length > 0);
+        aliases = u.aliases.filter(a => typeof a === "string" && a.trim().length > 0);
       }
-      console.log("[route] clean aliases:", JSON.stringify(aliases));
 
       C = {
         siteName:   "forgave.lol",
@@ -1164,7 +1152,9 @@ async function resolveRoute() {
       likeId = "forgave.lol/" + slug;
       return;
     }
-  } catch {}
+  } catch(e) {
+    console.error("[resolveRoute] error:", e);
+  }
   C = null;
 }
 
@@ -1205,9 +1195,9 @@ function renderCard() {
     usernameRow.appendChild(d);
   });
 
-  // FIX: Alias row — always treat as array, show if non-empty
+  // Render alias row
   const aliasRow = document.getElementById("alias-row");
-  const aliases = Array.isArray(C.aliases) ? C.aliases.filter(a => a && a.length > 0) : [];
+  const aliases = Array.isArray(C.aliases) ? C.aliases.filter(a => a && a.trim().length > 0) : [];
   if (aliases.length > 0) {
     aliasRow.style.display = "block";
     aliasRow.innerHTML = "also known as: " + aliases.map((a, i) =>
@@ -1419,13 +1409,15 @@ document.getElementById("su-username").addEventListener("input", e => {
   }, 400);
 });
 
-// sign up
+/* ── SIGN UP ── */
 document.getElementById("su-submit").addEventListener("click", async () => {
-  const btn = document.getElementById("su-submit");
+  const btn      = document.getElementById("su-submit");
   const username = document.getElementById("su-username").value.trim().toLowerCase();
   const pw       = document.getElementById("su-password").value;
   const confirm  = document.getElementById("su-confirm").value;
   const err      = document.getElementById("su-error");
+
+  err.textContent = "";
 
   if (!username || username.length < 2) { err.textContent="username too short"; return; }
   if (STATIC_USERS[username] || username==="chloryl") { err.textContent="username taken"; return; }
@@ -1435,24 +1427,40 @@ document.getElementById("su-submit").addEventListener("click", async () => {
   const hint = document.getElementById("su-username-hint");
   if (hint.classList.contains("error")) { err.textContent="username taken"; return; }
 
-  btn.disabled=true; btn.textContent="creating..."; err.textContent="";
+  btn.disabled=true; btn.textContent="creating...";
 
   try {
+    // Double-check username not taken
     const existing = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
-    if (existing && existing.length > 0) { err.textContent="username taken"; btn.disabled=false; btn.textContent="create account"; return; }
+    if (existing && existing.length > 0) {
+      err.textContent="username already taken";
+      btn.disabled=false; btn.textContent="create account";
+      return;
+    }
 
-    const allUsers = await supa.get("users", "order=uid.desc&limit=1");
-    const nextUid  = allUsers && allUsers.length > 0 ? allUsers[0].uid + 1 : STATIC_UID_START;
+    // Get next UID
+    let nextUid = STATIC_UID_START;
+    try {
+      const allUsers = await supa.get("users", "order=uid.desc&limit=1");
+      if (allUsers && allUsers.length > 0) nextUid = allUsers[0].uid + 1;
+    } catch {}
 
     const hash = await hashPassword(pw);
     const now  = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
 
     const result = await supa.post("users", {
-      username, password_hash: hash, uid: nextUid,
-      lines: ["","",""], discord:"", links:[],
-      bg_video_urls:[], bg_video_opacity:0.45,
-      bg_words:["</>","///"], last_change: now,
+      username,
+      password_hash: hash,
+      uid: nextUid,
+      lines: ["","",""],
+      discord: "",
+      links: [],
+      bg_video_urls: [],
+      bg_video_opacity: 0.45,
+      bg_words: ["</>","///"],
+      last_change: now,
       aliases: [],
+      equipped_badges: [],
     });
 
     if (result && result[0]) {
@@ -1462,39 +1470,52 @@ document.getElementById("su-submit").addEventListener("click", async () => {
       updateAuthUI();
       openDashboard();
     } else {
-      err.textContent = "something went wrong";
+      // result came back but empty — shouldn't happen with throw above, just in case
+      err.textContent = "something went wrong — check Supabase RLS policies";
     }
   } catch(e) {
-    err.textContent = "error — try again";
-    console.error(e);
+    console.error("[signup]", e);
+    err.textContent = e.message?.includes("duplicate") ? "username taken" : "error — check console";
   }
+
   btn.disabled=false; btn.textContent="create account";
 });
 
-// log in
+/* ── LOG IN ── */
 document.getElementById("li-submit").addEventListener("click", async () => {
   const btn      = document.getElementById("li-submit");
   const username = document.getElementById("li-username").value.trim().toLowerCase();
   const pw       = document.getElementById("li-password").value;
   const err      = document.getElementById("li-error");
 
+  err.textContent = "";
   if (!username || !pw) { err.textContent="fill in all fields"; return; }
 
-  btn.disabled=true; btn.textContent="logging in..."; err.textContent="";
+  btn.disabled=true; btn.textContent="logging in...";
 
   try {
     const rows = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
-    if (!rows || rows.length === 0) { err.textContent="user not found"; btn.disabled=false; btn.textContent="log in"; return; }
+    if (!rows || rows.length === 0) {
+      err.textContent="user not found";
+      btn.disabled=false; btn.textContent="log in";
+      return;
+    }
 
     const hash = await hashPassword(pw);
-    if (rows[0].password_hash !== hash) { err.textContent="wrong password"; btn.disabled=false; btn.textContent="log in"; return; }
+    if (rows[0].password_hash !== hash) {
+      err.textContent="wrong password";
+      btn.disabled=false; btn.textContent="log in";
+      return;
+    }
 
     saveSession({ username, uid: rows[0].uid });
     closeModal(authModal);
     updateAuthUI();
-  } catch {
-    err.textContent="error — try again";
+  } catch(e) {
+    console.error("[login]", e);
+    err.textContent = "error — try again";
   }
+
   btn.disabled=false; btn.textContent="log in";
 });
 
@@ -1515,7 +1536,7 @@ document.getElementById("user-pill-logout").addEventListener("click", () => {
 });
 
 /* ════════════════════════════════════════
-   DASHBOARD — SIDE-TAB NAV
+   DASHBOARD NAV
 ════════════════════════════════════════ */
 document.querySelectorAll(".dash-nav-btn").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -1548,16 +1569,18 @@ async function openDashboard() {
       document.getElementById("d-bgwords").value = (u.bg_words || []).join(", ");
       renderDashLinks(u.links || []);
       renderBadges(u.uid, u.equipped_badges || []);
-      dashAliases = Array.isArray(u.aliases) ? u.aliases.filter(a => a && a.length > 0) : [];
+      dashAliases = Array.isArray(u.aliases) ? u.aliases.filter(a => typeof a === "string" && a.trim().length > 0) : [];
       renderAliasList();
     }
-  } catch {}
+  } catch(e) {
+    console.error("[openDashboard]", e);
+  }
 
   openModal(dashModal);
 }
 
 /* ════════════════════════════════════════
-   BADGES PANEL
+   BADGES
 ════════════════════════════════════════ */
 const OG_UID_THRESHOLD = 50;
 let dashEquipped = [];
@@ -1578,8 +1601,7 @@ function renderBadges(uid, equippedList) {
       <div class="badge-desc">
         ${isOG
           ? "you were one of the first 50 members on forgave.lol. respect."
-          : `awarded to the first 50 members. you joined as #${isNaN(numUid) ? "?" : numUid}.`
-        }
+          : `awarded to the first 50 members. you joined as #${isNaN(numUid) ? "?" : numUid}.`}
       </div>
     </div>
     <div class="badge-card-right">
@@ -1614,7 +1636,7 @@ const ALIAS_MAX = 3;
 let dashAliases = [];
 
 function renderAliasList() {
-  const list = document.getElementById("alias-list");
+  const list    = document.getElementById("alias-list");
   const trigger = document.getElementById("alias-add-trigger");
   list.innerHTML = "";
 
@@ -1626,7 +1648,7 @@ function renderAliasList() {
         <div class="alias-entry-name">${name}</div>
         <div class="alias-entry-url">forgave.lol/${name}</div>
       </div>
-      <button class="alias-remove" data-i="${i}" title="remove">×</button>
+      <button class="alias-remove" title="remove">×</button>
     `;
     entry.querySelector(".alias-remove").addEventListener("click", () => {
       dashAliases.splice(i, 1);
@@ -1639,14 +1661,12 @@ function renderAliasList() {
 }
 
 function openAliasForm() {
-  const form = document.getElementById("alias-add-form");
-  const trigger = document.getElementById("alias-add-trigger");
   document.getElementById("alias-input-user").value = "";
   document.getElementById("alias-input-pw").value = "";
   document.getElementById("alias-form-hint").textContent = "";
   document.getElementById("alias-form-hint").className = "alias-form-hint";
-  form.classList.add("open");
-  trigger.style.display = "none";
+  document.getElementById("alias-add-form").classList.add("open");
+  document.getElementById("alias-add-trigger").style.display = "none";
   document.getElementById("alias-input-user").focus();
 }
 
@@ -1667,43 +1687,50 @@ document.getElementById("alias-verify-btn").addEventListener("click", async () =
   hint.className = "alias-form-hint";
   hint.textContent = "";
 
-  if (!user) { hint.className = "alias-form-hint error"; hint.textContent = "enter a username"; return; }
-  if (!pw)   { hint.className = "alias-form-hint error"; hint.textContent = "enter the password"; return; }
-  if (user === session?.username) { hint.className = "alias-form-hint error"; hint.textContent = "that's your own account"; return; }
-  if (dashAliases.includes(user)) { hint.className = "alias-form-hint error"; hint.textContent = "already added"; return; }
-  if (dashAliases.length >= ALIAS_MAX) { hint.className = "alias-form-hint error"; hint.textContent = "max 3 aliases reached"; return; }
+  if (!user) { hint.className="alias-form-hint error"; hint.textContent="enter a username"; return; }
+  if (!pw)   { hint.className="alias-form-hint error"; hint.textContent="enter the password"; return; }
+  if (user === session?.username) { hint.className="alias-form-hint error"; hint.textContent="that's your own account"; return; }
+  if (dashAliases.includes(user)) { hint.className="alias-form-hint error"; hint.textContent="already added"; return; }
+  if (dashAliases.length >= ALIAS_MAX) { hint.className="alias-form-hint error"; hint.textContent="max 3 aliases reached"; return; }
 
-  btn.disabled = true; btn.textContent = "verifying...";
+  btn.disabled=true; btn.textContent="verifying...";
 
   try {
     if (STATIC_USERS[user]) {
-      hint.className = "alias-form-hint error";
-      hint.textContent = "can't verify static profiles";
-      btn.disabled = false; btn.textContent = "verify & add";
+      hint.className="alias-form-hint error";
+      hint.textContent="can't verify static profiles";
+      btn.disabled=false; btn.textContent="verify & add";
       return;
     }
 
     const rows = await supa.get("users", `username=eq.${encodeURIComponent(user)}`);
     if (!rows || rows.length === 0) {
-      hint.className = "alias-form-hint error"; hint.textContent = "account not found";
-      btn.disabled = false; btn.textContent = "verify & add"; return;
+      hint.className="alias-form-hint error"; hint.textContent="account not found";
+      btn.disabled=false; btn.textContent="verify & add";
+      return;
     }
 
     const hash = await hashPassword(pw);
     if (rows[0].password_hash !== hash) {
-      hint.className = "alias-form-hint error"; hint.textContent = "wrong password";
-      btn.disabled = false; btn.textContent = "verify & add"; return;
+      hint.className="alias-form-hint error"; hint.textContent="wrong password";
+      btn.disabled=false; btn.textContent="verify & add";
+      return;
     }
 
     dashAliases.push(user);
-    hint.className = "alias-form-hint success"; hint.textContent = "verified ✓";
+    hint.className="alias-form-hint success"; hint.textContent="verified ✓";
     setTimeout(() => closeAliasForm(), 700);
-  } catch {
-    hint.className = "alias-form-hint error"; hint.textContent = "error — try again";
+  } catch(e) {
+    console.error("[alias-verify]", e);
+    hint.className="alias-form-hint error"; hint.textContent="error — try again";
   }
-  btn.disabled = false; btn.textContent = "verify & add";
+
+  btn.disabled=false; btn.textContent="verify & add";
 });
 
+/* ════════════════════════════════════════
+   LINKS
+════════════════════════════════════════ */
 function renderDashLinks(links) {
   const list = document.getElementById("d-links-list");
   list.innerHTML="";
@@ -1749,7 +1776,6 @@ async function saveDashboard(silent = false) {
   const discord    = document.getElementById("d-discord").value.trim();
   const bgVideoRaw = document.getElementById("d-bgvideo").value.trim();
   const bgWordsRaw = document.getElementById("d-bgwords").value.trim();
-
   const bg_video_urls = bgVideoRaw ? [bgVideoRaw] : [];
   const bg_words = bgWordsRaw.split(",").map(w=>w.trim()).filter(Boolean);
 
@@ -1762,42 +1788,43 @@ async function saveDashboard(silent = false) {
   });
 
   const now = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
-
-  // Clean aliases array before saving
   const cleanAliases = dashAliases.filter(a => typeof a === "string" && a.trim().length > 0);
 
   const payload = {
-    lines, discord, links, bg_video_urls, bg_words, last_change: now,
+    lines, discord, links, bg_video_urls, bg_words,
+    last_change: now,
     equipped_badges: dashEquipped,
     aliases: cleanAliases,
   };
 
-  console.log("[save] payload:", JSON.stringify(payload));
-
   try {
-    const result = await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
-    console.log("[save] result:", JSON.stringify(result));
+    await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
 
-    // Update alias row on card immediately without reload
+    // Update alias row on card immediately
     updateAliasRowOnCard(cleanAliases);
 
     if (!silent) {
       status.textContent = "saved ✓";
+      setTimeout(() => { status.textContent = ""; }, 3000);
       if (slug === session.username) location.reload();
     } else {
       if (slug === session.username) location.reload();
     }
   } catch(e) {
-    console.error("[save] error:", e);
-    if (!silent) status.textContent = "error saving";
+    console.error("[save]", e);
+    if (!silent) {
+      status.textContent = "error saving — check console";
+      status.style.color = "rgba(255,100,100,.6)";
+    }
   }
+
   if (!silent) { btn.disabled=false; btn.textContent="save changes"; }
 }
 
 function updateAliasRowOnCard(aliases) {
   const aliasRow = document.getElementById("alias-row");
   if (!aliasRow) return;
-  const clean = (aliases || []).filter(a => a && a.length > 0);
+  const clean = (aliases || []).filter(a => a && a.trim().length > 0);
   if (clean.length > 0) {
     aliasRow.style.display = "block";
     aliasRow.innerHTML = "also known as: " + clean.map((a, i) =>
@@ -1817,7 +1844,6 @@ document.getElementById("d-save").addEventListener("click", () => saveDashboard(
 updateAuthUI();
 resolveRoute().then(() => {
   renderCard();
-  document.getElementById("overlay").addEventListener("click", ()=>{}, {once:true});
 });
 </script>
 </body>
