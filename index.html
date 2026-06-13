@@ -1419,7 +1419,7 @@ document.getElementById("su-submit").addEventListener("click", async () => {
 
   err.textContent = "";
 
-  if (!username || username.length < 2) { err.textContent="username too short"; return; }
+  if (!username || username.length < 1) { err.textContent="username too short"; return; }
   if (STATIC_USERS[username] || username==="chloryl") { err.textContent="username taken"; return; }
   if (pw.length < 6) { err.textContent="password must be 6+ chars"; return; }
   if (pw !== confirm) { err.textContent="passwords don't match"; return; }
