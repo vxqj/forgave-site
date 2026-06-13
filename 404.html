@@ -1137,11 +1137,13 @@ async function resolveRoute() {
         });
       }
 
-      // FIX: Ensure aliases is always a proper array
+      // Ensure aliases is always a proper array
       let aliases = [];
+      console.log("[route] raw u.aliases from DB:", JSON.stringify(u.aliases));
       if (Array.isArray(u.aliases)) {
         aliases = u.aliases.filter(a => typeof a === "string" && a.length > 0);
       }
+      console.log("[route] clean aliases:", JSON.stringify(aliases));
 
       C = {
         siteName:   "forgave.lol",
@@ -1761,22 +1763,50 @@ async function saveDashboard(silent = false) {
 
   const now = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
 
+  // Clean aliases array before saving
+  const cleanAliases = dashAliases.filter(a => typeof a === "string" && a.trim().length > 0);
+
+  const payload = {
+    lines, discord, links, bg_video_urls, bg_words, last_change: now,
+    equipped_badges: dashEquipped,
+    aliases: cleanAliases,
+  };
+
+  console.log("[save] payload:", JSON.stringify(payload));
+
   try {
-    await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, {
-      lines, discord, links, bg_video_urls, bg_words, last_change: now,
-      equipped_badges: dashEquipped,
-      aliases: dashAliases,
-    });
+    const result = await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
+    console.log("[save] result:", JSON.stringify(result));
+
+    // Update alias row on card immediately without reload
+    updateAliasRowOnCard(cleanAliases);
+
     if (!silent) {
-      status.textContent="saved ✓";
+      status.textContent = "saved ✓";
       if (slug === session.username) location.reload();
     } else {
       if (slug === session.username) location.reload();
     }
-  } catch {
-    if (!silent) status.textContent="error saving";
+  } catch(e) {
+    console.error("[save] error:", e);
+    if (!silent) status.textContent = "error saving";
   }
   if (!silent) { btn.disabled=false; btn.textContent="save changes"; }
+}
+
+function updateAliasRowOnCard(aliases) {
+  const aliasRow = document.getElementById("alias-row");
+  if (!aliasRow) return;
+  const clean = (aliases || []).filter(a => a && a.length > 0);
+  if (clean.length > 0) {
+    aliasRow.style.display = "block";
+    aliasRow.innerHTML = "also known as: " + clean.map((a, i) =>
+      `<a href="https://forgave.lol/${a}" target="_blank" rel="noopener">${a}</a>${i < clean.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`
+    ).join("");
+  } else {
+    aliasRow.style.display = "none";
+    aliasRow.innerHTML = "";
+  }
 }
 
 document.getElementById("d-save").addEventListener("click", () => saveDashboard(false));
