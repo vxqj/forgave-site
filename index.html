@@ -952,25 +952,15 @@ const supa = {
 /* ════════════════════════════════════════
    DISCORD WEBHOOK
 ════════════════════════════════════════ */
-const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1515356595700105296/J_aBVGYSHGNQ_E5pRtlVkx-xg7oS1CLhpfiobYtLss1QTfh9ynUbRN2n4QZnrTWiDuBf";
-
 async function notifyDiscord(username, uid) {
   try {
-    await fetch(DISCORD_WEBHOOK, {
+    await fetch(`${SUPA_URL}/functions/v1/notify-discord`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        embeds: [{
-          title: "new account created",
-          color: 0x5865F2,
-          fields: [
-            { name: "username", value: username, inline: true },
-            { name: "uid",      value: String(uid), inline: true },
-            { name: "profile",  value: `https://forgave.lol/${username}`, inline: false },
-          ],
-          timestamp: new Date().toISOString(),
-        }]
-      })
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + SUPA_KEY
+      },
+      body: JSON.stringify({ username, uid })
     });
   } catch {}
 }
