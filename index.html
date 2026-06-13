@@ -1090,7 +1090,7 @@ const OG_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" 
   </defs>
 </svg>`;
 
-  const OG_PLUS_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+const OG_PLUS_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M13 3L10.5 8.5L4.5 9.5L9 13.5L7.5 19.5L13 16.5L18.5 19.5L17 13.5L21.5 9.5L15.5 8.5Z" fill="url(#diamond-fill)" stroke="url(#diamond-stroke)" stroke-width="0.8" stroke-linejoin="round"/>
   <defs>
     <linearGradient id="diamond-fill" x1="13" y1="3" x2="13" y2="20" gradientUnits="userSpaceOnUse">
@@ -1146,6 +1146,7 @@ const POPULAR_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="n
     </linearGradient>
   </defs>
 </svg>`;
+  
 /* ════════════════════════════════════════
    ROUTING
 ════════════════════════════════════════ */
@@ -1642,9 +1643,6 @@ renderBadges(u.uid, u.equipped_badges || [], likeCount);      dashAliases = Arra
 /* ════════════════════════════════════════
    BADGES
 ════════════════════════════════════════ */
-const OG_UID_THRESHOLD = 50;
-let dashEquipped = [];
-
 function renderBadges(uid, equippedList, likeCount) {
   dashEquipped = equippedList ? [...equippedList] : [];
   const grid = document.getElementById("badge-grid");
