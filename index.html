@@ -609,8 +609,92 @@ html, body {
 /* OG badge custom SVG colors */
 .og-badge-svg { width: 26px; height: 26px; display: block; }
 
-/* Mobile dashboard */
-@media (max-width: 600px) {
+/* ── Alias row on card ── */
+.alias-row {
+  font-size: .62rem;
+  color: rgba(255,255,255,.22);
+  letter-spacing: .4px;
+  margin-top: 5px;
+  line-height: 1;
+}
+.alias-row a {
+  color: rgba(255,255,255,.38);
+  text-decoration: none;
+  transition: color .15s;
+}
+.alias-row a:hover { color: rgba(255,255,255,.7); }
+.alias-row .alias-sep { margin: 0 3px; opacity: .4; }
+
+/* ── Alias dashboard panel ── */
+.alias-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+
+.alias-entry {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 11px;
+  padding: 11px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.alias-entry-info { flex: 1; min-width: 0; }
+.alias-entry-name {
+  font-size: .72rem;
+  color: rgba(255,255,255,.7);
+  letter-spacing: .3px;
+  margin-bottom: 2px;
+}
+.alias-entry-url {
+  font-size: .58rem;
+  color: rgba(255,255,255,.2);
+  letter-spacing: .5px;
+}
+.alias-remove {
+  background: none; border: none;
+  color: rgba(255,100,100,.35);
+  font-size: .9rem; cursor: pointer;
+  transition: color .15s; padding: 0 2px; line-height: 1; flex-shrink: 0;
+}
+.alias-remove:hover { color: rgba(255,100,100,.75); }
+
+.alias-add-form {
+  background: rgba(255,255,255,.02);
+  border: 1px dashed rgba(255,255,255,.09);
+  border-radius: 11px;
+  padding: 13px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+.alias-add-form.open { display: flex; }
+.alias-add-form .field { margin-bottom: 0; }
+.alias-form-actions { display: flex; gap: 7px; margin-top: 2px; }
+.alias-form-btn {
+  flex: 1; background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px; padding: 8px;
+  color: rgba(255,255,255,.6); font-family: "DM Mono", monospace;
+  font-size: .64rem; letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; transition: background .15s, color .15s;
+}
+.alias-form-btn:hover { background: rgba(255,255,255,.11); color: #fff; }
+.alias-form-btn.cancel { flex: 0 0 auto; padding: 8px 14px; }
+.alias-form-hint { font-size: .58rem; letter-spacing: .8px; min-height: 1em; }
+.alias-form-hint.error { color: rgba(255,100,100,.6); }
+.alias-form-hint.success { color: rgba(100,220,150,.6); }
+
+.alias-add-trigger {
+  background: none; border: 1px dashed rgba(255,255,255,.1); border-radius: 8px;
+  color: rgba(255,255,255,.25); font-family: "DM Mono", monospace; font-size: .62rem;
+  letter-spacing: 1px; padding: 7px; width: 100%; cursor: pointer; transition: all .15s;
+}
+.alias-add-trigger:hover { border-color: rgba(255,255,255,.25); color: rgba(255,255,255,.5); }
+.alias-limit-note {
+  font-size: .58rem; color: rgba(255,255,255,.15); letter-spacing: .8px;
+  text-align: center; margin-top: 8px; font-style: italic;
+}
+
   #dash-modal .modal { width: calc(100vw - 24px); }
   .dash-body { flex-direction: column; }
   .dash-sidebar {
@@ -648,6 +732,7 @@ html, body {
     <div class="card-header">
       <div class="site-name" id="site-name"></div>
       <div class="username-row" id="username-row"></div>
+      <div class="alias-row" id="alias-row" style="display:none"></div>
     </div>
     <div class="divider"></div>
     <div class="meta-section">
@@ -749,6 +834,10 @@ html, body {
           <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>
           badges
         </button>
+        <button class="dash-nav-btn" data-panel="alias">
+          <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+          alias
+        </button>
       </nav>
 
       <!-- Panels -->
@@ -792,6 +881,33 @@ html, body {
           <div class="badge-grid" id="badge-grid">
             <!-- Rendered by JS -->
           </div>
+        </div>
+
+        <!-- ALIAS -->
+        <div class="dash-panel" id="panel-alias">
+          <div class="dash-panel-title">aliases</div>
+          <div style="font-size:.62rem;color:rgba(255,255,255,.2);letter-spacing:.5px;line-height:1.7;margin-bottom:16px;">
+            link your other forgave profiles. they'll show on your card as<br>
+            <span style="color:rgba(255,255,255,.35);">also known as: name, name</span>
+          </div>
+          <div class="alias-list" id="alias-list"></div>
+          <div class="alias-add-form" id="alias-add-form">
+            <div class="field">
+              <label>username</label>
+              <input type="text" id="alias-input-user" placeholder="their username" maxlength="24" autocomplete="off" spellcheck="false"/>
+            </div>
+            <div class="field">
+              <label>password for that account</label>
+              <input type="password" id="alias-input-pw" placeholder="••••••••"/>
+            </div>
+            <div class="alias-form-hint" id="alias-form-hint"></div>
+            <div class="alias-form-actions">
+              <button class="alias-form-btn" id="alias-verify-btn">verify &amp; add</button>
+              <button class="alias-form-btn cancel" id="alias-cancel-btn">cancel</button>
+            </div>
+          </div>
+          <button class="alias-add-trigger" id="alias-add-trigger">+ add alias</button>
+          <div class="alias-limit-note">max 3 aliases</div>
         </div>
 
       </div><!-- /panels -->
@@ -1035,6 +1151,7 @@ async function resolveRoute() {
         wordCount:  26, wordSpeed:[1.0,2.5], wordSize:[9,28], wordSpin:0.007,
         wordColor:  "rgba(180,180,200,",
         music:      { url:"", volume:0.4 },
+        aliases:    u.aliases || [],
       };
       likeId = "forgave.lol/" + slug;
       return;
@@ -1080,6 +1197,18 @@ function renderCard() {
     d.appendChild(tip);
     usernameRow.appendChild(d);
   });
+
+  // Alias row
+  const aliasRow = document.getElementById("alias-row");
+  const aliases = C.aliases || [];
+  if (aliases.length > 0) {
+    aliasRow.style.display = "";
+    aliasRow.innerHTML = "also known as: " + aliases.map((a, i) =>
+      `<a href="https://forgave.lol/${a}" target="_blank" rel="noopener">${a}</a>${i < aliases.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`
+    ).join("");
+  } else {
+    aliasRow.style.display = "none";
+  }
 
   ["line1","line2","line3"].forEach((id, i) => {
     const el = document.getElementById(id);
@@ -1412,6 +1541,8 @@ async function openDashboard() {
       document.getElementById("d-bgwords").value = (u.bg_words || []).join(", ");
       renderDashLinks(u.links || []);
       renderBadges(u.uid, u.equipped_badges || []);
+      dashAliases = u.aliases ? [...u.aliases] : [];
+      renderAliasList();
     }
   } catch {}
 
@@ -1472,8 +1603,106 @@ function renderBadges(uid, equippedList) {
 }
 
 /* ════════════════════════════════════════
-   LINKS
+   ALIASES
 ════════════════════════════════════════ */
+const ALIAS_MAX = 3;
+let dashAliases = []; // array of verified usernames
+
+function renderAliasList() {
+  const list = document.getElementById("alias-list");
+  const trigger = document.getElementById("alias-add-trigger");
+  list.innerHTML = "";
+
+  dashAliases.forEach((name, i) => {
+    const entry = document.createElement("div");
+    entry.className = "alias-entry";
+    entry.innerHTML = `
+      <div class="alias-entry-info">
+        <div class="alias-entry-name">${name}</div>
+        <div class="alias-entry-url">forgave.lol/${name}</div>
+      </div>
+      <button class="alias-remove" data-i="${i}" title="remove">×</button>
+    `;
+    entry.querySelector(".alias-remove").addEventListener("click", () => {
+      dashAliases.splice(i, 1);
+      renderAliasList();
+    });
+    list.appendChild(entry);
+  });
+
+  // Hide add trigger if at max
+  trigger.style.display = dashAliases.length >= ALIAS_MAX ? "none" : "";
+}
+
+function openAliasForm() {
+  const form = document.getElementById("alias-add-form");
+  const trigger = document.getElementById("alias-add-trigger");
+  document.getElementById("alias-input-user").value = "";
+  document.getElementById("alias-input-pw").value = "";
+  document.getElementById("alias-form-hint").textContent = "";
+  document.getElementById("alias-form-hint").className = "alias-form-hint";
+  form.classList.add("open");
+  trigger.style.display = "none";
+  document.getElementById("alias-input-user").focus();
+}
+
+function closeAliasForm() {
+  document.getElementById("alias-add-form").classList.remove("open");
+  renderAliasList(); // restore trigger visibility
+}
+
+document.getElementById("alias-add-trigger").addEventListener("click", openAliasForm);
+document.getElementById("alias-cancel-btn").addEventListener("click", closeAliasForm);
+
+document.getElementById("alias-verify-btn").addEventListener("click", async () => {
+  const btn  = document.getElementById("alias-verify-btn");
+  const hint = document.getElementById("alias-form-hint");
+  const user = document.getElementById("alias-input-user").value.trim().toLowerCase();
+  const pw   = document.getElementById("alias-input-pw").value;
+
+  hint.className = "alias-form-hint";
+  hint.textContent = "";
+
+  if (!user) { hint.className = "alias-form-hint error"; hint.textContent = "enter a username"; return; }
+  if (!pw)   { hint.className = "alias-form-hint error"; hint.textContent = "enter the password"; return; }
+  if (user === session?.username) { hint.className = "alias-form-hint error"; hint.textContent = "that's your own account"; return; }
+  if (dashAliases.includes(user)) { hint.className = "alias-form-hint error"; hint.textContent = "already added"; return; }
+  if (dashAliases.length >= ALIAS_MAX) { hint.className = "alias-form-hint error"; hint.textContent = "max 3 aliases reached"; return; }
+
+  btn.disabled = true; btn.textContent = "verifying...";
+
+  try {
+    // Check static users first
+    if (STATIC_USERS[user]) {
+      hint.className = "alias-form-hint error";
+      hint.textContent = "can't verify static profiles";
+      btn.disabled = false; btn.textContent = "verify & add";
+      return;
+    }
+
+    const rows = await supa.get("users", `username=eq.${encodeURIComponent(user)}`);
+    if (!rows || rows.length === 0) {
+      hint.className = "alias-form-hint error"; hint.textContent = "account not found";
+      btn.disabled = false; btn.textContent = "verify & add"; return;
+    }
+
+    const hash = await hashPassword(pw);
+    if (rows[0].password_hash !== hash) {
+      hint.className = "alias-form-hint error"; hint.textContent = "wrong password";
+      btn.disabled = false; btn.textContent = "verify & add"; return;
+    }
+
+    // Verified ✓
+    dashAliases.push(user);
+    hint.className = "alias-form-hint success"; hint.textContent = "verified ✓";
+    setTimeout(() => closeAliasForm(), 700);
+  } catch {
+    hint.className = "alias-form-hint error"; hint.textContent = "error — try again";
+  }
+  btn.disabled = false; btn.textContent = "verify & add";
+});
+
+
 function renderDashLinks(links) {
   const list = document.getElementById("d-links-list");
   list.innerHTML="";
@@ -1536,6 +1765,7 @@ document.getElementById("d-save").addEventListener("click", async () => {
     await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, {
       lines, discord, links, bg_video_urls, bg_words, last_change: now,
       equipped_badges: dashEquipped,
+      aliases: dashAliases,
     });
     status.textContent="saved ✓";
     if (slug === session.username) {
