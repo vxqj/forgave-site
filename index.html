@@ -331,10 +331,21 @@ html, body {
 #user-pill.visible { display:flex; }
 #user-pill-name {
   font-size:.62rem; letter-spacing:1.2px; text-transform:uppercase;
-  color:rgba(255,255,255,.35); cursor:pointer;
-  transition:color .15s;
+  color:rgba(255,255,255,.35); cursor:default;
 }
-#user-pill-name:hover { color:rgba(255,255,255,.7); }
+#user-pill-settings {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-top-color: rgba(255,255,255,0.18);
+  color: rgba(255,255,255,.35);
+  width: 34px; height: 34px; border-radius: 9px;
+  cursor: pointer; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(12px);
+  transition: color .2s, background .2s, border-color .2s;
+}
+#user-pill-settings:hover { color: rgba(255,255,255,.85); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
+#user-pill-settings svg { width: 16px; height: 16px; fill: currentColor; display: block; }
 #user-pill-logout {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.10);
@@ -364,6 +375,7 @@ html, body {
 <!-- Logged-in pill -->
 <div id="user-pill">
   <span id="user-pill-name"></span>
+  <button id="user-pill-settings" title="settings"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.06 7.06 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54a7.4 7.4 0 0 0-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.36 1.04.67 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54a7.4 7.4 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.03-1.58zM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2z"/></svg></button>
   <button id="user-pill-logout" title="sign out"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5a2 2 0 0 0-2 2v4h2V5h14v14H5v-4H3v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/></svg></button>
 </div>
 
@@ -974,7 +986,7 @@ function updateAuthUI() {
   }
 }
 
-document.getElementById("user-pill-name").addEventListener("click", openDashboard);
+document.getElementById("user-pill-settings").addEventListener("click", openDashboard);
 document.getElementById("user-pill-logout").addEventListener("click", () => {
   clearSession(); updateAuthUI();
 });
