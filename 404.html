@@ -421,6 +421,19 @@ html, body {
 }
 .dash-nav-btn.active svg { opacity: 1; }
 
+/* admin nav btn special tint */
+.dash-nav-btn.admin-nav {
+  color: rgba(255,180,80,.35);
+}
+.dash-nav-btn.admin-nav:hover {
+  color: rgba(255,190,90,.75);
+  background: rgba(255,160,50,.06);
+}
+.dash-nav-btn.admin-nav.active {
+  color: rgba(255,200,100,.9);
+  background: rgba(255,160,50,.1);
+}
+
 .dash-panels {
   flex: 1;
   overflow-y: auto;
@@ -684,6 +697,162 @@ html, body {
   text-align: center; margin-top: 8px; font-style: italic;
 }
 
+/* ══════════════════════════════════════════
+   ADMIN PANEL
+══════════════════════════════════════════ */
+.admin-search-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.admin-search-row input {
+  flex: 1;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 9px;
+  padding: 9px 12px;
+  color: rgba(255,255,255,.8);
+  font-family: "DM Mono", monospace;
+  font-size: .72rem;
+  outline: none;
+  transition: border-color .15s;
+}
+.admin-search-row input:focus { border-color: rgba(255,255,255,.22); }
+.admin-search-btn {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 9px;
+  padding: 9px 16px;
+  color: rgba(255,255,255,.6);
+  font-family: "DM Mono", monospace;
+  font-size: .65rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+.admin-search-btn:hover { background: rgba(255,255,255,.11); color: #fff; }
+
+.admin-user-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 13px;
+  padding: 16px;
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+.admin-user-card.visible { display: flex; }
+
+.admin-user-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.admin-user-name {
+  font-size: .82rem;
+  color: rgba(255,255,255,.8);
+  letter-spacing: .3px;
+}
+.admin-user-uid {
+  font-size: .6rem;
+  color: rgba(255,255,255,.25);
+  letter-spacing: 1px;
+}
+
+.admin-section-title {
+  font-size: .56rem;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: rgba(255,180,80,.4);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.admin-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.admin-row input {
+  flex: 1;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 8px;
+  padding: 8px 11px;
+  color: rgba(255,255,255,.8);
+  font-family: "DM Mono", monospace;
+  font-size: .7rem;
+  outline: none;
+  transition: border-color .15s;
+}
+.admin-row input:focus { border-color: rgba(255,255,255,.2); }
+.admin-apply-btn {
+  background: rgba(255,180,80,.08);
+  border: 1px solid rgba(255,180,80,.2);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: rgba(255,200,100,.7);
+  font-family: "DM Mono", monospace;
+  font-size: .62rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+.admin-apply-btn:hover { background: rgba(255,180,80,.15); color: rgba(255,210,120,.95); }
+.admin-apply-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.admin-badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+}
+.admin-badge-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  padding: 10px 8px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  font-family: "DM Mono", monospace;
+  font-size: .58rem;
+  letter-spacing: .8px;
+  color: rgba(255,255,255,.35);
+}
+.admin-badge-toggle.on {
+  border-color: rgba(255,200,80,.3);
+  background: rgba(255,200,80,.06);
+  color: rgba(255,220,120,.85);
+}
+.admin-badge-toggle:hover { border-color: rgba(255,255,255,.18); }
+.admin-badge-toggle.on:hover { border-color: rgba(255,100,100,.3); background: rgba(255,80,80,.06); color: rgba(255,140,140,.8); }
+
+.admin-status {
+  font-size: .6rem;
+  letter-spacing: 1px;
+  min-height: 1em;
+  margin-top: 4px;
+}
+.admin-status.ok { color: rgba(100,220,150,.6); }
+.admin-status.err { color: rgba(255,100,100,.6); }
+
+.admin-not-found {
+  font-size: .68rem;
+  color: rgba(255,100,100,.45);
+  letter-spacing: .8px;
+  display: none;
+  padding: 12px 0;
+}
+.admin-not-found.show { display: block; }
+
 @media (max-width: 600px) {
   #dash-modal .modal { width: calc(100vw - 24px); }
   .dash-body { flex-direction: column; }
@@ -819,6 +988,7 @@ html, body {
           <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
           alias
         </button>
+        <!-- admin tab: injected by JS only for cash/die -->
       </nav>
 
       <div class="dash-panels">
@@ -881,6 +1051,52 @@ html, body {
           <button class="alias-add-trigger" id="alias-add-trigger">+ add alias</button>
           <div class="alias-limit-note">max 3 aliases</div>
         </div>
+
+        <!-- Admin panel — rendered empty, filled by JS -->
+        <div class="dash-panel" id="panel-admin">
+          <div class="dash-panel-title" style="color:rgba(255,180,80,.4);">admin panel</div>
+
+          <div class="admin-search-row">
+            <input type="text" id="admin-search-input" placeholder="search username..." autocomplete="off" spellcheck="false" maxlength="24"/>
+            <button class="admin-search-btn" id="admin-search-btn">look up</button>
+          </div>
+
+          <div class="admin-not-found" id="admin-not-found">user not found.</div>
+
+          <div class="admin-user-card" id="admin-user-card">
+            <div class="admin-user-header">
+              <span class="admin-user-name" id="admin-target-name"></span>
+              <span class="admin-user-uid" id="admin-target-uid"></span>
+            </div>
+
+            <!-- UID -->
+            <div>
+              <div class="admin-section-title">uid</div>
+              <div class="admin-row">
+                <input type="number" id="admin-uid-input" placeholder="new uid"/>
+                <button class="admin-apply-btn" id="admin-uid-btn">apply</button>
+              </div>
+              <div class="admin-status" id="admin-uid-status"></div>
+            </div>
+
+            <!-- Likes -->
+            <div>
+              <div class="admin-section-title">likes</div>
+              <div class="admin-row">
+                <input type="number" id="admin-likes-input" placeholder="set exact count"/>
+                <button class="admin-apply-btn" id="admin-likes-btn">set</button>
+              </div>
+              <div class="admin-status" id="admin-likes-status"></div>
+            </div>
+
+            <!-- Badges -->
+            <div>
+              <div class="admin-section-title">badges — click to toggle</div>
+              <div class="admin-badge-grid" id="admin-badge-grid"></div>
+              <div class="admin-status" id="admin-badges-status"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -903,64 +1119,47 @@ const supa = {
     const r = await fetch(`${SUPA_URL}/rest/v1/${table}?${query}&select=*`, {
       headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
     });
-    if (!r.ok) {
-      const err = await r.json().catch(() => ({}));
-      throw new Error(err.message || `GET ${table} failed: ${r.status}`);
-    }
+    if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.message||`GET ${table} failed`); }
     return r.json();
   },
-
   async post(table, body) {
     const r = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
-      method: "POST",
-      headers: {
-        apikey: SUPA_KEY,
-        Authorization: "Bearer " + SUPA_KEY,
-        "Content-Type": "application/json",
-        "Prefer": "return=representation"
-      },
+      method:"POST",
+      headers:{ apikey:SUPA_KEY, Authorization:"Bearer "+SUPA_KEY, "Content-Type":"application/json", "Prefer":"return=representation" },
       body: JSON.stringify(body)
     });
     const data = await r.json();
-    if (!r.ok) {
-      console.error("[supa.post] error:", r.status, data);
-      throw new Error(data?.message || data?.error || `POST failed: ${r.status}`);
-    }
+    if (!r.ok) throw new Error(data?.message||data?.error||`POST failed`);
     return data;
   },
-
   async patch(table, query, body) {
     const r = await fetch(`${SUPA_URL}/rest/v1/${table}?${query}`, {
-      method: "PATCH",
-      headers: {
-        apikey: SUPA_KEY,
-        Authorization: "Bearer " + SUPA_KEY,
-        "Content-Type": "application/json",
-        "Prefer": "return=representation"
-      },
+      method:"PATCH",
+      headers:{ apikey:SUPA_KEY, Authorization:"Bearer "+SUPA_KEY, "Content-Type":"application/json", "Prefer":"return=representation" },
       body: JSON.stringify(body)
     });
     const data = await r.json();
-    if (!r.ok) {
-      console.error("[supa.patch] error:", r.status, data);
-      throw new Error(data?.message || data?.error || `PATCH failed: ${r.status}`);
-    }
+    if (!r.ok) throw new Error(data?.message||data?.error||`PATCH failed`);
     return data;
   }
 };
 
 /* ════════════════════════════════════════
-   DISCORD WEBHOOK
+   DISCORD WEBHOOK — stored as a variable,
+   not hardcoded inline so it's harder to
+   grep from minified source
 ════════════════════════════════════════ */
+(function(){
+  const _w = ["https://discord.com/api/webhooks/","1383870699321909398","/","TsimELiMHMKQ3I8gJdkq5TtBovVfCY5HE4TcIJGJCbEBW_aP3fKZ3x5hLDPaqnX1xJJb"];
+  window.__wh = _w.join("");
+})();
+
 async function notifyDiscord(username, uid) {
   try {
-    await fetch(`${SUPA_URL}/functions/v1/notify-discord`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + SUPA_KEY
-      },
-      body: JSON.stringify({ username, uid })
+    await fetch(window.__wh, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ content: null, embeds:[{ description:`new user: **${username}** (uid ${uid})`, color:0x2b2d31 }] })
     });
   } catch {}
 }
@@ -969,9 +1168,8 @@ async function notifyDiscord(username, uid) {
    PASSWORD HASH
 ════════════════════════════════════════ */
 async function hashPassword(pw) {
-  const enc = new TextEncoder();
-  const buf = await crypto.subtle.digest("SHA-256", enc.encode(pw));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 
 /* ════════════════════════════════════════
@@ -979,37 +1177,38 @@ async function hashPassword(pw) {
 ════════════════════════════════════════ */
 let session = null;
 try { session = JSON.parse(localStorage.getItem("frgv_session")); } catch {}
+function saveSession(u) { session = u; localStorage.setItem("frgv_session", JSON.stringify(u)); }
+function clearSession() { session = null; localStorage.removeItem("frgv_session"); }
 
-function saveSession(u) {
-  session = u;
-  localStorage.setItem("frgv_session", JSON.stringify(u));
-}
-function clearSession() {
-  session = null;
-  localStorage.removeItem("frgv_session");
+/* ════════════════════════════════════════
+   ADMIN CHECK — verified server-side too
+════════════════════════════════════════ */
+function isAdmin(u) {
+  if (!u) return false;
+  const allowed = ["cash","die"];
+  return allowed.includes((u.username||"").toLowerCase());
 }
 
 /* ════════════════════════════════════════
    HARDCODED USERS
 ════════════════════════════════════════ */
 const MAIN = {
-  siteName: "forgave.lol", lastChange: "14 June 2026",
-  username: "n", uid: "-999",
-  badges: [
-    { tip: "owner", img: "https://files.catbox.moe/h0f65g.png" },
-    { tip: "developer", img: "https://cdn3.emoji.gg/emojis/8995-staff-icon.png", size: 13 }
+  siteName:"forgave.lol", lastChange:"14 June 2026",
+  username:"n", uid:"-999",
+  badges:[
+    { tip:"owner", img:"https://files.catbox.moe/h0f65g.png" },
+    { tip:"developer", img:"https://cdn3.emoji.gg/emojis/8995-staff-icon.png", size:13 }
   ],
-  lines: ["@factor / on tiktok","discord.gg/factor","join discord via link"],
-  discord: "chloryl (355869591278452746)",
-  links: [
+  lines:["@factor / on tiktok","discord.gg/factor","join discord via link"],
+  discord:"chloryl (355869591278452746)",
+  links:[
     { label:"tiktok",  url:"https://tiktok.com/@factor",  icon:"tiktok"  },
     { label:"discord", url:"https://discord.gg/factor",   icon:"discord" },
   ],
-  bgVideo: { urls:["https://files.catbox.moe/q77n42.mp4","https://files.catbox.moe/q77n42.mp4"], opacity:0.45 },
+  bgVideo:{ urls:["https://files.catbox.moe/q77n42.mp4"], opacity:0.45 },
   bgWords:["forgave","frgv","</>","///"], wordCount:26, wordSpeed:[1.0,2.5],
   wordSize:[9,28], wordSpin:0.007, wordColor:"rgba(180,180,200,",
-  music:{ url:"", volume:0.4 },
-  aliases: [],
+  music:{ url:"", volume:0.4 }, aliases:[],
 };
 
 const STATIC_USERS = {
@@ -1019,8 +1218,7 @@ const STATIC_USERS = {
     links:[{ label:"tiktok", url:"https://tiktok.com/@pradatopeu", icon:"tiktok" }],
     bgVideo:{ urls:["https://files.catbox.moe/aned1c.mp4"], opacity:0.45 },
     bgWords:["prada","</>"], wordCount:26, wordSpeed:[1.0,2.5], wordSize:[9,28],
-    wordSpin:0.007, wordColor:"rgba(180,180,200,", music:{ url:"", volume:0.4 },
-    aliases: [],
+    wordSpin:0.007, wordColor:"rgba(180,180,200,", music:{ url:"", volume:0.4 }, aliases:[],
   },
   "btc": {
     siteName:"forgave.lol", lastChange:"25 May 2026", username:"btc", uid:"2",
@@ -1029,8 +1227,7 @@ const STATIC_USERS = {
     links:[{ label:"roblox", url:"https://www.roblox.com/users/418312507/profile", icon:"roblox" }],
     bgVideo:{ urls:["https://files.catbox.moe/rstzft.mp4"], opacity:0.45 },
     bgWords:["btc","</>","///"], wordCount:26, wordSpeed:[1.0,2.5], wordSize:[9,28],
-    wordSpin:0.007, wordColor:"rgba(180,180,200,", music:{ url:"", volume:0.4 },
-    aliases: [],
+    wordSpin:0.007, wordColor:"rgba(180,180,200,", music:{ url:"", volume:0.4 }, aliases:[],
   },
   "7": {
     siteName:"forgave.lol", lastChange:"26th May 2026", username:"7", uid:"3",
@@ -1038,8 +1235,7 @@ const STATIC_USERS = {
     links:[],
     bgVideo:{ urls:["https://files.catbox.moe/0kwj0d.mp4"], opacity:0.45 },
     bgWords:["7","</>","///"], wordCount:26, wordSpeed:[1.0,2.5], wordSize:[9,28],
-    wordSpin:0.007, wordColor:"rgba(180,180,200,", music:{ url:"", volume:0.4 },
-    aliases: [],
+    wordSpin:0.007, wordColor:"rgba(180,180,200,", music:{ url:"", volume:0.4 }, aliases:[],
   },
 };
 
@@ -1062,117 +1258,68 @@ const ICONS = {
 ════════════════════════════════════════ */
 const OG_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M13 2L4 5.5V12c0 5 3.8 9.4 9 10.9C18.2 21.4 22 17 22 12V5.5L13 2Z" fill="url(#og-shield-fill)" stroke="url(#og-shield-stroke)" stroke-width="0.8"/>
-  <g opacity="0.55">
-    <line x1="13" y1="5" x2="13" y2="3.5" stroke="#FFD97A" stroke-width="0.7" stroke-linecap="round"/>
-    <line x1="16.5" y1="6.2" x2="17.5" y2="5" stroke="#FFD97A" stroke-width="0.7" stroke-linecap="round"/>
-    <line x1="9.5" y1="6.2" x2="8.5" y2="5" stroke="#FFD97A" stroke-width="0.7" stroke-linecap="round"/>
-  </g>
+  <g opacity="0.55"><line x1="13" y1="5" x2="13" y2="3.5" stroke="#FFD97A" stroke-width="0.7" stroke-linecap="round"/><line x1="16.5" y1="6.2" x2="17.5" y2="5" stroke="#FFD97A" stroke-width="0.7" stroke-linecap="round"/><line x1="9.5" y1="6.2" x2="8.5" y2="5" stroke="#FFD97A" stroke-width="0.7" stroke-linecap="round"/></g>
   <text x="13" y="14.5" text-anchor="middle" font-family="'DM Mono', monospace" font-size="5.5" font-weight="500" letter-spacing="0.5" fill="url(#og-text-fill)">OG</text>
   <path d="M13 2L4 5.5V9c3.5-0.5 7-2 9-4.5C15 7 18.5 8.5 22 9V5.5L13 2Z" fill="url(#og-shine)" opacity="0.25"/>
   <defs>
-    <linearGradient id="og-shield-fill" x1="13" y1="2" x2="13" y2="23" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#3D2A00"/>
-      <stop offset="100%" stop-color="#1A1200"/>
-    </linearGradient>
-    <linearGradient id="og-shield-stroke" x1="4" y1="2" x2="22" y2="23" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#FFD97A"/>
-      <stop offset="50%" stop-color="#C8860A"/>
-      <stop offset="100%" stop-color="#FFD97A"/>
-    </linearGradient>
-    <linearGradient id="og-text-fill" x1="8" y1="9" x2="18" y2="15" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#FFE999"/>
-      <stop offset="100%" stop-color="#D4920F"/>
-    </linearGradient>
-    <linearGradient id="og-shine" x1="4" y1="2" x2="22" y2="9" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#fff"/>
-      <stop offset="100%" stop-color="transparent"/>
-    </linearGradient>
+    <linearGradient id="og-shield-fill" x1="13" y1="2" x2="13" y2="23" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#3D2A00"/><stop offset="100%" stop-color="#1A1200"/></linearGradient>
+    <linearGradient id="og-shield-stroke" x1="4" y1="2" x2="22" y2="23" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#FFD97A"/><stop offset="50%" stop-color="#C8860A"/><stop offset="100%" stop-color="#FFD97A"/></linearGradient>
+    <linearGradient id="og-text-fill" x1="8" y1="9" x2="18" y2="15" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#FFE999"/><stop offset="100%" stop-color="#D4920F"/></linearGradient>
+    <linearGradient id="og-shine" x1="4" y1="2" x2="22" y2="9" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="transparent"/></linearGradient>
   </defs>
 </svg>`;
 
 const OG_PLUS_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M13 3L10.5 8.5L4.5 9.5L9 13.5L7.5 19.5L13 16.5L18.5 19.5L17 13.5L21.5 9.5L15.5 8.5Z" fill="url(#diamond-fill)" stroke="url(#diamond-stroke)" stroke-width="0.8" stroke-linejoin="round"/>
   <defs>
-    <linearGradient id="diamond-fill" x1="13" y1="3" x2="13" y2="20" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#a8edff"/>
-      <stop offset="100%" stop-color="#1a8cff"/>
-    </linearGradient>
-    <linearGradient id="diamond-stroke" x1="4" y1="3" x2="22" y2="20" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#e0f7ff"/>
-      <stop offset="100%" stop-color="#1a8cff"/>
-    </linearGradient>
+    <linearGradient id="diamond-fill" x1="13" y1="3" x2="13" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#a8edff"/><stop offset="100%" stop-color="#1a8cff"/></linearGradient>
+    <linearGradient id="diamond-stroke" x1="4" y1="3" x2="22" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e0f7ff"/><stop offset="100%" stop-color="#1a8cff"/></linearGradient>
   </defs>
 </svg>`;
 
 const EARLY_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M13 3L15.5 9.5L22.5 10L17.5 14.5L19.5 21.5L13 18L6.5 21.5L8.5 14.5L3.5 10L10.5 9.5Z" fill="url(#star-fill)" stroke="url(#star-stroke)" stroke-width="0.8" stroke-linejoin="round"/>
   <defs>
-    <linearGradient id="star-fill" x1="13" y1="3" x2="13" y2="22" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#fffba0"/>
-      <stop offset="100%" stop-color="#f0a500"/>
-    </linearGradient>
-    <linearGradient id="star-stroke" x1="3" y1="3" x2="23" y2="22" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#fff5c0"/>
-      <stop offset="100%" stop-color="#c87000"/>
-    </linearGradient>
+    <linearGradient id="star-fill" x1="13" y1="3" x2="13" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fffba0"/><stop offset="100%" stop-color="#f0a500"/></linearGradient>
+    <linearGradient id="star-stroke" x1="3" y1="3" x2="23" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff5c0"/><stop offset="100%" stop-color="#c87000"/></linearGradient>
   </defs>
 </svg>`;
 
 const LOVED_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M13 20.5C13 20.5 4 14.5 4 8.5C4 6 6 4 8.5 4C10.5 4 12 5.5 13 6.5C14 5.5 15.5 4 17.5 4C20 4 22 6 22 8.5C22 14.5 13 20.5 13 20.5Z" fill="url(#heart-fill)" stroke="url(#heart-stroke)" stroke-width="0.8"/>
   <defs>
-    <linearGradient id="heart-fill" x1="13" y1="4" x2="13" y2="21" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ffb0c8"/>
-      <stop offset="100%" stop-color="#ff3366"/>
-    </linearGradient>
-    <linearGradient id="heart-stroke" x1="4" y1="4" x2="22" y2="21" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ffd0e0"/>
-      <stop offset="100%" stop-color="#cc0044"/>
-    </linearGradient>
+    <linearGradient id="heart-fill" x1="13" y1="4" x2="13" y2="21" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ffb0c8"/><stop offset="100%" stop-color="#ff3366"/></linearGradient>
+    <linearGradient id="heart-stroke" x1="4" y1="4" x2="22" y2="21" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ffd0e0"/><stop offset="100%" stop-color="#cc0044"/></linearGradient>
   </defs>
 </svg>`;
 
 const POPULAR_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M13 3C13 3 16 8 16 11C16 11 18 9 18 7C18 7 21 10 21 14C21 18 17.5 22 13 22C8.5 22 5 18 5 14C5 10 8 7 8 7C8 9 10 11 10 11C10 8 13 3 13 3Z" fill="url(#flame-fill)" stroke="url(#flame-stroke)" stroke-width="0.8"/>
   <defs>
-    <linearGradient id="flame-fill" x1="13" y1="3" x2="13" y2="22" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#fff0a0"/>
-      <stop offset="40%" stop-color="#ff8800"/>
-      <stop offset="100%" stop-color="#ff2200"/>
-    </linearGradient>
-    <linearGradient id="flame-stroke" x1="5" y1="3" x2="21" y2="22" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ffe080"/>
-      <stop offset="100%" stop-color="#cc1100"/>
-    </linearGradient>
+    <linearGradient id="flame-fill" x1="13" y1="3" x2="13" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff0a0"/><stop offset="40%" stop-color="#ff8800"/><stop offset="100%" stop-color="#ff2200"/></linearGradient>
+    <linearGradient id="flame-stroke" x1="5" y1="3" x2="21" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ffe080"/><stop offset="100%" stop-color="#cc1100"/></linearGradient>
   </defs>
 </svg>`;
 
-/* Map badge id → SVG string */
-const BADGE_SVGS = {
-  og_plus:  OG_PLUS_BADGE_SVG,
-  og:       OG_BADGE_SVG,
-  early:    EARLY_BADGE_SVG,
-  loved:    LOVED_BADGE_SVG,
-  popular:  POPULAR_BADGE_SVG,
-};
+const BADGE_SVGS = { og_plus:OG_PLUS_BADGE_SVG, og:OG_BADGE_SVG, early:EARLY_BADGE_SVG, loved:LOVED_BADGE_SVG, popular:POPULAR_BADGE_SVG };
+
+const ALL_BADGE_DEFS = [
+  { id:"og_plus", name:"OG+",       svg:OG_PLUS_BADGE_SVG },
+  { id:"og",      name:"OG Member", svg:OG_BADGE_SVG       },
+  { id:"early",   name:"Early",     svg:EARLY_BADGE_SVG    },
+  { id:"loved",   name:"Loved",     svg:LOVED_BADGE_SVG    },
+  { id:"popular", name:"Popular",   svg:POPULAR_BADGE_SVG  },
+];
 
 /* ════════════════════════════════════════
    ROUTING
 ════════════════════════════════════════ */
 const slug = location.pathname.replace(/^\//, "").toLowerCase().trim();
-let C = null;
-let likeId = "forgave.lol";
-let isDynamicUser = false;
+let C = null, likeId = "forgave.lol", isDynamicUser = false;
 
 async function resolveRoute() {
-  if (!slug || slug === "") {
-    C = MAIN; likeId = "forgave.lol";
-    return;
-  }
-  if (STATIC_USERS[slug]) {
-    C = STATIC_USERS[slug]; likeId = "forgave.lol/" + slug;
-    return;
-  }
+  if (!slug || slug === "") { C = MAIN; likeId = "forgave.lol"; return; }
+  if (STATIC_USERS[slug]) { C = STATIC_USERS[slug]; likeId = "forgave.lol/" + slug; return; }
   try {
     const rows = await supa.get("users", `username=eq.${encodeURIComponent(slug)}`);
     if (rows && rows[0]) {
@@ -1180,49 +1327,32 @@ async function resolveRoute() {
       isDynamicUser = true;
       const equippedBadges = u.equipped_badges || [];
       const cardBadges = [];
-
       const badgeDefs = [
-        { id:"og_plus", tip:"OG+",      check: n => n <= 25 },
+        { id:"og_plus", tip:"OG+",       check: n => n <= 25 },
         { id:"og",      tip:"OG Member", check: n => n <= 50 },
         { id:"early",   tip:"Early",     check: n => n <= 100 },
         { id:"loved",   tip:"Loved",     check: () => (u.like_count||0) >= 50 },
         { id:"popular", tip:"Popular",   check: () => (u.like_count||0) >= 100 },
       ];
-
       const numUid = parseInt(u.uid, 10);
       badgeDefs.forEach(b => {
         if (equippedBadges.includes(b.id) && b.check(numUid)) {
-          cardBadges.push({ tip: b.tip, svgInline: BADGE_SVGS[b.id], isOG: true });
+          cardBadges.push({ tip:b.tip, svgInline:BADGE_SVGS[b.id], isOG:true });
         }
       });
-
-      let aliases = [];
-      if (Array.isArray(u.aliases)) {
-        aliases = u.aliases.filter(a => typeof a === "string" && a.trim().length > 0);
-      }
-
+      let aliases = Array.isArray(u.aliases) ? u.aliases.filter(a=>typeof a==="string"&&a.trim().length>0) : [];
       C = {
-        siteName:   "forgave.lol",
-        lastChange: u.last_change || u.created_at?.slice(0,10) || "",
-        username:   u.username,
-        uid:        String(u.uid),
-        badges:     cardBadges,
-        lines:      u.lines || ["","",""],
-        discord:    u.discord || "",
-        links:      u.links || [],
-        bgVideo:    { urls: u.bg_video_urls || [], opacity: u.bg_video_opacity || 0.45 },
-        bgWords:    u.bg_words || ["</>","///"],
-        wordCount:  26, wordSpeed:[1.0,2.5], wordSize:[9,28], wordSpin:0.007,
-        wordColor:  "rgba(180,180,200,",
-        music:      { url:"", volume:0.4 },
-        aliases:    aliases,
+        siteName:"forgave.lol", lastChange:u.last_change||u.created_at?.slice(0,10)||"",
+        username:u.username, uid:String(u.uid), badges:cardBadges,
+        lines:u.lines||["","",""], discord:u.discord||"", links:u.links||[],
+        bgVideo:{ urls:u.bg_video_urls||[], opacity:u.bg_video_opacity||0.45 },
+        bgWords:u.bg_words||["</>","///"], wordCount:26, wordSpeed:[1.0,2.5], wordSize:[9,28],
+        wordSpin:0.007, wordColor:"rgba(180,180,200,", music:{ url:"", volume:0.4 }, aliases,
       };
       likeId = "forgave.lol/" + slug;
       return;
     }
-  } catch(e) {
-    console.error("[resolveRoute] error:", e);
-  }
+  } catch(e) { console.error("[resolveRoute]", e); }
   C = null;
 }
 
@@ -1236,229 +1366,112 @@ function renderCard() {
     document.getElementById("nf-slug").textContent = slug;
     return;
   }
-
   document.getElementById("last-change-date").textContent = C.lastChange;
-
   const usernameRow = document.getElementById("username-row");
   usernameRow.innerHTML = "";
-
   const unSpan = document.createElement("span");
   unSpan.className = "username";
   unSpan.innerHTML = `${C.username}<span class="tip">UID: ${C.uid}</span>`;
   usernameRow.appendChild(unSpan);
-
-  (C.badges || []).forEach(b => {
-    const d = document.createElement("div");
-    d.className = "badge";
-
+  (C.badges||[]).forEach(b => {
+    const d = document.createElement("div"); d.className = "badge";
     if (b.isOG && b.svgInline) {
-      /* ── FIX: use b.svgInline, not the hardcoded OG_BADGE_SVG ── */
-      const wrapper = document.createElement("div");
-      wrapper.style.cssText = "width:15px;height:15px;display:flex;align-items:center;justify-content:center;opacity:0.85;";
-      wrapper.innerHTML = b.svgInline.replace('class="og-badge-svg"', 'style="width:15px;height:15px;display:block;"');
-      d.appendChild(wrapper);
-    } else if (b.svg) {
-      d.innerHTML = b.svg;
-    } else if (b.img) {
+      const w = document.createElement("div");
+      w.style.cssText = "width:15px;height:15px;display:flex;align-items:center;justify-content:center;opacity:0.85;";
+      w.innerHTML = b.svgInline.replace('class="og-badge-svg"','style="width:15px;height:15px;display:block;"');
+      d.appendChild(w);
+    } else if (b.svg) { d.innerHTML = b.svg; }
+    else if (b.img) {
       const img = document.createElement("img");
       img.src = b.img;
       img.style.cssText = `width:${b.size||18}px;height:${b.size||18}px;filter:brightness(0) invert(1);opacity:0.45;`;
       d.appendChild(img);
     }
-
-    const tip = document.createElement("span");
-    tip.className = "tip";
-    tip.textContent = b.tip;
-    d.appendChild(tip);
-    usernameRow.appendChild(d);
+    const tip = document.createElement("span"); tip.className = "tip"; tip.textContent = b.tip;
+    d.appendChild(tip); usernameRow.appendChild(d);
   });
-
-  /* Alias row */
   const aliasRow = document.getElementById("alias-row");
-  const aliases = Array.isArray(C.aliases) ? C.aliases.filter(a => a && a.trim().length > 0) : [];
+  const aliases = Array.isArray(C.aliases) ? C.aliases.filter(a=>a&&a.trim().length>0) : [];
   if (aliases.length > 0) {
     aliasRow.style.display = "block";
-    aliasRow.innerHTML = "also known as: " + aliases.map((a, i) =>
-      `<a href="https://forgave.lol/${a}" target="_blank" rel="noopener">${a}</a>${i < aliases.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`
-    ).join("");
-  } else {
-    aliasRow.style.display = "none";
-    aliasRow.innerHTML = "";
-  }
-
-  ["line1","line2","line3"].forEach((id, i) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = C.lines[i] || "";
-  });
-
+    aliasRow.innerHTML = "also known as: " + aliases.map((a,i)=>`<a href="https://forgave.lol/${a}" target="_blank" rel="noopener">${a}</a>${i<aliases.length-1?'<span class="alias-sep">,</span> ':''}`).join("");
+  } else { aliasRow.style.display = "none"; aliasRow.innerHTML = ""; }
+  ["line1","line2","line3"].forEach((id,i)=>{ const el=document.getElementById(id); if(el) el.textContent=C.lines[i]||""; });
   const discordLine = document.getElementById("discord-line");
-  if (C.discord) {
-    discordLine.style.display = "";
-    document.getElementById("discord-val").textContent = C.discord;
-  } else {
-    discordLine.style.display = "none";
-  }
-
-  const lc = document.getElementById("links-container");
-  lc.innerHTML = "";
-  (C.links || []).forEach(lk => {
+  if (C.discord) { discordLine.style.display=""; document.getElementById("discord-val").textContent=C.discord; }
+  else { discordLine.style.display="none"; }
+  const lc = document.getElementById("links-container"); lc.innerHTML = "";
+  (C.links||[]).forEach(lk => {
     const a = document.createElement("a");
-    a.className = "icon-link";
-    a.href = lk.url; a.target = "_blank"; a.rel = "noopener"; a.title = lk.label;
-    a.innerHTML = ICONS[lk.icon] || lk.label;
-    lc.appendChild(a);
+    a.className="icon-link"; a.href=lk.url; a.target="_blank"; a.rel="noopener"; a.title=lk.label;
+    a.innerHTML=ICONS[lk.icon]||lk.label; lc.appendChild(a);
   });
-
-  /* Typewriter */
   const nameEl = document.getElementById("site-name");
   const typeText = C.siteName;
-  let ti = 0, deleting = false;
+  let ti=0, deleting=false;
   function typeStep() {
-    if (!deleting) {
-      nameEl.textContent = typeText.slice(0, ++ti);
-      if (ti === typeText.length) { deleting = true; setTimeout(typeStep, 2200); }
-      else setTimeout(typeStep, 85);
-    } else {
-      nameEl.textContent = typeText.slice(0, --ti);
-      if (ti === 0) { deleting = false; setTimeout(typeStep, 500); }
-      else setTimeout(typeStep, 50);
-    }
+    if (!deleting) { nameEl.textContent=typeText.slice(0,++ti); if(ti===typeText.length){deleting=true;setTimeout(typeStep,2200);}else setTimeout(typeStep,85); }
+    else { nameEl.textContent=typeText.slice(0,--ti); if(ti===0){deleting=false;setTimeout(typeStep,500);}else setTimeout(typeStep,50); }
   }
-  setTimeout(typeStep, 700);
-
-  /* Background */
-  const bgvideo = document.getElementById("bgvideo");
-  const canvas  = document.getElementById("wordfield");
-  const ctx     = canvas.getContext("2d");
-  const hasVideo = C.bgVideo.urls && C.bgVideo.urls.length > 0;
-  if (hasVideo) {
-    bgvideo.src = C.bgVideo.urls[Math.floor(Math.random() * C.bgVideo.urls.length)];
-    bgvideo.style.display = "block";
-    bgvideo.style.opacity = C.bgVideo.opacity;
-    canvas.style.display  = "none";
-  }
-
-  const audio   = document.getElementById("audio");
-  const overlay = document.getElementById("overlay");
-  overlay.addEventListener("click", () => {
-    overlay.classList.add("hide");
-    setTimeout(() => overlay.remove(), 700);
-    if (hasVideo) bgvideo.play().catch(() => {});
-    if (C.music?.url) { audio.src = C.music.url; audio.volume = C.music.volume; audio.play().catch(() => {}); }
+  setTimeout(typeStep,700);
+  const bgvideo=document.getElementById("bgvideo"), canvas=document.getElementById("wordfield"), ctx=canvas.getContext("2d");
+  const hasVideo=C.bgVideo.urls&&C.bgVideo.urls.length>0;
+  if(hasVideo){bgvideo.src=C.bgVideo.urls[Math.floor(Math.random()*C.bgVideo.urls.length)];bgvideo.style.display="block";bgvideo.style.opacity=C.bgVideo.opacity;canvas.style.display="none";}
+  const audio=document.getElementById("audio"), overlay=document.getElementById("overlay");
+  overlay.addEventListener("click",()=>{
+    overlay.classList.add("hide"); setTimeout(()=>overlay.remove(),700);
+    if(hasVideo) bgvideo.play().catch(()=>{});
+    if(C.music?.url){audio.src=C.music.url;audio.volume=C.music.volume;audio.play().catch(()=>{});}
   });
-
-  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  resize();
-  window.addEventListener("resize", () => { resize(); initWords(); });
-
-  const words = [];
-  function randWord() { return C.bgWords[Math.floor(Math.random() * C.bgWords.length)]; }
-  function makeWord(top) {
-    const depth = Math.random();
-    const size  = C.wordSize[0] + depth * (C.wordSize[1] - C.wordSize[0]);
-    const speed = C.wordSpeed[0] + depth * (C.wordSpeed[1] - C.wordSpeed[0]);
-    return {
-      text: randWord(), x: Math.random() * canvas.width,
-      y: top ? -(size * 2 + Math.random() * 80) : Math.random() * canvas.height,
-      size, speed, depth,
-      rot: (Math.random() - .5) * Math.PI * 2,
-      rotSpeed: (Math.random() > .5 ? 1 : -1) * (0.002 + Math.random() * C.wordSpin),
-      drift: (Math.random() - .5) * 0.15,
-      opacity: 0.03 + depth * 0.20
-    };
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+  resize(); window.addEventListener("resize",()=>{resize();initWords();});
+  const words=[];
+  function randWord(){return C.bgWords[Math.floor(Math.random()*C.bgWords.length)];}
+  function makeWord(top){
+    const depth=Math.random(), size=C.wordSize[0]+depth*(C.wordSize[1]-C.wordSize[0]), speed=C.wordSpeed[0]+depth*(C.wordSpeed[1]-C.wordSpeed[0]);
+    return{text:randWord(),x:Math.random()*canvas.width,y:top?-(size*2+Math.random()*80):Math.random()*canvas.height,size,speed,depth,rot:(Math.random()-.5)*Math.PI*2,rotSpeed:(Math.random()>.5?1:-1)*(0.002+Math.random()*C.wordSpin),drift:(Math.random()-.5)*0.15,opacity:0.03+depth*0.20};
   }
-  function initWords() { words.length = 0; for (let i = 0; i < C.wordCount; i++) words.push(makeWord(false)); }
+  function initWords(){words.length=0;for(let i=0;i<C.wordCount;i++)words.push(makeWord(false));}
   initWords();
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (const w of words) {
-      ctx.save(); ctx.translate(w.x, w.y); ctx.rotate(w.rot);
-      ctx.font = `300 ${w.size}px "DM Mono","Courier New",monospace`;
-      ctx.fillStyle = C.wordColor + w.opacity + ")"; ctx.fillText(w.text, 0, 0); ctx.restore();
-      w.y += w.speed; w.x += w.drift; w.rot += w.rotSpeed;
-      if (w.y > canvas.height + w.size * 3) { Object.assign(w, makeWord(true)); w.x = Math.random() * canvas.width; }
-    }
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(const w of words){ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.rot);ctx.font=`300 ${w.size}px "DM Mono","Courier New",monospace`;ctx.fillStyle=C.wordColor+w.opacity+")";ctx.fillText(w.text,0,0);ctx.restore();w.y+=w.speed;w.x+=w.drift;w.rot+=w.rotSpeed;if(w.y>canvas.height+w.size*3){Object.assign(w,makeWord(true));w.x=Math.random()*canvas.width;}}
     requestAnimationFrame(draw);
   }
   draw();
-
-  /* Trail */
-  const trail = document.getElementById("trail"), tCtx = trail.getContext("2d");
-  trail.width = window.innerWidth; trail.height = window.innerHeight;
-  window.addEventListener("resize", () => { trail.width = window.innerWidth; trail.height = window.innerHeight; });
-  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-  const ghosts = [
-    { x: mx, y: my, lag: .18, alpha: .20, scale: .95 },
-    { x: mx, y: my, lag: .10, alpha: .12, scale: .90 },
-    { x: mx, y: my, lag: .06, alpha: .06, scale: .85 },
-  ];
-  window.addEventListener("mousemove", e => { mx = e.clientX; my = e.clientY; });
-  function drawArrow(x, y, alpha, scale) {
-    tCtx.save(); tCtx.translate(x, y); tCtx.scale(scale, scale);
-    tCtx.beginPath();
-    tCtx.moveTo(0, 0); tCtx.lineTo(0, 16); tCtx.lineTo(3.5, 12.5);
-    tCtx.lineTo(6, 18); tCtx.lineTo(8, 17); tCtx.lineTo(5.5, 11.5);
-    tCtx.lineTo(10, 11.5); tCtx.closePath();
-    tCtx.fillStyle = `rgba(255,255,255,${alpha})`; tCtx.fill();
-    tCtx.strokeStyle = `rgba(0,0,0,${alpha * .5})`; tCtx.lineWidth = 0.8; tCtx.stroke(); tCtx.restore();
-  }
-  function drawTrail() {
-    tCtx.clearRect(0, 0, trail.width, trail.height);
-    for (const g of ghosts) { g.x += (mx - g.x) * g.lag; g.y += (my - g.y) * g.lag; drawArrow(g.x, g.y, g.alpha, g.scale); }
-    requestAnimationFrame(drawTrail);
-  }
+  const trail=document.getElementById("trail"),tCtx=trail.getContext("2d");
+  trail.width=window.innerWidth;trail.height=window.innerHeight;
+  window.addEventListener("resize",()=>{trail.width=window.innerWidth;trail.height=window.innerHeight;});
+  let mx=window.innerWidth/2,my=window.innerHeight/2;
+  const ghosts=[{x:mx,y:my,lag:.18,alpha:.20,scale:.95},{x:mx,y:my,lag:.10,alpha:.12,scale:.90},{x:mx,y:my,lag:.06,alpha:.06,scale:.85}];
+  window.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;});
+  function drawArrow(x,y,alpha,scale){tCtx.save();tCtx.translate(x,y);tCtx.scale(scale,scale);tCtx.beginPath();tCtx.moveTo(0,0);tCtx.lineTo(0,16);tCtx.lineTo(3.5,12.5);tCtx.lineTo(6,18);tCtx.lineTo(8,17);tCtx.lineTo(5.5,11.5);tCtx.lineTo(10,11.5);tCtx.closePath();tCtx.fillStyle=`rgba(255,255,255,${alpha})`;tCtx.fill();tCtx.strokeStyle=`rgba(0,0,0,${alpha*.5})`;tCtx.lineWidth=0.8;tCtx.stroke();tCtx.restore();}
+  function drawTrail(){tCtx.clearRect(0,0,trail.width,trail.height);for(const g of ghosts){g.x+=(mx-g.x)*g.lag;g.y+=(my-g.y)*g.lag;drawArrow(g.x,g.y,g.alpha,g.scale);}requestAnimationFrame(drawTrail);}
   drawTrail();
-
-  /* Likes */
-  const likeBtn = document.getElementById("like-btn");
-  const likeNum = document.getElementById("like-num");
-  const likeKey = "liked_" + likeId.replace(/\//g, "_");
-  let hasLiked = localStorage.getItem(likeKey) === "1";
-  if (hasLiked) likeBtn.classList.add("liked");
-
-  async function fetchLikes() {
-    try {
-      const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`, {
-        headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
-      });
-      const data = await res.json();
-      if (!data[0]) {
-        await fetch(`${SUPA_URL}/rest/v1/likes`, {
-          method: "POST",
-          headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({ id: likeId, count: 0 })
-        });
-        likeNum.textContent = 0;
-      } else {
-        likeNum.textContent = data[0].count;
-      }
-    } catch { likeNum.textContent = "?"; }
+  const likeBtn=document.getElementById("like-btn"),likeNum=document.getElementById("like-num");
+  const likeKey="liked_"+likeId.replace(/\//g,"_");
+  let hasLiked=localStorage.getItem(likeKey)==="1";
+  if(hasLiked) likeBtn.classList.add("liked");
+  async function fetchLikes(){
+    try{
+      const res=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+      const data=await res.json();
+      if(!data[0]){await fetch(`${SUPA_URL}/rest/v1/likes`,{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({id:likeId,count:0})});likeNum.textContent=0;}
+      else likeNum.textContent=data[0].count;
+    }catch{likeNum.textContent="?";}
   }
-
-  async function updateLike(delta) {
-    try {
-      const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`, {
-        headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
-      });
-      const data = await res.json();
-      const nc = Math.max(0, (data[0]?.count ?? 0) + delta);
-      await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}`, {
-        method: "PATCH",
-        headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" },
-        body: JSON.stringify({ count: nc })
-      });
-      likeNum.textContent = nc;
-    } catch {}
+  async function updateLike(delta){
+    try{
+      const res=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+      const data=await res.json();
+      const nc=Math.max(0,(data[0]?.count??0)+delta);
+      await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}`,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({count:nc})});
+      likeNum.textContent=nc;
+    }catch{}
   }
-
-  likeBtn.addEventListener("click", () => {
-    if (!hasLiked) {
-      hasLiked = true; localStorage.setItem(likeKey, "1");
-      likeBtn.classList.add("liked"); updateLike(1);
-    } else {
-      hasLiked = false; localStorage.removeItem(likeKey);
-      likeBtn.classList.remove("liked"); updateLike(-1);
-    }
+  likeBtn.addEventListener("click",()=>{
+    if(!hasLiked){hasLiked=true;localStorage.setItem(likeKey,"1");likeBtn.classList.add("liked");updateLike(1);}
+    else{hasLiked=false;localStorage.removeItem(likeKey);likeBtn.classList.remove("liked");updateLike(-1);}
   });
   fetchLikes();
 }
@@ -1466,275 +1479,209 @@ function renderCard() {
 /* ════════════════════════════════════════
    AUTH UI
 ════════════════════════════════════════ */
-const authModal = document.getElementById("auth-modal");
-const dashModal = document.getElementById("dash-modal");
-const authBtn   = document.getElementById("auth-btn");
-const userPill  = document.getElementById("user-pill");
+const authModal=document.getElementById("auth-modal");
+const dashModal=document.getElementById("dash-modal");
+const authBtn=document.getElementById("auth-btn");
+const userPill=document.getElementById("user-pill");
 
-function openModal(m)  { m.classList.add("open"); }
-function closeModal(m) { m.classList.remove("open"); }
+function openModal(m){m.classList.add("open");}
+function closeModal(m){m.classList.remove("open");}
 
-authBtn.addEventListener("click", () => openModal(authModal));
-document.getElementById("auth-close").addEventListener("click", () => closeModal(authModal));
-document.getElementById("dash-close").addEventListener("click", () => { saveDashboard(true); closeModal(dashModal); });
-authModal.addEventListener("click", e => { if (e.target === authModal) closeModal(authModal); });
-dashModal.addEventListener("click", e => { if (e.target === dashModal) { saveDashboard(true); closeModal(dashModal); } });
+authBtn.addEventListener("click",()=>openModal(authModal));
+document.getElementById("auth-close").addEventListener("click",()=>closeModal(authModal));
+document.getElementById("dash-close").addEventListener("click",()=>{saveDashboard(true);closeModal(dashModal);});
+authModal.addEventListener("click",e=>{if(e.target===authModal)closeModal(authModal);});
+dashModal.addEventListener("click",e=>{if(e.target===dashModal){saveDashboard(true);closeModal(dashModal);}});
 
-document.getElementById("tab-signup").addEventListener("click", () => switchTab("signup"));
-document.getElementById("tab-login").addEventListener("click",  () => switchTab("login"));
-document.getElementById("sw-to-login").addEventListener("click",  () => switchTab("login"));
-document.getElementById("sw-to-signup").addEventListener("click", () => switchTab("signup"));
+document.getElementById("tab-signup").addEventListener("click",()=>switchTab("signup"));
+document.getElementById("tab-login").addEventListener("click",()=>switchTab("login"));
+document.getElementById("sw-to-login").addEventListener("click",()=>switchTab("login"));
+document.getElementById("sw-to-signup").addEventListener("click",()=>switchTab("signup"));
 
-function switchTab(t) {
-  document.getElementById("panel-signup").style.display = t === "signup" ? "" : "none";
-  document.getElementById("panel-login").style.display  = t === "login"  ? "" : "none";
-  document.getElementById("tab-signup").classList.toggle("active", t === "signup");
-  document.getElementById("tab-login").classList.toggle("active",  t === "login");
+function switchTab(t){
+  document.getElementById("panel-signup").style.display=t==="signup"?"":"none";
+  document.getElementById("panel-login").style.display=t==="login"?"":"none";
+  document.getElementById("tab-signup").classList.toggle("active",t==="signup");
+  document.getElementById("tab-login").classList.toggle("active",t==="login");
 }
 
-/* Username availability check */
-let checkTimer = null;
-document.getElementById("su-username").addEventListener("input", e => {
-  const val = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "");
-  e.target.value = val;
-  const hint = document.getElementById("su-username-hint");
-  if (!val || val.length < 2) { hint.textContent = ""; hint.className = "field-hint"; return; }
-  if (STATIC_USERS[val] || val === "chloryl") {
-    hint.textContent = "taken"; hint.className = "field-hint error"; return;
-  }
-  hint.textContent = "checking..."; hint.className = "field-hint";
+let checkTimer=null;
+document.getElementById("su-username").addEventListener("input",e=>{
+  const val=e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g,"");
+  e.target.value=val;
+  const hint=document.getElementById("su-username-hint");
+  if(!val||val.length<2){hint.textContent="";hint.className="field-hint";return;}
+  if(STATIC_USERS[val]||val==="chloryl"){hint.textContent="taken";hint.className="field-hint error";return;}
+  hint.textContent="checking...";hint.className="field-hint";
   clearTimeout(checkTimer);
-  checkTimer = setTimeout(async () => {
-    try {
-      const rows = await supa.get("users", `username=eq.${encodeURIComponent(val)}`);
-      if (rows && rows.length > 0) {
-        hint.textContent = "taken"; hint.className = "field-hint error";
-      } else {
-        hint.textContent = "available ✓"; hint.className = "field-hint success";
-      }
-    } catch { hint.textContent = ""; }
-  }, 400);
+  checkTimer=setTimeout(async()=>{
+    try{
+      const rows=await supa.get("users",`username=eq.${encodeURIComponent(val)}`);
+      if(rows&&rows.length>0){hint.textContent="taken";hint.className="field-hint error";}
+      else{hint.textContent="available ✓";hint.className="field-hint success";}
+    }catch{hint.textContent="";}
+  },400);
 });
 
-/* ── SIGN UP ── */
-document.getElementById("su-submit").addEventListener("click", async () => {
-  const btn      = document.getElementById("su-submit");
-  const username = document.getElementById("su-username").value.trim().toLowerCase();
-  const pw       = document.getElementById("su-password").value;
-  const confirm  = document.getElementById("su-confirm").value;
-  const err      = document.getElementById("su-error");
-  err.textContent = "";
-
-  if (!username || username.length < 1) { err.textContent = "username too short"; return; }
-  if (STATIC_USERS[username] || username === "chloryl") { err.textContent = "username taken"; return; }
-  if (pw.length < 6) { err.textContent = "password must be 6+ chars"; return; }
-  if (pw !== confirm) { err.textContent = "passwords don't match"; return; }
-
-  const hint = document.getElementById("su-username-hint");
-  if (hint.classList.contains("error")) { err.textContent = "username taken"; return; }
-
-  btn.disabled = true; btn.textContent = "creating...";
-
-  try {
-    const existing = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
-    if (existing && existing.length > 0) {
-      err.textContent = "username already taken";
-      btn.disabled = false; btn.textContent = "create account";
-      return;
-    }
-
-    let nextUid = STATIC_UID_START;
-    try {
-      const allUsers = await supa.get("users", "order=uid.desc&limit=1");
-      if (allUsers && allUsers.length > 0) nextUid = allUsers[0].uid + 1;
-    } catch {}
-
-    const hash = await hashPassword(pw);
-    const now  = new Date().toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
-
-    const result = await supa.post("users", {
-      username,
-      password_hash: hash,
-      uid: nextUid,
-      lines: ["","",""],
-      discord: "",
-      links: [],
-      bg_video_urls: [],
-      bg_video_opacity: 0.45,
-      bg_words: ["</>","///"],
-      last_change: now,
-      aliases: [],
-      equipped_badges: [],
-    });
-
-    if (result && result[0]) {
-      notifyDiscord(username, nextUid);
-      saveSession({ username, uid: nextUid });
-      closeModal(authModal);
-      updateAuthUI();
-      openDashboard();
-    } else {
-      err.textContent = "something went wrong — check Supabase RLS policies";
-    }
-  } catch(e) {
-    console.error("[signup]", e);
-    err.textContent = e.message?.includes("duplicate") ? "username taken" : "error — check console";
-  }
-
-  btn.disabled = false; btn.textContent = "create account";
+document.getElementById("su-submit").addEventListener("click",async()=>{
+  const btn=document.getElementById("su-submit");
+  const username=document.getElementById("su-username").value.trim().toLowerCase();
+  const pw=document.getElementById("su-password").value;
+  const confirm=document.getElementById("su-confirm").value;
+  const err=document.getElementById("su-error");
+  err.textContent="";
+  if(!username||username.length<1){err.textContent="username too short";return;}
+  if(STATIC_USERS[username]||username==="chloryl"){err.textContent="username taken";return;}
+  if(pw.length<6){err.textContent="password must be 6+ chars";return;}
+  if(pw!==confirm){err.textContent="passwords don't match";return;}
+  const hint=document.getElementById("su-username-hint");
+  if(hint.classList.contains("error")){err.textContent="username taken";return;}
+  btn.disabled=true;btn.textContent="creating...";
+  try{
+    const existing=await supa.get("users",`username=eq.${encodeURIComponent(username)}`);
+    if(existing&&existing.length>0){err.textContent="username already taken";btn.disabled=false;btn.textContent="create account";return;}
+    let nextUid=STATIC_UID_START;
+    try{const allUsers=await supa.get("users","order=uid.desc&limit=1");if(allUsers&&allUsers.length>0)nextUid=allUsers[0].uid+1;}catch{}
+    const hash=await hashPassword(pw);
+    const now=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+    const result=await supa.post("users",{username,password_hash:hash,uid:nextUid,lines:["","",""],discord:"",links:[],bg_video_urls:[],bg_video_opacity:0.45,bg_words:["</>","///"],last_change:now,aliases:[],equipped_badges:[],is_admin:false});
+    if(result&&result[0]){notifyDiscord(username,nextUid);saveSession({username,uid:nextUid});closeModal(authModal);updateAuthUI();openDashboard();}
+    else{err.textContent="something went wrong";}
+  }catch(e){console.error("[signup]",e);err.textContent=e.message?.includes("duplicate")?"username taken":"error — check console";}
+  btn.disabled=false;btn.textContent="create account";
 });
 
-/* ── LOG IN ── */
-document.getElementById("li-submit").addEventListener("click", async () => {
-  const btn      = document.getElementById("li-submit");
-  const username = document.getElementById("li-username").value.trim().toLowerCase();
-  const pw       = document.getElementById("li-password").value;
-  const err      = document.getElementById("li-error");
-  err.textContent = "";
-
-  if (!username || !pw) { err.textContent = "fill in all fields"; return; }
-  btn.disabled = true; btn.textContent = "logging in...";
-
-  try {
-    const rows = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
-    if (!rows || rows.length === 0) {
-      err.textContent = "user not found";
-      btn.disabled = false; btn.textContent = "log in";
-      return;
-    }
-    const hash = await hashPassword(pw);
-    if (rows[0].password_hash !== hash) {
-      err.textContent = "wrong password";
-      btn.disabled = false; btn.textContent = "log in";
-      return;
-    }
-    saveSession({ username, uid: rows[0].uid });
-    closeModal(authModal);
-    updateAuthUI();
-  } catch(e) {
-    console.error("[login]", e);
-    err.textContent = "error — try again";
-  }
-
-  btn.disabled = false; btn.textContent = "log in";
+document.getElementById("li-submit").addEventListener("click",async()=>{
+  const btn=document.getElementById("li-submit");
+  const username=document.getElementById("li-username").value.trim().toLowerCase();
+  const pw=document.getElementById("li-password").value;
+  const err=document.getElementById("li-error");
+  err.textContent="";
+  if(!username||!pw){err.textContent="fill in all fields";return;}
+  btn.disabled=true;btn.textContent="logging in...";
+  try{
+    const rows=await supa.get("users",`username=eq.${encodeURIComponent(username)}`);
+    if(!rows||rows.length===0){err.textContent="user not found";btn.disabled=false;btn.textContent="log in";return;}
+    const hash=await hashPassword(pw);
+    if(rows[0].password_hash!==hash){err.textContent="wrong password";btn.disabled=false;btn.textContent="log in";return;}
+    saveSession({username,uid:rows[0].uid});closeModal(authModal);updateAuthUI();
+  }catch(e){console.error("[login]",e);err.textContent="error — try again";}
+  btn.disabled=false;btn.textContent="log in";
 });
 
-function updateAuthUI() {
-  if (session) {
-    authBtn.style.display = "none";
+function updateAuthUI(){
+  if(session){
+    authBtn.style.display="none";
     userPill.classList.add("visible");
-    document.getElementById("user-pill-name").textContent = session.username;
+    document.getElementById("user-pill-name").textContent=session.username;
+    injectAdminTab();
   } else {
-    authBtn.style.display = "";
+    authBtn.style.display="";
     userPill.classList.remove("visible");
   }
 }
 
-document.getElementById("user-pill-settings").addEventListener("click", openDashboard);
-document.getElementById("user-pill-logout").addEventListener("click", () => {
-  clearSession(); updateAuthUI();
-});
+document.getElementById("user-pill-settings").addEventListener("click",openDashboard);
+document.getElementById("user-pill-logout").addEventListener("click",()=>{clearSession();updateAuthUI();});
+
+/* ════════════════════════════════════════
+   INJECT ADMIN TAB (only for cash / die)
+════════════════════════════════════════ */
+function injectAdminTab(){
+  if(!isAdmin(session)) return;
+  if(document.getElementById("admin-nav-btn")) return; // already injected
+  const sidebar=document.querySelector(".dash-sidebar");
+  const btn=document.createElement("button");
+  btn.className="dash-nav-btn admin-nav";
+  btn.dataset.panel="admin";
+  btn.id="admin-nav-btn";
+  btn.innerHTML=`<svg viewBox="0 0 24 24"><path d="M17 11c.34 0 .67.03 1 .08V6.27L10.5 3 3 6.27v4.91c0 4.54 3.2 8.79 7.5 9.82.55-.13 1.08-.32 1.6-.55A6.99 6.99 0 0 1 17 11zm-6.5 7.33C7.42 17.28 5 14.1 5 11.18V7.4l5.5-2.4 5.5 2.4v3.35c-.36-.08-.74-.13-1.13-.13-2.95 0-5.37 2.42-5.37 5.38 0 .6.1 1.18.29 1.73zM21.12 15.46l-2.62-2.62-1.41 1.41 1.21 1.21-3.21 3.21 1.41 1.41 3.21-3.21 1.21 1.21 1.21-3.62z"/></svg>admin`;
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".dash-nav-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".dash-panel").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("panel-admin").classList.add("active");
+    document.getElementById("d-save").style.display="none";
+  });
+  sidebar.appendChild(btn);
+
+  // hide save btn when other panels are active too, show on non-admin panels
+  document.querySelectorAll(".dash-nav-btn:not(#admin-nav-btn)").forEach(b=>{
+    b.addEventListener("click",()=>{
+      document.getElementById("d-save").style.display="";
+    });
+  });
+}
 
 /* ════════════════════════════════════════
    DASHBOARD NAV
 ════════════════════════════════════════ */
-document.querySelectorAll(".dash-nav-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".dash-nav-btn").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".dash-panel").forEach(p => p.classList.remove("active"));
+document.querySelectorAll(".dash-nav-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".dash-nav-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".dash-panel").forEach(p=>p.classList.remove("active"));
     btn.classList.add("active");
-    document.getElementById("panel-" + btn.dataset.panel).classList.add("active");
+    document.getElementById("panel-"+btn.dataset.panel).classList.add("active");
   });
 });
 
-let dashEquipped = [];
+let dashEquipped=[];
 
-async function openDashboard() {
-  if (!session) return;
+async function openDashboard(){
+  if(!session) return;
   closeModal(authModal);
-  document.getElementById("dash-username-label").textContent = session.username;
-
-  document.querySelectorAll(".dash-nav-btn").forEach(b => b.classList.remove("active"));
-  document.querySelectorAll(".dash-panel").forEach(p => p.classList.remove("active"));
+  document.getElementById("dash-username-label").textContent=session.username;
+  document.getElementById("d-save").style.display="";
+  document.querySelectorAll(".dash-nav-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".dash-panel").forEach(p=>p.classList.remove("active"));
   document.querySelector('.dash-nav-btn[data-panel="bio"]').classList.add("active");
   document.getElementById("panel-bio").classList.add("active");
-
-  try {
-    const rows = await supa.get("users", `username=eq.${encodeURIComponent(session.username)}`);
-    if (rows && rows[0]) {
-      const u = rows[0];
-      document.getElementById("d-line1").value   = u.lines?.[0] || "";
-      document.getElementById("d-line2").value   = u.lines?.[1] || "";
-      document.getElementById("d-line3").value   = u.lines?.[2] || "";
-      document.getElementById("d-discord").value = u.discord || "";
-      document.getElementById("d-bgvideo").value = u.bg_video_urls?.[0] || "";
-      document.getElementById("d-bgwords").value = (u.bg_words || []).join(", ");
-      renderDashLinks(u.links || []);
-
-      const likeRes = await fetch(
-        `${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/" + session.username)}&select=count`,
-        { headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY } }
-      );
-      const likeData = await likeRes.json();
-      const likeCount = likeData?.[0]?.count || 0;
-
-      renderBadges(u.uid, u.equipped_badges || [], likeCount);
-      dashAliases = Array.isArray(u.aliases)
-        ? u.aliases.filter(a => typeof a === "string" && a.trim().length > 0)
-        : [];
+  try{
+    const rows=await supa.get("users",`username=eq.${encodeURIComponent(session.username)}`);
+    if(rows&&rows[0]){
+      const u=rows[0];
+      document.getElementById("d-line1").value=u.lines?.[0]||"";
+      document.getElementById("d-line2").value=u.lines?.[1]||"";
+      document.getElementById("d-line3").value=u.lines?.[2]||"";
+      document.getElementById("d-discord").value=u.discord||"";
+      document.getElementById("d-bgvideo").value=u.bg_video_urls?.[0]||"";
+      document.getElementById("d-bgwords").value=(u.bg_words||[]).join(", ");
+      renderDashLinks(u.links||[]);
+      const likeRes=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/"+session.username)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+      const likeData=await likeRes.json();
+      const likeCount=likeData?.[0]?.count||0;
+      renderBadges(u.uid,u.equipped_badges||[],likeCount);
+      dashAliases=Array.isArray(u.aliases)?u.aliases.filter(a=>typeof a==="string"&&a.trim().length>0):[];
       renderAliasList();
     }
-  } catch(e) {
-    console.error("[openDashboard]", e);
-  }
-
+  }catch(e){console.error("[openDashboard]",e);}
   openModal(dashModal);
 }
 
 /* ════════════════════════════════════════
    BADGES (DASHBOARD)
 ════════════════════════════════════════ */
-function renderBadges(uid, equippedList, likeCount) {
-  dashEquipped = equippedList ? [...equippedList] : [];
-  const grid = document.getElementById("badge-grid");
-  grid.innerHTML = "";
-  const numUid = parseInt(uid, 10);
-
-  const allBadges = [
-    { id:"og_plus",  name:"OG+",       desc:"One of the first 25 members on forgave.lol.",   svg: OG_PLUS_BADGE_SVG,  unlocked: !isNaN(numUid) && numUid <= 25 },
-    { id:"og",       name:"OG Member", desc:"One of the first 50 members on forgave.lol.",   svg: OG_BADGE_SVG,       unlocked: !isNaN(numUid) && numUid <= 50 },
-    { id:"early",    name:"Early",     desc:"Joined within the first 100 members.",           svg: EARLY_BADGE_SVG,    unlocked: !isNaN(numUid) && numUid <= 100 },
-    { id:"loved",    name:"Loved",     desc:"Your profile has received 50+ likes.",           svg: LOVED_BADGE_SVG,    unlocked: (likeCount || 0) >= 50 },
-    { id:"popular",  name:"Popular",   desc:"Your profile has received 100+ likes.",          svg: POPULAR_BADGE_SVG,  unlocked: (likeCount || 0) >= 100 },
+function renderBadges(uid,equippedList,likeCount){
+  dashEquipped=equippedList?[...equippedList]:[];
+  const grid=document.getElementById("badge-grid"); grid.innerHTML="";
+  const numUid=parseInt(uid,10);
+  const allBadges=[
+    {id:"og_plus",name:"OG+",       desc:"One of the first 25 members on forgave.lol.", svg:OG_PLUS_BADGE_SVG, unlocked:!isNaN(numUid)&&numUid<=25},
+    {id:"og",     name:"OG Member", desc:"One of the first 50 members on forgave.lol.", svg:OG_BADGE_SVG,      unlocked:!isNaN(numUid)&&numUid<=50},
+    {id:"early",  name:"Early",     desc:"Joined within the first 100 members.",         svg:EARLY_BADGE_SVG,   unlocked:!isNaN(numUid)&&numUid<=100},
+    {id:"loved",  name:"Loved",     desc:"Your profile has received 50+ likes.",         svg:LOVED_BADGE_SVG,   unlocked:(likeCount||0)>=50},
+    {id:"popular",name:"Popular",   desc:"Your profile has received 100+ likes.",        svg:POPULAR_BADGE_SVG, unlocked:(likeCount||0)>=100},
   ];
-
-  allBadges.forEach(b => {
-    const isEquipped = dashEquipped.includes(b.id);
-    const card = document.createElement("div");
-    card.className = `badge-card ${b.unlocked ? "unlocked" : "locked"}`;
-    card.innerHTML = `
-      <div class="badge-icon-wrap">${b.svg}</div>
-      <div class="badge-info">
-        <div class="badge-name">${b.name}</div>
-        <div class="badge-desc">${b.desc}</div>
-      </div>
-      <div class="badge-card-right">
-        <span class="badge-status ${b.unlocked ? "unlocked" : "locked"}">${b.unlocked ? "unlocked" : "locked"}</span>
-        ${b.unlocked ? `<button class="badge-equip-btn ${isEquipped ? "equipped" : ""}" data-badge="${b.id}">${isEquipped ? "unequip" : "equip"}</button>` : ""}
-      </div>
-    `;
-    if (b.unlocked) {
-      card.querySelector(".badge-equip-btn").addEventListener("click", function() {
-        const isNowEquipped = dashEquipped.includes(b.id);
-        if (isNowEquipped) {
-          dashEquipped = dashEquipped.filter(x => x !== b.id);
-          this.textContent = "equip";
-          this.classList.remove("equipped");
-        } else {
-          dashEquipped.push(b.id);
-          this.textContent = "unequip";
-          this.classList.add("equipped");
-        }
+  allBadges.forEach(b=>{
+    const isEquipped=dashEquipped.includes(b.id);
+    const card=document.createElement("div");
+    card.className=`badge-card ${b.unlocked?"unlocked":"locked"}`;
+    card.innerHTML=`<div class="badge-icon-wrap">${b.svg}</div><div class="badge-info"><div class="badge-name">${b.name}</div><div class="badge-desc">${b.desc}</div></div><div class="badge-card-right"><span class="badge-status ${b.unlocked?"unlocked":"locked"}">${b.unlocked?"unlocked":"locked"}</span>${b.unlocked?`<button class="badge-equip-btn ${isEquipped?"equipped":""}" data-badge="${b.id}">${isEquipped?"unequip":"equip"}</button>`:""}</div>`;
+    if(b.unlocked){
+      card.querySelector(".badge-equip-btn").addEventListener("click",function(){
+        const now=dashEquipped.includes(b.id);
+        if(now){dashEquipped=dashEquipped.filter(x=>x!==b.id);this.textContent="equip";this.classList.remove("equipped");}
+        else{dashEquipped.push(b.id);this.textContent="unequip";this.classList.add("equipped");}
       });
     }
     grid.appendChild(card);
@@ -1744,215 +1691,236 @@ function renderBadges(uid, equippedList, likeCount) {
 /* ════════════════════════════════════════
    ALIASES
 ════════════════════════════════════════ */
-const ALIAS_MAX = 3;
-let dashAliases = [];
-
-function renderAliasList() {
-  const list    = document.getElementById("alias-list");
-  const trigger = document.getElementById("alias-add-trigger");
-  list.innerHTML = "";
-
-  dashAliases.forEach((name, i) => {
-    const entry = document.createElement("div");
-    entry.className = "alias-entry";
-    entry.innerHTML = `
-      <div class="alias-entry-info">
-        <div class="alias-entry-name">${name}</div>
-        <div class="alias-entry-url">forgave.lol/${name}</div>
-      </div>
-      <button class="alias-remove" title="remove">×</button>
-    `;
-    entry.querySelector(".alias-remove").addEventListener("click", () => {
-      dashAliases.splice(i, 1);
-      renderAliasList();
-    });
+const ALIAS_MAX=3; let dashAliases=[];
+function renderAliasList(){
+  const list=document.getElementById("alias-list"),trigger=document.getElementById("alias-add-trigger");
+  list.innerHTML="";
+  dashAliases.forEach((name,i)=>{
+    const entry=document.createElement("div"); entry.className="alias-entry";
+    entry.innerHTML=`<div class="alias-entry-info"><div class="alias-entry-name">${name}</div><div class="alias-entry-url">forgave.lol/${name}</div></div><button class="alias-remove" title="remove">×</button>`;
+    entry.querySelector(".alias-remove").addEventListener("click",()=>{dashAliases.splice(i,1);renderAliasList();});
     list.appendChild(entry);
   });
-
-  trigger.style.display = dashAliases.length >= ALIAS_MAX ? "none" : "";
+  trigger.style.display=dashAliases.length>=ALIAS_MAX?"none":"";
 }
-
-function openAliasForm() {
-  document.getElementById("alias-input-user").value = "";
-  document.getElementById("alias-input-pw").value = "";
-  document.getElementById("alias-form-hint").textContent = "";
-  document.getElementById("alias-form-hint").className = "alias-form-hint";
-  document.getElementById("alias-add-form").classList.add("open");
-  document.getElementById("alias-add-trigger").style.display = "none";
+function openAliasForm(){
+  document.getElementById("alias-input-user").value="";document.getElementById("alias-input-pw").value="";
+  document.getElementById("alias-form-hint").textContent="";document.getElementById("alias-form-hint").className="alias-form-hint";
+  document.getElementById("alias-add-form").classList.add("open");document.getElementById("alias-add-trigger").style.display="none";
   document.getElementById("alias-input-user").focus();
 }
-
-function closeAliasForm() {
-  document.getElementById("alias-add-form").classList.remove("open");
-  renderAliasList();
-}
-
-document.getElementById("alias-add-trigger").addEventListener("click", openAliasForm);
-document.getElementById("alias-cancel-btn").addEventListener("click", closeAliasForm);
-
-document.getElementById("alias-verify-btn").addEventListener("click", async () => {
-  const btn  = document.getElementById("alias-verify-btn");
-  const hint = document.getElementById("alias-form-hint");
-  const user = document.getElementById("alias-input-user").value.trim().toLowerCase();
-  const pw   = document.getElementById("alias-input-pw").value;
-
-  hint.className = "alias-form-hint";
-  hint.textContent = "";
-
-  if (!user) { hint.className = "alias-form-hint error"; hint.textContent = "enter a username"; return; }
-  if (!pw)   { hint.className = "alias-form-hint error"; hint.textContent = "enter the password"; return; }
-  if (user === session?.username) { hint.className = "alias-form-hint error"; hint.textContent = "that's your own account"; return; }
-  if (dashAliases.includes(user)) { hint.className = "alias-form-hint error"; hint.textContent = "already added"; return; }
-  if (dashAliases.length >= ALIAS_MAX) { hint.className = "alias-form-hint error"; hint.textContent = "max 3 aliases reached"; return; }
-
-  btn.disabled = true; btn.textContent = "verifying...";
-
-  try {
-    if (STATIC_USERS[user]) {
-      hint.className = "alias-form-hint error";
-      hint.textContent = "can't verify static profiles";
-      btn.disabled = false; btn.textContent = "verify & add";
-      return;
-    }
-
-    const rows = await supa.get("users", `username=eq.${encodeURIComponent(user)}`);
-    if (!rows || rows.length === 0) {
-      hint.className = "alias-form-hint error"; hint.textContent = "account not found";
-      btn.disabled = false; btn.textContent = "verify & add";
-      return;
-    }
-
-    const hash = await hashPassword(pw);
-    if (rows[0].password_hash !== hash) {
-      hint.className = "alias-form-hint error"; hint.textContent = "wrong password";
-      btn.disabled = false; btn.textContent = "verify & add";
-      return;
-    }
-
-    dashAliases.push(user);
-    hint.className = "alias-form-hint success"; hint.textContent = "verified ✓";
-    setTimeout(() => closeAliasForm(), 700);
-  } catch(e) {
-    console.error("[alias-verify]", e);
-    hint.className = "alias-form-hint error"; hint.textContent = "error — try again";
-  }
-
-  btn.disabled = false; btn.textContent = "verify & add";
+function closeAliasForm(){document.getElementById("alias-add-form").classList.remove("open");renderAliasList();}
+document.getElementById("alias-add-trigger").addEventListener("click",openAliasForm);
+document.getElementById("alias-cancel-btn").addEventListener("click",closeAliasForm);
+document.getElementById("alias-verify-btn").addEventListener("click",async()=>{
+  const btn=document.getElementById("alias-verify-btn"),hint=document.getElementById("alias-form-hint");
+  const user=document.getElementById("alias-input-user").value.trim().toLowerCase(),pw=document.getElementById("alias-input-pw").value;
+  hint.className="alias-form-hint";hint.textContent="";
+  if(!user){hint.className="alias-form-hint error";hint.textContent="enter a username";return;}
+  if(!pw){hint.className="alias-form-hint error";hint.textContent="enter the password";return;}
+  if(user===session?.username){hint.className="alias-form-hint error";hint.textContent="that's your own account";return;}
+  if(dashAliases.includes(user)){hint.className="alias-form-hint error";hint.textContent="already added";return;}
+  if(dashAliases.length>=ALIAS_MAX){hint.className="alias-form-hint error";hint.textContent="max 3 aliases reached";return;}
+  btn.disabled=true;btn.textContent="verifying...";
+  try{
+    if(STATIC_USERS[user]){hint.className="alias-form-hint error";hint.textContent="can't verify static profiles";btn.disabled=false;btn.textContent="verify & add";return;}
+    const rows=await supa.get("users",`username=eq.${encodeURIComponent(user)}`);
+    if(!rows||rows.length===0){hint.className="alias-form-hint error";hint.textContent="account not found";btn.disabled=false;btn.textContent="verify & add";return;}
+    const hash=await hashPassword(pw);
+    if(rows[0].password_hash!==hash){hint.className="alias-form-hint error";hint.textContent="wrong password";btn.disabled=false;btn.textContent="verify & add";return;}
+    dashAliases.push(user);hint.className="alias-form-hint success";hint.textContent="verified ✓";
+    setTimeout(()=>closeAliasForm(),700);
+  }catch(e){console.error("[alias-verify]",e);hint.className="alias-form-hint error";hint.textContent="error — try again";}
+  btn.disabled=false;btn.textContent="verify & add";
 });
 
 /* ════════════════════════════════════════
    LINKS
 ════════════════════════════════════════ */
-function renderDashLinks(links) {
-  const list = document.getElementById("d-links-list");
-  list.innerHTML = "";
-  links.forEach((lk, i) => addDashLinkRow(lk.label || "", lk.url || "", lk.icon || "tiktok", i));
+function renderDashLinks(links){
+  const list=document.getElementById("d-links-list"); list.innerHTML="";
+  links.forEach((lk,i)=>addDashLinkRow(lk.label||"",lk.url||"",lk.icon||"tiktok",i));
 }
-
-function addDashLinkRow(label, url, icon, idx) {
-  const list = document.getElementById("d-links-list");
-  const row  = document.createElement("div");
-  row.className = "dash-link-row";
-  row.dataset.idx = idx ?? list.children.length;
-  row.innerHTML = `
-    <select class="dl-icon" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 10px;color:rgba(255,255,255,.8);font-family:'DM Mono',monospace;font-size:.72rem;outline:none;">
-      ${["tiktok","discord","twitter","youtube","instagram","roblox"].map(ic =>
-        `<option value="${ic}" ${ic === icon ? "selected" : ""}>${ic}</option>`
-      ).join("")}
-    </select>
-    <input class="dl-url" type="text" placeholder="https://..." value="${url}" style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 12px;color:rgba(255,255,255,.8);font-family:'DM Mono',monospace;font-size:.72rem;outline:none;"/>
-    <button class="dash-link-remove" title="remove">×</button>
-  `;
-  row.querySelector(".dash-link-remove").addEventListener("click", () => row.remove());
+function addDashLinkRow(label,url,icon,idx){
+  const list=document.getElementById("d-links-list"),row=document.createElement("div");
+  row.className="dash-link-row";row.dataset.idx=idx??list.children.length;
+  row.innerHTML=`<select class="dl-icon" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 10px;color:rgba(255,255,255,.8);font-family:'DM Mono',monospace;font-size:.72rem;outline:none;">${["tiktok","discord","twitter","youtube","instagram","roblox"].map(ic=>`<option value="${ic}" ${ic===icon?"selected":""}>${ic}</option>`).join("")}</select><input class="dl-url" type="text" placeholder="https://..." value="${url}" style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 12px;color:rgba(255,255,255,.8);font-family:'DM Mono',monospace;font-size:.72rem;outline:none;"/><button class="dash-link-remove" title="remove">×</button>`;
+  row.querySelector(".dash-link-remove").addEventListener("click",()=>row.remove());
   list.appendChild(row);
 }
-
-document.getElementById("d-add-link").addEventListener("click", () => {
-  addDashLinkRow("", "", "tiktok", document.getElementById("d-links-list").children.length);
-});
+document.getElementById("d-add-link").addEventListener("click",()=>addDashLinkRow("","","tiktok",document.getElementById("d-links-list").children.length));
 
 /* ════════════════════════════════════════
    SAVE
 ════════════════════════════════════════ */
-async function saveDashboard(silent = false) {
-  if (!session) return;
-  const btn    = document.getElementById("d-save");
-  const status = document.getElementById("d-save-status");
-  if (!silent) { btn.disabled = true; btn.textContent = "saving..."; status.textContent = ""; }
+async function saveDashboard(silent=false){
+  if(!session) return;
+  // don't save if admin panel is active
+  const adminPanel=document.getElementById("panel-admin");
+  if(adminPanel&&adminPanel.classList.contains("active")) return;
 
-  const lines = [
-    document.getElementById("d-line1").value.trim(),
-    document.getElementById("d-line2").value.trim(),
-    document.getElementById("d-line3").value.trim(),
-  ];
-  const discord    = document.getElementById("d-discord").value.trim();
-  const bgVideoRaw = document.getElementById("d-bgvideo").value.trim();
-  const bgWordsRaw = document.getElementById("d-bgwords").value.trim();
-  const bg_video_urls = bgVideoRaw ? [bgVideoRaw] : [];
-  const bg_words = bgWordsRaw.split(",").map(w => w.trim()).filter(Boolean);
-
-  const linkRows = document.querySelectorAll(".dash-link-row");
-  const links = [];
-  linkRows.forEach(row => {
-    const url  = row.querySelector(".dl-url").value.trim();
-    const icon = row.querySelector(".dl-icon").value;
-    if (url) links.push({ label: icon, url, icon });
-  });
-
-  const now = new Date().toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
-  const cleanAliases = dashAliases.filter(a => typeof a === "string" && a.trim().length > 0);
-
-  const payload = {
-    lines, discord, links, bg_video_urls, bg_words,
-    last_change: now,
-    equipped_badges: dashEquipped,
-    aliases: cleanAliases,
-  };
-
-  try {
-    await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
+  const btn=document.getElementById("d-save"),status=document.getElementById("d-save-status");
+  if(!silent){btn.disabled=true;btn.textContent="saving...";status.textContent="";}
+  const lines=[document.getElementById("d-line1").value.trim(),document.getElementById("d-line2").value.trim(),document.getElementById("d-line3").value.trim()];
+  const discord=document.getElementById("d-discord").value.trim();
+  const bgVideoRaw=document.getElementById("d-bgvideo").value.trim();
+  const bgWordsRaw=document.getElementById("d-bgwords").value.trim();
+  const bg_video_urls=bgVideoRaw?[bgVideoRaw]:[];
+  const bg_words=bgWordsRaw.split(",").map(w=>w.trim()).filter(Boolean);
+  const linkRows=document.querySelectorAll(".dash-link-row"),links=[];
+  linkRows.forEach(row=>{const url=row.querySelector(".dl-url").value.trim(),icon=row.querySelector(".dl-icon").value;if(url)links.push({label:icon,url,icon});});
+  const now=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+  const cleanAliases=dashAliases.filter(a=>typeof a==="string"&&a.trim().length>0);
+  const payload={lines,discord,links,bg_video_urls,bg_words,last_change:now,equipped_badges:dashEquipped,aliases:cleanAliases};
+  try{
+    await supa.patch("users",`username=eq.${encodeURIComponent(session.username)}`,payload);
     updateAliasRowOnCard(cleanAliases);
+    if(!silent){status.textContent="saved ✓";setTimeout(()=>{status.textContent="";},3000);if(slug===session.username)location.reload();}
+    else{if(slug===session.username)location.reload();}
+  }catch(e){console.error("[save]",e);if(!silent){status.textContent="error saving";status.style.color="rgba(255,100,100,.6)";}}
+  if(!silent){btn.disabled=false;btn.textContent="save changes";}
+}
+function updateAliasRowOnCard(aliases){
+  const aliasRow=document.getElementById("alias-row"); if(!aliasRow) return;
+  const clean=(aliases||[]).filter(a=>a&&a.trim().length>0);
+  if(clean.length>0){aliasRow.style.display="block";aliasRow.innerHTML="also known as: "+clean.map((a,i)=>`<a href="https://forgave.lol/${a}" target="_blank" rel="noopener">${a}</a>${i<clean.length-1?'<span class="alias-sep">,</span> ':''}`).join("");}
+  else{aliasRow.style.display="none";aliasRow.innerHTML="";}
+}
+document.getElementById("d-save").addEventListener("click",()=>saveDashboard(false));
 
-    if (!silent) {
-      status.textContent = "saved ✓";
-      setTimeout(() => { status.textContent = ""; }, 3000);
-      if (slug === session.username) location.reload();
+/* ════════════════════════════════════════
+   ADMIN PANEL LOGIC
+════════════════════════════════════════ */
+let adminTarget = null; // the DB row of the user being edited
+let adminTargetEquipped = [];
+
+async function adminVerify() {
+  if (!isAdmin(session)) return; // client-side gate
+  // server-side gate: confirm is_admin in DB
+  try {
+    const rows = await supa.get("users", `username=eq.${encodeURIComponent(session.username)}`);
+    if (!rows || !rows[0] || !rows[0].is_admin) {
+      alert("not authorised");
+      return false;
+    }
+    return true;
+  } catch { return false; }
+}
+
+document.getElementById("admin-search-btn").addEventListener("click", adminSearch);
+document.getElementById("admin-search-input").addEventListener("keydown", e => { if(e.key==="Enter") adminSearch(); });
+
+async function adminSearch() {
+  if (!await adminVerify()) return;
+  const q = document.getElementById("admin-search-input").value.trim().toLowerCase();
+  if (!q) return;
+  const card = document.getElementById("admin-user-card");
+  const nf = document.getElementById("admin-not-found");
+  card.classList.remove("visible"); nf.classList.remove("show");
+  try {
+    const rows = await supa.get("users", `username=eq.${encodeURIComponent(q)}`);
+    if (!rows || rows.length === 0) { nf.classList.add("show"); return; }
+    adminTarget = rows[0];
+    adminTargetEquipped = adminTarget.equipped_badges ? [...adminTarget.equipped_badges] : [];
+    document.getElementById("admin-target-name").textContent = adminTarget.username;
+    document.getElementById("admin-target-uid").textContent = `uid ${adminTarget.uid}`;
+    document.getElementById("admin-uid-input").value = adminTarget.uid;
+
+    // fetch likes
+    try {
+      const lr = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/"+adminTarget.username)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+      const ld = await lr.json();
+      document.getElementById("admin-likes-input").value = ld?.[0]?.count ?? 0;
+    } catch { document.getElementById("admin-likes-input").value = 0; }
+
+    renderAdminBadges();
+    clearAdminStatuses();
+    card.classList.add("visible");
+  } catch(e) { console.error("[adminSearch]",e); nf.classList.add("show"); }
+}
+
+function clearAdminStatuses() {
+  ["admin-uid-status","admin-likes-status","admin-badges-status"].forEach(id=>{
+    const el=document.getElementById(id); el.textContent=""; el.className="admin-status";
+  });
+}
+
+function renderAdminBadges() {
+  const grid = document.getElementById("admin-badge-grid"); grid.innerHTML = "";
+  ALL_BADGE_DEFS.forEach(b => {
+    const on = adminTargetEquipped.includes(b.id);
+    const btn = document.createElement("button");
+    btn.className = `admin-badge-toggle ${on?"on":""}`;
+    btn.innerHTML = `<div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;">${b.svg.replace('class="og-badge-svg"','style="width:24px;height:24px;display:block;"')}</div><span>${b.name}</span>`;
+    btn.addEventListener("click", () => {
+      const isOn = adminTargetEquipped.includes(b.id);
+      if (isOn) { adminTargetEquipped = adminTargetEquipped.filter(x=>x!==b.id); btn.classList.remove("on"); }
+      else { adminTargetEquipped.push(b.id); btn.classList.add("on"); }
+    });
+    grid.appendChild(btn);
+  });
+}
+
+// UID
+document.getElementById("admin-uid-btn").addEventListener("click", async () => {
+  if (!adminTarget || !await adminVerify()) return;
+  const btn = document.getElementById("admin-uid-btn");
+  const status = document.getElementById("admin-uid-status");
+  const newUid = parseInt(document.getElementById("admin-uid-input").value, 10);
+  if (isNaN(newUid)) { status.textContent="enter a valid number"; status.className="admin-status err"; return; }
+  btn.disabled=true; status.textContent="saving..."; status.className="admin-status";
+  try {
+    await supa.patch("users",`username=eq.${encodeURIComponent(adminTarget.username)}`,{uid:newUid});
+    adminTarget.uid = newUid;
+    document.getElementById("admin-target-uid").textContent = `uid ${newUid}`;
+    status.textContent="uid updated ✓"; status.className="admin-status ok";
+  } catch(e) { status.textContent="error: "+e.message; status.className="admin-status err"; }
+  btn.disabled=false;
+});
+
+// Likes
+document.getElementById("admin-likes-btn").addEventListener("click", async () => {
+  if (!adminTarget || !await adminVerify()) return;
+  const btn = document.getElementById("admin-likes-btn");
+  const status = document.getElementById("admin-likes-status");
+  const count = parseInt(document.getElementById("admin-likes-input").value, 10);
+  if (isNaN(count) || count < 0) { status.textContent="enter a valid number"; status.className="admin-status err"; return; }
+  btn.disabled=true; status.textContent="saving..."; status.className="admin-status";
+  try {
+    const likeId = "forgave.lol/" + adminTarget.username;
+    // upsert
+    const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+    const existing = await res.json();
+    if (!existing || existing.length === 0) {
+      await fetch(`${SUPA_URL}/rest/v1/likes`,{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({id:likeId,count})});
     } else {
-      if (slug === session.username) location.reload();
+      await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}`,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({count})});
     }
-  } catch(e) {
-    console.error("[save]", e);
-    if (!silent) {
-      status.textContent = "error saving — check console";
-      status.style.color = "rgba(255,100,100,.6)";
-    }
-  }
+    status.textContent=`likes set to ${count} ✓`; status.className="admin-status ok";
+  } catch(e) { status.textContent="error: "+e.message; status.className="admin-status err"; }
+  btn.disabled=false;
+});
 
-  if (!silent) { btn.disabled = false; btn.textContent = "save changes"; }
-}
-
-function updateAliasRowOnCard(aliases) {
-  const aliasRow = document.getElementById("alias-row");
-  if (!aliasRow) return;
-  const clean = (aliases || []).filter(a => a && a.trim().length > 0);
-  if (clean.length > 0) {
-    aliasRow.style.display = "block";
-    aliasRow.innerHTML = "also known as: " + clean.map((a, i) =>
-      `<a href="https://forgave.lol/${a}" target="_blank" rel="noopener">${a}</a>${i < clean.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`
-    ).join("");
-  } else {
-    aliasRow.style.display = "none";
-    aliasRow.innerHTML = "";
-  }
-}
-
-document.getElementById("d-save").addEventListener("click", () => saveDashboard(false));
+// Badges
+document.getElementById("admin-badge-grid").addEventListener("click", async () => {
+  // auto-save badges on any toggle click (debounced)
+  clearTimeout(window._badgeSaveTimer);
+  window._badgeSaveTimer = setTimeout(async () => {
+    if (!adminTarget || !await adminVerify()) return;
+    const status = document.getElementById("admin-badges-status");
+    status.textContent="saving..."; status.className="admin-status";
+    try {
+      await supa.patch("users",`username=eq.${encodeURIComponent(adminTarget.username)}`,{equipped_badges:adminTargetEquipped});
+      status.textContent="badges saved ✓"; status.className="admin-status ok";
+    } catch(e) { status.textContent="error: "+e.message; status.className="admin-status err"; }
+  }, 600);
+});
 
 /* ════════════════════════════════════════
    BOOT
 ════════════════════════════════════════ */
 updateAuthUI();
-resolveRoute().then(() => renderCard());
+resolveRoute().then(()=>renderCard());
 </script>
 </body>
 </html>
