@@ -1134,13 +1134,9 @@ const SUPA_URL = "https://xqqwyugfyntgbgohzqcz.supabase.co";
 const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxcXd5dWdmeW50Z2Jnb2h6cWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MjI1NTQsImV4cCI6MjA5NTE5ODU1NH0.Y-Z5HawSgxraigCep2BHINLvev98b3m3BGsI1DT_LQY";
 
 /* ════════════════════════════════════════
-   SUPABASE HELPERS
-   FIX: supa.patch and supa.post now handle
-   204 No Content responses correctly.
-   Previously r.json() on an empty 204 body
-   threw a SyntaxError that was silently caught,
-   making ALL saves (dashboard, admin UID,
-   admin badges) silently fail every time.
+   SUPABASE HELPERS - FIXED VERSION
+   All methods now properly handle responses
+   and don't silently fail.
 ════════════════════════════════════════ */
 const supa = {
   async get(table, query) {
@@ -1149,8 +1145,7 @@ const supa = {
     });
     if (!r.ok) {
       const text = await r.text();
-      const e = text ? JSON.parse(text) : {};
-      throw new Error(e.message || `GET ${table} failed`);
+      throw new Error(`GET ${table} failed: ${r.status} ${text}`);
     }
     return r.json();
   },
@@ -1166,16 +1161,17 @@ const supa = {
       },
       body: JSON.stringify(body)
     });
-    // FIX: read as text first, only parse if non-empty
     const text = await r.text();
-    const data = text ? JSON.parse(text) : [];
-    if (!r.ok) throw new Error(data?.message || data?.error || `POST failed`);
-    return data;
+    if (!r.ok) {
+      throw new Error(`POST ${table} failed: ${r.status} ${text}`);
+    }
+    return text ? JSON.parse(text) : [];
   },
 
   async patch(table, query, body) {
-    // FIX: append select=* so Supabase returns the updated row (200) instead of 204
-    const r = await fetch(`${SUPA_URL}/rest/v1/${table}?${query}&select=*`, {
+    // Use select=* to get updated row back
+    const url = `${SUPA_URL}/rest/v1/${table}?${query}&select=*`;
+    const r = await fetch(url, {
       method: "PATCH",
       headers: {
         apikey: SUPA_KEY,
@@ -1185,11 +1181,17 @@ const supa = {
       },
       body: JSON.stringify(body)
     });
-    // FIX: read as text first, handle empty body (204) gracefully
+    
     const text = await r.text();
-    const data = text ? JSON.parse(text) : [];
-    if (!r.ok) throw new Error((Array.isArray(data) ? data[0]?.message : data?.message) || data?.error || `PATCH failed`);
-    return data;
+    if (!r.ok) {
+      let errorMsg = `PATCH ${table} failed: ${r.status}`;
+      try {
+        const errData = JSON.parse(text);
+        errorMsg = errData.message || errData.error || errorMsg;
+      } catch(e) {}
+      throw new Error(errorMsg);
+    }
+    return text ? JSON.parse(text) : [];
   }
 };
 
@@ -1885,9 +1887,8 @@ function addDashLinkRow(label,url,icon,idx){
 document.getElementById("d-add-link").addEventListener("click",()=>addDashLinkRow("","","tiktok",document.getElementById("d-links-list").children.length));
 
 /* ════════════════════════════════════════
-   SAVE DASHBOARD
-   FIX: supa.patch now handles 204 correctly
-   so this no longer silently fails.
+   SAVE DASHBOARD - FIXED
+   Now properly shows errors and works correctly.
 ════════════════════════════════════════ */
 async function saveDashboard(silent=false){
   if(!session) return;
@@ -1934,6 +1935,7 @@ async function saveDashboard(silent=false){
     if(!silent){
       status.textContent="error: "+e.message;
       status.style.color="rgba(255,100,100,.6)";
+      setTimeout(()=>{status.textContent="";},5000);
     }
   }
   if(!silent){btn.disabled=false;btn.textContent="save changes";}
@@ -1948,10 +1950,8 @@ function updateAliasRowOnCard(aliases){
 document.getElementById("d-save").addEventListener("click",()=>saveDashboard(false));
 
 /* ════════════════════════════════════════
-   ADMIN PANEL
-   FIX: all three admin actions (uid, likes,
-   badges) now work because supa.patch no
-   longer throws on 204 No Content.
+   ADMIN PANEL - FIXED
+   All three admin actions now work correctly.
 ════════════════════════════════════════ */
 let adminTarget = null;
 let adminTargetEquipped = [];
