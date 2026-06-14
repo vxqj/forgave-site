@@ -13,7 +13,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
     <style>
-        /* ========== ALL STYLES (compact but complete) ========== */
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono","Courier New",monospace;color:#fff}
         #bgvideo{display:none;position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
@@ -40,7 +39,7 @@
         .username .tip,.badge .tip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%) translateY(4px);background:rgba(6,6,8,.98);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.8);font-size:.58rem;font-family:"DM Mono",monospace;letter-spacing:1.6px;text-transform:uppercase;padding:3px 8px;border-radius:5px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:20}
         .username:hover .tip,.badge:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}
         .badge{position:relative;display:flex;align-items:center;justify-content:center;width:16px;height:16px;flex-shrink:0;cursor:default}
-        .badge svg{width:13px;height:13px;transition:transform .15s,filter .2s ease;display:block}
+        .badge svg{width:13px;height:13px;transition:transform .15s;display:block}
         .badge:hover svg{transform:scale(1.2)}
         .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07) 30%,rgba(255,255,255,.07) 70%,transparent);margin-bottom:15px;opacity:0;animation:fadeUp .4s ease forwards;animation-delay:.6s}
         .meta-section{margin-bottom:15px}
@@ -223,7 +222,6 @@
         .embed-preview-title{font-size:.75rem;color:rgba(255,255,255,0.7);margin-bottom:4px}
         .embed-preview-desc{font-size:.65rem;color:rgba(255,255,255,0.4)}
         .embed-preview-image{margin-top:8px;max-width:100%;max-height:100px;border-radius:8px}
-        .color-preview{width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);margin-left:12px}
         @media (max-width:600px){#dash-modal .modal{width:calc(100vw - 24px)}.dash-body{flex-direction:column}.dash-sidebar{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);flex-direction:row;padding:10px 12px;overflow-x:auto;gap:4px}.dash-nav-btn{white-space:nowrap;flex-shrink:0}.dash-panels{padding:16px}}
     </style>
 </head>
@@ -319,7 +317,6 @@
                 <button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
                 <button class="dash-nav-btn" data-panel="cursor"><svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>cursor</button>
                 <button class="dash-nav-btn" data-panel="embed"><svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zM5 7h14v2H5V7zm0 4h14v2H5v-2zm0 4h8v2H5v-2z"/></svg>embed</button>
-                <button class="dash-nav-btn" data-panel="colors"><svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7z"/><circle cx="12" cy="12" r="3"/></svg>colors</button>
             </nav>
             <div class="dash-panels">
                 <div class="dash-panel active" id="panel-bio">
@@ -400,24 +397,6 @@
                         <img id="embed-preview-img" class="embed-preview-image" style="display:none;">
                     </div>
                 </div>
-                <div class="dash-panel" id="panel-colors">
-                    <div class="dash-panel-title">badge colors</div>
-                    <div class="field">
-                        <label>badge tint</label>
-                        <input type="color" id="d-badge-color" value="#ffffff">
-                        <div class="field-hint">pick a color – your badges will shift toward this hue</div>
-                    </div>
-                    <div class="embed-preview" style="margin-top:12px;">
-                        <div class="embed-preview-title">preview</div>
-                        <div style="display:flex; gap:8px; margin-top:8px;">
-                            <div class="badge" style="filter: hue-rotate(0deg)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 5.5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12v-6L12 2z"/></svg></div>
-                            <div class="badge" style="filter: hue-rotate(90deg)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 5.5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12v-6L12 2z"/></svg></div>
-                            <div class="badge" style="filter: hue-rotate(180deg)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 5.5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12v-6L12 2z"/></svg></div>
-                            <div class="badge" style="filter: hue-rotate(270deg)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 5.5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12v-6L12 2z"/></svg></div>
-                        </div>
-                        <div class="field-hint">example tints (your actual badges will change)</div>
-                    </div>
-                </div>
                 <div class="dash-panel" id="panel-admin">
                     <div class="dash-panel-title" style="color:rgba(255,180,80,.4);">admin panel</div>
                     <div class="admin-search-row"><input type="text" id="admin-search-input" placeholder="search username..."><button class="admin-search-btn" id="admin-search-btn">look up</button></div>
@@ -490,7 +469,7 @@
         }
     };
 
-    // ========== PASSWORD HASHING & GENERATION ==========
+    // ========== PASSWORD HASHING ==========
     async function hashPassword(pw) {
         const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw));
         return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
@@ -524,7 +503,7 @@
         bgVideo: { urls: ["https://files.catbox.moe/q77n42.mp4"], opacity: 0.45 },
         bgWords: ["forgave", "frgv", "</>", "///"],
         wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [],
-        embed_title: "", embed_description: "", embed_image: "", custom_cursor: "", badge_color: ""
+        embed_title: "", embed_description: "", embed_image: "", custom_cursor: ""
     };
     const STATIC_USERS = {
         "prada": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "prada", uid: "1", badges: [], lines: ["@juliasfanboy / on discord", "rich", "take risks"], discord: "", links: [{ label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok" }], bgVideo: { urls: ["https://files.catbox.moe/aned1c.mp4"], opacity: 0.45 }, bgWords: ["prada", "</>"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [] },
@@ -543,7 +522,7 @@
         roblox: `<svg viewBox="0 0 24 24"><path d="M5.16 0L0 18.84 18.84 24 24 5.16 5.16 0zm8.32 13.65l-3.13-.86.86-3.13 3.13.86-.86 3.13z"/></svg>`
     };
 
-    // ========== BADGE SVGS ==========
+    // ========== BADGE SVGS (same as before) ==========
     const OG_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 2L4 5.5V12c0 5 3.8 9.4 9 10.9C18.2 21.4 22 17 22 12V5.5L13 2Z" fill="url(#og-shield-fill)" stroke="url(#og-shield-stroke)" stroke-width="0.8"/><g opacity="0.55"><line x1="13" y1="5" x2="13" y2="3.5" stroke="#FFD97A" stroke-width="0.7"/><line x1="16.5" y1="6.2" x2="17.5" y2="5" stroke="#FFD97A" stroke-width="0.7"/><line x1="9.5" y1="6.2" x2="8.5" y2="5" stroke="#FFD97A" stroke-width="0.7"/></g><text x="13" y="14.5" text-anchor="middle" font-family="'DM Mono', monospace" font-size="5.5" fill="url(#og-text-fill)">OG</text><path d="M13 2L4 5.5V9c3.5-0.5 7-2 9-4.5C15 7 18.5 8.5 22 9V5.5L13 2Z" fill="url(#og-shine)" opacity="0.25"/><defs><linearGradient id="og-shield-fill" x1="13" y1="2" x2="13" y2="23"><stop offset="0%" stop-color="#3D2A00"/><stop offset="100%" stop-color="#1A1200"/></linearGradient><linearGradient id="og-shield-stroke" x1="4" y1="2" x2="22" y2="23"><stop offset="0%" stop-color="#FFD97A"/><stop offset="50%" stop-color="#C8860A"/><stop offset="100%" stop-color="#FFD97A"/></linearGradient><linearGradient id="og-text-fill" x1="8" y1="9" x2="18" y2="15"><stop offset="0%" stop-color="#FFE999"/><stop offset="100%" stop-color="#D4920F"/></linearGradient><linearGradient id="og-shine" x1="4" y1="2" x2="22" y2="9"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="transparent"/></linearGradient></defs></svg>`;
     const OG_PLUS_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 3L10.5 8.5L4.5 9.5L9 13.5L7.5 19.5L13 16.5L18.5 19.5L17 13.5L21.5 9.5L15.5 8.5Z" fill="url(#diamond-fill)" stroke="url(#diamond-stroke)" stroke-width="0.8"/><defs><linearGradient id="diamond-fill" x1="13" y1="3" x2="13" y2="20"><stop offset="0%" stop-color="#a8edff"/><stop offset="100%" stop-color="#1a8cff"/></linearGradient><linearGradient id="diamond-stroke" x1="4" y1="3" x2="22" y2="20"><stop offset="0%" stop-color="#e0f7ff"/><stop offset="100%" stop-color="#1a8cff"/></linearGradient></defs></svg>`;
     const EARLY_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 3L15.5 9.5L22.5 10L17.5 14.5L19.5 21.5L13 18L6.5 21.5L8.5 14.5L3.5 10L10.5 9.5Z" fill="url(#star-fill)" stroke="url(#star-stroke)" stroke-width="0.8"/><defs><linearGradient id="star-fill" x1="13" y1="3" x2="13" y2="22"><stop offset="0%" stop-color="#fffba0"/><stop offset="100%" stop-color="#f0a500"/></linearGradient><linearGradient id="star-stroke" x1="3" y1="3" x2="23" y2="22"><stop offset="0%" stop-color="#fff5c0"/><stop offset="100%" stop-color="#c87000"/></linearGradient></defs></svg>`;
@@ -564,7 +543,7 @@
         { id: "popular", name: "Popular", svg: POPULAR_BADGE_SVG, adminOnly: false }
     ];
 
-    // ========== ROUTING & CARD DATA (including badge_color) ==========
+    // ========== ROUTING & CARD DATA ==========
     let slug = location.pathname.replace(/^\//, "").toLowerCase().trim();
     let C = null;
     let likeId = "forgave.lol";
@@ -632,8 +611,7 @@
                     custom_cursor: u.custom_cursor || "",
                     embed_title: u.embed_title || "",
                     embed_description: u.embed_description || "",
-                    embed_image: u.embed_image || "",
-                    badge_color: u.badge_color || ""
+                    embed_image: u.embed_image || ""
                 };
                 likeId = "forgave.lol/" + slug;
                 return;
@@ -642,27 +620,6 @@
             console.error("[resolveRoute]", e);
         }
         C = null;
-    }
-
-    // Apply badge color filter
-    function applyBadgeColor(color) {
-        const badges = document.querySelectorAll(".badge svg");
-        if (color && color.startsWith("#")) {
-            const hex = color.substring(1);
-            const r = parseInt(hex.substring(0,2), 16);
-            const g = parseInt(hex.substring(2,4), 16);
-            const b = parseInt(hex.substring(4,6), 16);
-            let max = Math.max(r,g,b), min = Math.min(r,g,b);
-            let h = 0;
-            if (max === min) h = 0;
-            else if (max === r) h = 60 * ((g - b) / (max - min));
-            else if (max === g) h = 60 * (2 + (b - r) / (max - min));
-            else if (max === b) h = 60 * (4 + (r - g) / (max - min));
-            if (h < 0) h += 360;
-            badges.forEach(svg => { svg.style.filter = `hue-rotate(${h}deg) saturate(1.2)`; });
-        } else {
-            badges.forEach(svg => { svg.style.filter = ""; });
-        }
     }
 
     // ========== CARD STYLES ==========
@@ -879,7 +836,6 @@
         initParallax();
         setCursorEffect(C.cursor_effect);
         applyCustomCursor(C.custom_cursor);
-        applyBadgeColor(C.badge_color);
     }
 
     // ========== AUTH UI ==========
@@ -946,10 +902,10 @@
                 lines: ["", "", ""], discord: "", links: [], bg_video_urls: [], bg_video_opacity: 0.45,
                 bg_words: ["</>", "///"], last_change: now, aliases: [], equipped_badges: [], is_admin: false,
                 card_style: "default", border_radius: 18, card_opacity: 0.58, parallax_enabled: true,
-                cursor_effect: "ghost", custom_cursor: "", embed_title: "", embed_description: "", embed_image: "", badge_color: ""
+                cursor_effect: "ghost", custom_cursor: "", embed_title: "", embed_description: "", embed_image: ""
             });
             if (result && result[0]) {
-                notifyDiscord(username, nextUid);
+                await notifyDiscord(username, nextUid);
                 saveSession({ username: username, uid: nextUid });
                 closeModal(authModal);
                 updateAuthUI();
@@ -1055,7 +1011,6 @@
                 document.getElementById("d-embed-title").value = u.embed_title || "";
                 document.getElementById("d-embed-desc").value = u.embed_description || "";
                 document.getElementById("d-embed-image").value = u.embed_image || "";
-                document.getElementById("d-badge-color").value = u.badge_color || "#ffffff";
                 updateEmbedPreview(u.embed_title, u.embed_description, u.embed_image);
                 if (u.custom_cursor) {
                     document.getElementById("cursor-preview-container").style.display = "flex";
@@ -1220,12 +1175,11 @@
         const embed_title = document.getElementById("d-embed-title").value.trim();
         const embed_description = document.getElementById("d-embed-desc").value.trim();
         const embed_image = document.getElementById("d-embed-image").value.trim();
-        const badge_color = document.getElementById("d-badge-color").value;
         const payload = {
             lines, discord, links, bg_video_urls, bg_words, last_change: now,
             equipped_badges: [...dashEquipped], aliases: cleanAliases,
             card_style, border_radius, card_opacity, parallax_enabled, cursor_effect,
-            custom_cursor, embed_title, embed_description, embed_image, badge_color
+            custom_cursor, embed_title, embed_description, embed_image
         };
         try {
             await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
@@ -1333,7 +1287,32 @@
         try { await supa.patch("users", `username=eq.${encodeURIComponent(adminTarget.username)}`, { equipped_badges: [...adminTargetEquipped] }); status.textContent = "badges saved ✓"; status.className = "admin-status ok"; } catch (e) { status.textContent = "error: " + e.message; status.className = "admin-status err"; }
         btn.disabled = false;
     };
-    async function notifyDiscord(username, uid) { try { await fetch("https://discord.com/api/webhooks/1383870699321909398/TsimELiMHMKQ3I8gJdkq5TtBovVfCY5HE4TcIJGJCbEBW_aP3fKZ3x5hLDPaqnX1xJJb", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ embeds: [{ description: `new user: **${username}** (uid ${uid})`, color: 0x2b2d31 }] }) }); } catch (e) { } }
+    // ========== FIXED DISCORD WEBHOOK NOTIFICATION ==========
+    async function notifyDiscord(username, uid) {
+        try {
+            const webhookUrl = "https://discord.com/api/webhooks/1515599322534908027/GqyFJK_Er3c36tVTjf7HEXdyq5vPU0tvVfassmY-TlHKbF5kCxMWmBqoHNfSo7-LYorj";
+            const payload = {
+                embeds: [{
+                    title: "🎉 New User Joined",
+                    color: 0x5865F2,
+                    fields: [
+                        { name: "Username", value: username, inline: true },
+                        { name: "UID", value: String(uid), inline: true }
+                    ],
+                    timestamp: new Date().toISOString()
+                }]
+            };
+            await fetch(webhookUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+        } catch (e) {
+            console.error("Webhook failed:", e);
+        }
+    }
+
+    // ========== BOOT ==========
     initCursorEffect();
     updateAuthUI();
     resolveRoute().then(() => renderCard());
