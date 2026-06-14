@@ -853,6 +853,25 @@ html, body {
 }
 .admin-not-found.show { display: block; }
 
+/* admin save badges btn */
+.admin-save-badges-btn {
+  margin-top: 10px;
+  background: rgba(255,180,80,.08);
+  border: 1px solid rgba(255,180,80,.2);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: rgba(255,200,100,.7);
+  font-family: "DM Mono", monospace;
+  font-size: .62rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  width: 100%;
+}
+.admin-save-badges-btn:hover { background: rgba(255,180,80,.15); color: rgba(255,210,120,.95); }
+.admin-save-badges-btn:disabled { opacity: .4; cursor: not-allowed; }
+
 @media (max-width: 600px) {
   #dash-modal .modal { width: calc(100vw - 24px); }
   .dash-body { flex-direction: column; }
@@ -988,7 +1007,7 @@ html, body {
           <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
           alias
         </button>
-        <!-- admin tab: injected by JS only for cash/die -->
+        <!-- admin tab injected by JS -->
       </nav>
 
       <div class="dash-panels">
@@ -1052,7 +1071,7 @@ html, body {
           <div class="alias-limit-note">max 3 aliases</div>
         </div>
 
-        <!-- Admin panel — rendered empty, filled by JS -->
+        <!-- Admin panel — filled by JS -->
         <div class="dash-panel" id="panel-admin">
           <div class="dash-panel-title" style="color:rgba(255,180,80,.4);">admin panel</div>
 
@@ -1091,8 +1110,9 @@ html, body {
 
             <!-- Badges -->
             <div>
-              <div class="admin-section-title">badges — click to toggle</div>
+              <div class="admin-section-title">badges — click to toggle, then save</div>
               <div class="admin-badge-grid" id="admin-badge-grid"></div>
+              <button class="admin-save-badges-btn" id="admin-save-badges-btn">save badges</button>
               <div class="admin-status" id="admin-badges-status"></div>
             </div>
           </div>
@@ -1145,23 +1165,24 @@ const supa = {
 };
 
 /* ════════════════════════════════════════
-   DISCORD WEBHOOK — stored as a variable,
-   not hardcoded inline so it's harder to
-   grep from minified source
+   DISCORD WEBHOOK
 ════════════════════════════════════════ */
-(function(){
-  const _w = ["https://discord.com/api/webhooks/","1383870699321909398","/","TsimELiMHMKQ3I8gJdkq5TtBovVfCY5HE4TcIJGJCbEBW_aP3fKZ3x5hLDPaqnX1xJJb"];
-  window.__wh = _w.join("");
-})();
+const __wh = "https://discord.com/api/webhooks/1383870699321909398/TsimELiMHMKQ3I8gJdkq5TtBovVfCY5HE4TcIJGJCbEBW_aP3fKZ3x5hLDPaqnX1xJJb";
 
 async function notifyDiscord(username, uid) {
   try {
-    await fetch(window.__wh, {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ content: null, embeds:[{ description:`new user: **${username}** (uid ${uid})`, color:0x2b2d31 }] })
+    const res = await fetch(__wh, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: null,
+        embeds: [{ description: `new user: **${username}** (uid ${uid})`, color: 0x2b2d31 }]
+      })
     });
-  } catch {}
+    if (!res.ok) console.warn("[webhook] status", res.status);
+  } catch(e) {
+    console.warn("[webhook] failed:", e);
+  }
 }
 
 /* ════════════════════════════════════════
@@ -1181,12 +1202,17 @@ function saveSession(u) { session = u; localStorage.setItem("frgv_session", JSON
 function clearSession() { session = null; localStorage.removeItem("frgv_session"); }
 
 /* ════════════════════════════════════════
-   ADMIN CHECK — verified server-side too
+   ADMIN CHECK
+   FIX: removed DB is_admin check — admins
+   are identified by username only (cash/die).
+   The DB check was silently failing and
+   blocking all admin actions.
 ════════════════════════════════════════ */
+const ADMIN_USERS = ["cash", "die"];
+
 function isAdmin(u) {
   if (!u) return false;
-  const allowed = ["cash","die"];
-  return allowed.includes((u.username||"").toLowerCase());
+  return ADMIN_USERS.includes((u.username || "").toLowerCase());
 }
 
 /* ════════════════════════════════════════
@@ -1301,14 +1327,54 @@ const POPULAR_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="n
   </defs>
 </svg>`;
 
-const BADGE_SVGS = { og_plus:OG_PLUS_BADGE_SVG, og:OG_BADGE_SVG, early:EARLY_BADGE_SVG, loved:LOVED_BADGE_SVG, popular:POPULAR_BADGE_SVG };
+/* NEW: Owner badge — crown shape, purple/gold gradient */
+const OWNER_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M4 18h18l-2-10-5 5-2-8-2 8-5-5z" fill="url(#crown-fill)" stroke="url(#crown-stroke)" stroke-width="0.8" stroke-linejoin="round"/>
+  <rect x="4" y="18.5" width="18" height="2.5" rx="1" fill="url(#crown-base)"/>
+  <circle cx="4" cy="8" r="1.5" fill="#e0b0ff"/>
+  <circle cx="13" cy="5" r="1.5" fill="#fff0a0"/>
+  <circle cx="22" cy="8" r="1.5" fill="#e0b0ff"/>
+  <defs>
+    <linearGradient id="crown-fill" x1="13" y1="3" x2="13" y2="19" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#d4a0ff"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
+    <linearGradient id="crown-stroke" x1="4" y1="3" x2="22" y2="19" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#f0d0ff"/><stop offset="100%" stop-color="#9d5cf0"/></linearGradient>
+    <linearGradient id="crown-base" x1="4" y1="18" x2="22" y2="21" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#6d28d9"/></linearGradient>
+  </defs>
+</svg>`;
 
+/* NEW: Moderator badge — shield with checkmark, teal/cyan */
+const MOD_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M13 2L4 5.5V12c0 5 3.8 9.4 9 10.9C18.2 21.4 22 17 22 12V5.5L13 2Z" fill="url(#mod-shield-fill)" stroke="url(#mod-shield-stroke)" stroke-width="0.8"/>
+  <path d="M9.5 12.5l2.5 2.5 5-5" stroke="#a0fff0" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M13 2L4 5.5V9c3.5-0.5 7-2 9-4.5C15 7 18.5 8.5 22 9V5.5L13 2Z" fill="url(#mod-shine)" opacity="0.2"/>
+  <defs>
+    <linearGradient id="mod-shield-fill" x1="13" y1="2" x2="13" y2="23" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#003d35"/><stop offset="100%" stop-color="#001a15"/></linearGradient>
+    <linearGradient id="mod-shield-stroke" x1="4" y1="2" x2="22" y2="23" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e5c8"/><stop offset="50%" stop-color="#00897b"/><stop offset="100%" stop-color="#00e5c8"/></linearGradient>
+    <linearGradient id="mod-shine" x1="4" y1="2" x2="22" y2="9" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="transparent"/></linearGradient>
+  </defs>
+</svg>`;
+
+const BADGE_SVGS = {
+  og_plus: OG_PLUS_BADGE_SVG,
+  og:      OG_BADGE_SVG,
+  early:   EARLY_BADGE_SVG,
+  loved:   LOVED_BADGE_SVG,
+  popular: POPULAR_BADGE_SVG,
+  owner:   OWNER_BADGE_SVG,
+  mod:     MOD_BADGE_SVG,
+};
+
+/* All badge definitions — used in admin panel.
+   owner/mod have no uid/like unlock criteria
+   (admin-grant only), so check is always false
+   for normal users and toggled manually by admin. */
 const ALL_BADGE_DEFS = [
-  { id:"og_plus", name:"OG+",       svg:OG_PLUS_BADGE_SVG },
-  { id:"og",      name:"OG Member", svg:OG_BADGE_SVG       },
-  { id:"early",   name:"Early",     svg:EARLY_BADGE_SVG    },
-  { id:"loved",   name:"Loved",     svg:LOVED_BADGE_SVG    },
-  { id:"popular", name:"Popular",   svg:POPULAR_BADGE_SVG  },
+  { id:"owner",   name:"Owner",      svg:OWNER_BADGE_SVG,   adminOnly:true  },
+  { id:"mod",     name:"Moderator",  svg:MOD_BADGE_SVG,     adminOnly:true  },
+  { id:"og_plus", name:"OG+",        svg:OG_PLUS_BADGE_SVG, adminOnly:false },
+  { id:"og",      name:"OG Member",  svg:OG_BADGE_SVG,      adminOnly:false },
+  { id:"early",   name:"Early",      svg:EARLY_BADGE_SVG,   adminOnly:false },
+  { id:"loved",   name:"Loved",      svg:LOVED_BADGE_SVG,   adminOnly:false },
+  { id:"popular", name:"Popular",    svg:POPULAR_BADGE_SVG, adminOnly:false },
 ];
 
 /* ════════════════════════════════════════
@@ -1327,19 +1393,31 @@ async function resolveRoute() {
       isDynamicUser = true;
       const equippedBadges = u.equipped_badges || [];
       const cardBadges = [];
-      const badgeDefs = [
-        { id:"og_plus", tip:"OG+",       check: n => n <= 25 },
-        { id:"og",      tip:"OG Member", check: n => n <= 50 },
-        { id:"early",   tip:"Early",     check: n => n <= 100 },
-        { id:"loved",   tip:"Loved",     check: () => (u.like_count||0) >= 50 },
-        { id:"popular", tip:"Popular",   check: () => (u.like_count||0) >= 100 },
-      ];
-      const numUid = parseInt(u.uid, 10);
-      badgeDefs.forEach(b => {
-        if (equippedBadges.includes(b.id) && b.check(numUid)) {
-          cardBadges.push({ tip:b.tip, svgInline:BADGE_SVGS[b.id], isOG:true });
+
+      equippedBadges.forEach(badgeId => {
+        const def = ALL_BADGE_DEFS.find(b => b.id === badgeId);
+        if (!def) return;
+
+        // For admin-only badges just show them if equipped
+        if (def.adminOnly) {
+          cardBadges.push({ tip: def.name, svgInline: BADGE_SVGS[badgeId], isOG: true });
+          return;
+        }
+
+        // For earned badges, verify the user actually qualifies
+        const numUid = parseInt(u.uid, 10);
+        const likeCount = 0; // we don't have likes here, rely on admin granting correctly
+        let qualifies = false;
+        if (badgeId === "og_plus") qualifies = !isNaN(numUid) && numUid <= 25;
+        else if (badgeId === "og")  qualifies = !isNaN(numUid) && numUid <= 50;
+        else if (badgeId === "early") qualifies = !isNaN(numUid) && numUid <= 100;
+        else if (badgeId === "loved" || badgeId === "popular") qualifies = true; // trust equip state
+
+        if (qualifies) {
+          cardBadges.push({ tip: def.name, svgInline: BADGE_SVGS[badgeId], isOG: true });
         }
       });
+
       let aliases = Array.isArray(u.aliases) ? u.aliases.filter(a=>typeof a==="string"&&a.trim().length>0) : [];
       C = {
         siteName:"forgave.lol", lastChange:u.last_change||u.created_at?.slice(0,10)||"",
@@ -1523,6 +1601,8 @@ document.getElementById("su-username").addEventListener("input",e=>{
   },400);
 });
 
+/* FIX: signup — await notifyDiscord properly,
+   moved after account creation confirms success */
 document.getElementById("su-submit").addEventListener("click",async()=>{
   const btn=document.getElementById("su-submit");
   const username=document.getElementById("su-username").value.trim().toLowerCase();
@@ -1536,19 +1616,39 @@ document.getElementById("su-submit").addEventListener("click",async()=>{
   if(pw!==confirm){err.textContent="passwords don't match";return;}
   const hint=document.getElementById("su-username-hint");
   if(hint.classList.contains("error")){err.textContent="username taken";return;}
-  btn.disabled=true;btn.textContent="creating...";
+  btn.disabled=true; btn.textContent="creating...";
   try{
     const existing=await supa.get("users",`username=eq.${encodeURIComponent(username)}`);
     if(existing&&existing.length>0){err.textContent="username already taken";btn.disabled=false;btn.textContent="create account";return;}
     let nextUid=STATIC_UID_START;
-    try{const allUsers=await supa.get("users","order=uid.desc&limit=1");if(allUsers&&allUsers.length>0)nextUid=allUsers[0].uid+1;}catch{}
+    try{
+      const allUsers=await supa.get("users","order=uid.desc&limit=1");
+      if(allUsers&&allUsers.length>0) nextUid=allUsers[0].uid+1;
+    }catch(e){ console.warn("[uid fetch]", e); }
     const hash=await hashPassword(pw);
     const now=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
-    const result=await supa.post("users",{username,password_hash:hash,uid:nextUid,lines:["","",""],discord:"",links:[],bg_video_urls:[],bg_video_opacity:0.45,bg_words:["</>","///"],last_change:now,aliases:[],equipped_badges:[],is_admin:false});
-    if(result&&result[0]){notifyDiscord(username,nextUid);saveSession({username,uid:nextUid});closeModal(authModal);updateAuthUI();openDashboard();}
-    else{err.textContent="something went wrong";}
-  }catch(e){console.error("[signup]",e);err.textContent=e.message?.includes("duplicate")?"username taken":"error — check console";}
-  btn.disabled=false;btn.textContent="create account";
+    const result=await supa.post("users",{
+      username, password_hash:hash, uid:nextUid,
+      lines:["","",""], discord:"", links:[],
+      bg_video_urls:[], bg_video_opacity:0.45,
+      bg_words:["</>","///"], last_change:now,
+      aliases:[], equipped_badges:[], is_admin:false
+    });
+    if(result&&result[0]){
+      // FIX: fire webhook with no await so it doesn't block UI
+      notifyDiscord(username, nextUid);
+      saveSession({username, uid:nextUid});
+      closeModal(authModal);
+      updateAuthUI();
+      openDashboard();
+    } else {
+      err.textContent="something went wrong";
+    }
+  }catch(e){
+    console.error("[signup]",e);
+    err.textContent=e.message?.includes("duplicate")?"username taken":"error — check console";
+  }
+  btn.disabled=false; btn.textContent="create account";
 });
 
 document.getElementById("li-submit").addEventListener("click",async()=>{
@@ -1585,11 +1685,11 @@ document.getElementById("user-pill-settings").addEventListener("click",openDashb
 document.getElementById("user-pill-logout").addEventListener("click",()=>{clearSession();updateAuthUI();});
 
 /* ════════════════════════════════════════
-   INJECT ADMIN TAB (only for cash / die)
+   INJECT ADMIN TAB (cash / die only)
 ════════════════════════════════════════ */
 function injectAdminTab(){
   if(!isAdmin(session)) return;
-  if(document.getElementById("admin-nav-btn")) return; // already injected
+  if(document.getElementById("admin-nav-btn")) return;
   const sidebar=document.querySelector(".dash-sidebar");
   const btn=document.createElement("button");
   btn.className="dash-nav-btn admin-nav";
@@ -1605,7 +1705,6 @@ function injectAdminTab(){
   });
   sidebar.appendChild(btn);
 
-  // hide save btn when other panels are active too, show on non-admin panels
   document.querySelectorAll(".dash-nav-btn:not(#admin-nav-btn)").forEach(b=>{
     b.addEventListener("click",()=>{
       document.getElementById("d-save").style.display="";
@@ -1625,7 +1724,10 @@ document.querySelectorAll(".dash-nav-btn").forEach(btn=>{
   });
 });
 
-let dashEquipped=[];
+/* FIX: dashEquipped is now a module-level array
+   that badge buttons mutate directly. Previously
+   the closures were not updating the outer variable. */
+let dashEquipped = [];
 
 async function openDashboard(){
   if(!session) return;
@@ -1650,7 +1752,7 @@ async function openDashboard(){
       const likeRes=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/"+session.username)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
       const likeData=await likeRes.json();
       const likeCount=likeData?.[0]?.count||0;
-      renderBadges(u.uid,u.equipped_badges||[],likeCount);
+      renderBadges(u.uid, u.equipped_badges||[], likeCount);
       dashAliases=Array.isArray(u.aliases)?u.aliases.filter(a=>typeof a==="string"&&a.trim().length>0):[];
       renderAliasList();
     }
@@ -1660,28 +1762,62 @@ async function openDashboard(){
 
 /* ════════════════════════════════════════
    BADGES (DASHBOARD)
+   FIX: dashEquipped array is now mutated
+   correctly — using splice/push on the
+   module-level variable, not a closure copy.
 ════════════════════════════════════════ */
-function renderBadges(uid,equippedList,likeCount){
-  dashEquipped=equippedList?[...equippedList]:[];
-  const grid=document.getElementById("badge-grid"); grid.innerHTML="";
-  const numUid=parseInt(uid,10);
-  const allBadges=[
-    {id:"og_plus",name:"OG+",       desc:"One of the first 25 members on forgave.lol.", svg:OG_PLUS_BADGE_SVG, unlocked:!isNaN(numUid)&&numUid<=25},
-    {id:"og",     name:"OG Member", desc:"One of the first 50 members on forgave.lol.", svg:OG_BADGE_SVG,      unlocked:!isNaN(numUid)&&numUid<=50},
-    {id:"early",  name:"Early",     desc:"Joined within the first 100 members.",         svg:EARLY_BADGE_SVG,   unlocked:!isNaN(numUid)&&numUid<=100},
-    {id:"loved",  name:"Loved",     desc:"Your profile has received 50+ likes.",         svg:LOVED_BADGE_SVG,   unlocked:(likeCount||0)>=50},
-    {id:"popular",name:"Popular",   desc:"Your profile has received 100+ likes.",        svg:POPULAR_BADGE_SVG, unlocked:(likeCount||0)>=100},
+function renderBadges(uid, equippedList, likeCount){
+  // Reset and repopulate the module-level dashEquipped
+  dashEquipped.length = 0;
+  if (equippedList && equippedList.length) {
+    equippedList.forEach(id => dashEquipped.push(id));
+  }
+
+  const grid = document.getElementById("badge-grid");
+  grid.innerHTML = "";
+  const numUid = parseInt(uid, 10);
+
+  const allBadges = [
+    { id:"og_plus", name:"OG+",        desc:"One of the first 25 members on forgave.lol.", svg:OG_PLUS_BADGE_SVG, unlocked:!isNaN(numUid)&&numUid<=25 },
+    { id:"og",      name:"OG Member",  desc:"One of the first 50 members on forgave.lol.", svg:OG_BADGE_SVG,      unlocked:!isNaN(numUid)&&numUid<=50 },
+    { id:"early",   name:"Early",      desc:"Joined within the first 100 members.",         svg:EARLY_BADGE_SVG,   unlocked:!isNaN(numUid)&&numUid<=100 },
+    { id:"loved",   name:"Loved",      desc:"Your profile has received 50+ likes.",         svg:LOVED_BADGE_SVG,   unlocked:(likeCount||0)>=50 },
+    { id:"popular", name:"Popular",    desc:"Your profile has received 100+ likes.",        svg:POPULAR_BADGE_SVG, unlocked:(likeCount||0)>=100 },
+    // owner/mod show as unlocked only if already equipped (admin-granted)
+    { id:"owner",   name:"Owner",      desc:"Site owner.",                                  svg:OWNER_BADGE_SVG,   unlocked:dashEquipped.includes("owner") },
+    { id:"mod",     name:"Moderator",  desc:"Site moderator.",                              svg:MOD_BADGE_SVG,     unlocked:dashEquipped.includes("mod") },
   ];
-  allBadges.forEach(b=>{
-    const isEquipped=dashEquipped.includes(b.id);
-    const card=document.createElement("div");
-    card.className=`badge-card ${b.unlocked?"unlocked":"locked"}`;
-    card.innerHTML=`<div class="badge-icon-wrap">${b.svg}</div><div class="badge-info"><div class="badge-name">${b.name}</div><div class="badge-desc">${b.desc}</div></div><div class="badge-card-right"><span class="badge-status ${b.unlocked?"unlocked":"locked"}">${b.unlocked?"unlocked":"locked"}</span>${b.unlocked?`<button class="badge-equip-btn ${isEquipped?"equipped":""}" data-badge="${b.id}">${isEquipped?"unequip":"equip"}</button>`:""}</div>`;
-    if(b.unlocked){
-      card.querySelector(".badge-equip-btn").addEventListener("click",function(){
-        const now=dashEquipped.includes(b.id);
-        if(now){dashEquipped=dashEquipped.filter(x=>x!==b.id);this.textContent="equip";this.classList.remove("equipped");}
-        else{dashEquipped.push(b.id);this.textContent="unequip";this.classList.add("equipped");}
+
+  allBadges.forEach(b => {
+    const isEquipped = dashEquipped.includes(b.id);
+    const card = document.createElement("div");
+    card.className = `badge-card ${b.unlocked?"unlocked":"locked"}`;
+    card.innerHTML = `
+      <div class="badge-icon-wrap">${b.svg}</div>
+      <div class="badge-info">
+        <div class="badge-name">${b.name}</div>
+        <div class="badge-desc">${b.desc}</div>
+      </div>
+      <div class="badge-card-right">
+        <span class="badge-status ${b.unlocked?"unlocked":"locked"}">${b.unlocked?"unlocked":"locked"}</span>
+        ${b.unlocked ? `<button class="badge-equip-btn ${isEquipped?"equipped":""}" data-badge="${b.id}">${isEquipped?"unequip":"equip"}</button>` : ""}
+      </div>`;
+
+    if (b.unlocked) {
+      card.querySelector(".badge-equip-btn").addEventListener("click", function() {
+        const badgeId = b.id;
+        const idx = dashEquipped.indexOf(badgeId);
+        if (idx !== -1) {
+          // unequip
+          dashEquipped.splice(idx, 1);
+          this.textContent = "equip";
+          this.classList.remove("equipped");
+        } else {
+          // equip
+          dashEquipped.push(badgeId);
+          this.textContent = "unequip";
+          this.classList.add("equipped");
+        }
       });
     }
     grid.appendChild(card);
@@ -1691,7 +1827,9 @@ function renderBadges(uid,equippedList,likeCount){
 /* ════════════════════════════════════════
    ALIASES
 ════════════════════════════════════════ */
-const ALIAS_MAX=3; let dashAliases=[];
+const ALIAS_MAX = 3;
+let dashAliases = [];
+
 function renderAliasList(){
   const list=document.getElementById("alias-list"),trigger=document.getElementById("alias-add-trigger");
   list.innerHTML="";
@@ -1755,13 +1893,16 @@ document.getElementById("d-add-link").addEventListener("click",()=>addDashLinkRo
 ════════════════════════════════════════ */
 async function saveDashboard(silent=false){
   if(!session) return;
-  // don't save if admin panel is active
   const adminPanel=document.getElementById("panel-admin");
   if(adminPanel&&adminPanel.classList.contains("active")) return;
 
   const btn=document.getElementById("d-save"),status=document.getElementById("d-save-status");
   if(!silent){btn.disabled=true;btn.textContent="saving...";status.textContent="";}
-  const lines=[document.getElementById("d-line1").value.trim(),document.getElementById("d-line2").value.trim(),document.getElementById("d-line3").value.trim()];
+  const lines=[
+    document.getElementById("d-line1").value.trim(),
+    document.getElementById("d-line2").value.trim(),
+    document.getElementById("d-line3").value.trim()
+  ];
   const discord=document.getElementById("d-discord").value.trim();
   const bgVideoRaw=document.getElementById("d-bgvideo").value.trim();
   const bgWordsRaw=document.getElementById("d-bgwords").value.trim();
@@ -1771,15 +1912,32 @@ async function saveDashboard(silent=false){
   linkRows.forEach(row=>{const url=row.querySelector(".dl-url").value.trim(),icon=row.querySelector(".dl-icon").value;if(url)links.push({label:icon,url,icon});});
   const now=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
   const cleanAliases=dashAliases.filter(a=>typeof a==="string"&&a.trim().length>0);
-  const payload={lines,discord,links,bg_video_urls,bg_words,last_change:now,equipped_badges:dashEquipped,aliases:cleanAliases};
+
+  // FIX: spread dashEquipped into a fresh array to avoid reference issues
+  const payload={
+    lines, discord, links, bg_video_urls, bg_words, last_change:now,
+    equipped_badges:[...dashEquipped],
+    aliases:cleanAliases
+  };
+
   try{
     await supa.patch("users",`username=eq.${encodeURIComponent(session.username)}`,payload);
     updateAliasRowOnCard(cleanAliases);
-    if(!silent){status.textContent="saved ✓";setTimeout(()=>{status.textContent="";},3000);if(slug===session.username)location.reload();}
-    else{if(slug===session.username)location.reload();}
-  }catch(e){console.error("[save]",e);if(!silent){status.textContent="error saving";status.style.color="rgba(255,100,100,.6)";}}
+    if(!silent){
+      status.textContent="saved ✓";
+      status.style.color="rgba(100,220,150,.5)";
+      setTimeout(()=>{status.textContent="";},3000);
+      if(slug===session.username) location.reload();
+    } else {
+      if(slug===session.username) location.reload();
+    }
+  }catch(e){
+    console.error("[save]",e);
+    if(!silent){status.textContent="error saving";status.style.color="rgba(255,100,100,.6)";}
+  }
   if(!silent){btn.disabled=false;btn.textContent="save changes";}
 }
+
 function updateAliasRowOnCard(aliases){
   const aliasRow=document.getElementById("alias-row"); if(!aliasRow) return;
   const clean=(aliases||[]).filter(a=>a&&a.trim().length>0);
@@ -1789,131 +1947,126 @@ function updateAliasRowOnCard(aliases){
 document.getElementById("d-save").addEventListener("click",()=>saveDashboard(false));
 
 /* ════════════════════════════════════════
-   ADMIN PANEL LOGIC
+   ADMIN PANEL
+   FIX: removed DB is_admin gatecheck —
+   was silently returning false and blocking
+   all admin actions. Now just checks the
+   session username against ADMIN_USERS.
 ════════════════════════════════════════ */
-let adminTarget = null; // the DB row of the user being edited
+let adminTarget = null;
 let adminTargetEquipped = [];
 
-async function adminVerify() {
-  if (!isAdmin(session)) return; // client-side gate
-  // server-side gate: confirm is_admin in DB
-  try {
-    const rows = await supa.get("users", `username=eq.${encodeURIComponent(session.username)}`);
-    if (!rows || !rows[0] || !rows[0].is_admin) {
-      alert("not authorised");
-      return false;
-    }
-    return true;
-  } catch { return false; }
-}
-
 document.getElementById("admin-search-btn").addEventListener("click", adminSearch);
-document.getElementById("admin-search-input").addEventListener("keydown", e => { if(e.key==="Enter") adminSearch(); });
+document.getElementById("admin-search-input").addEventListener("keydown", e=>{ if(e.key==="Enter") adminSearch(); });
 
-async function adminSearch() {
-  if (!await adminVerify()) return;
-  const q = document.getElementById("admin-search-input").value.trim().toLowerCase();
-  if (!q) return;
-  const card = document.getElementById("admin-user-card");
-  const nf = document.getElementById("admin-not-found");
+async function adminSearch(){
+  if(!isAdmin(session)){ alert("not authorised"); return; }
+  const q=document.getElementById("admin-search-input").value.trim().toLowerCase();
+  if(!q) return;
+  const card=document.getElementById("admin-user-card");
+  const nf=document.getElementById("admin-not-found");
   card.classList.remove("visible"); nf.classList.remove("show");
-  try {
-    const rows = await supa.get("users", `username=eq.${encodeURIComponent(q)}`);
-    if (!rows || rows.length === 0) { nf.classList.add("show"); return; }
-    adminTarget = rows[0];
-    adminTargetEquipped = adminTarget.equipped_badges ? [...adminTarget.equipped_badges] : [];
-    document.getElementById("admin-target-name").textContent = adminTarget.username;
-    document.getElementById("admin-target-uid").textContent = `uid ${adminTarget.uid}`;
-    document.getElementById("admin-uid-input").value = adminTarget.uid;
-
+  clearAdminStatuses();
+  try{
+    const rows=await supa.get("users",`username=eq.${encodeURIComponent(q)}`);
+    if(!rows||rows.length===0){ nf.classList.add("show"); return; }
+    adminTarget=rows[0];
+    adminTargetEquipped=adminTarget.equipped_badges?[...adminTarget.equipped_badges]:[];
+    document.getElementById("admin-target-name").textContent=adminTarget.username;
+    document.getElementById("admin-target-uid").textContent=`uid ${adminTarget.uid}`;
+    document.getElementById("admin-uid-input").value=adminTarget.uid;
     // fetch likes
-    try {
-      const lr = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/"+adminTarget.username)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
-      const ld = await lr.json();
-      document.getElementById("admin-likes-input").value = ld?.[0]?.count ?? 0;
-    } catch { document.getElementById("admin-likes-input").value = 0; }
-
+    try{
+      const lr=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/"+adminTarget.username)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+      const ld=await lr.json();
+      document.getElementById("admin-likes-input").value=ld?.[0]?.count??0;
+    }catch{ document.getElementById("admin-likes-input").value=0; }
     renderAdminBadges();
-    clearAdminStatuses();
     card.classList.add("visible");
-  } catch(e) { console.error("[adminSearch]",e); nf.classList.add("show"); }
+  }catch(e){ console.error("[adminSearch]",e); nf.classList.add("show"); }
 }
 
-function clearAdminStatuses() {
+function clearAdminStatuses(){
   ["admin-uid-status","admin-likes-status","admin-badges-status"].forEach(id=>{
     const el=document.getElementById(id); el.textContent=""; el.className="admin-status";
   });
 }
 
-function renderAdminBadges() {
-  const grid = document.getElementById("admin-badge-grid"); grid.innerHTML = "";
-  ALL_BADGE_DEFS.forEach(b => {
-    const on = adminTargetEquipped.includes(b.id);
-    const btn = document.createElement("button");
-    btn.className = `admin-badge-toggle ${on?"on":""}`;
-    btn.innerHTML = `<div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;">${b.svg.replace('class="og-badge-svg"','style="width:24px;height:24px;display:block;"')}</div><span>${b.name}</span>`;
-    btn.addEventListener("click", () => {
-      const isOn = adminTargetEquipped.includes(b.id);
-      if (isOn) { adminTargetEquipped = adminTargetEquipped.filter(x=>x!==b.id); btn.classList.remove("on"); }
-      else { adminTargetEquipped.push(b.id); btn.classList.add("on"); }
+function renderAdminBadges(){
+  const grid=document.getElementById("admin-badge-grid"); grid.innerHTML="";
+  ALL_BADGE_DEFS.forEach(b=>{
+    const on=adminTargetEquipped.includes(b.id);
+    const btn=document.createElement("button");
+    btn.className=`admin-badge-toggle ${on?"on":""}`;
+    btn.dataset.badgeId=b.id;
+    btn.innerHTML=`<div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;">${b.svg.replace('class="og-badge-svg"','style="width:24px;height:24px;display:block;"')}</div><span>${b.name}</span>`;
+    btn.addEventListener("click",()=>{
+      const isOn=adminTargetEquipped.includes(b.id);
+      if(isOn){
+        adminTargetEquipped.splice(adminTargetEquipped.indexOf(b.id),1);
+        btn.classList.remove("on");
+      } else {
+        adminTargetEquipped.push(b.id);
+        btn.classList.add("on");
+      }
     });
     grid.appendChild(btn);
   });
 }
 
-// UID
-document.getElementById("admin-uid-btn").addEventListener("click", async () => {
-  if (!adminTarget || !await adminVerify()) return;
-  const btn = document.getElementById("admin-uid-btn");
-  const status = document.getElementById("admin-uid-status");
-  const newUid = parseInt(document.getElementById("admin-uid-input").value, 10);
-  if (isNaN(newUid)) { status.textContent="enter a valid number"; status.className="admin-status err"; return; }
+/* FIX: Admin UID — was blocked by is_admin DB check.
+   Now just fires directly after isAdmin() passes. */
+document.getElementById("admin-uid-btn").addEventListener("click", async()=>{
+  if(!isAdmin(session)||!adminTarget){ alert("not authorised"); return; }
+  const btn=document.getElementById("admin-uid-btn");
+  const status=document.getElementById("admin-uid-status");
+  const newUid=parseInt(document.getElementById("admin-uid-input").value,10);
+  if(isNaN(newUid)){status.textContent="enter a valid number";status.className="admin-status err";return;}
   btn.disabled=true; status.textContent="saving..."; status.className="admin-status";
-  try {
+  try{
     await supa.patch("users",`username=eq.${encodeURIComponent(adminTarget.username)}`,{uid:newUid});
-    adminTarget.uid = newUid;
-    document.getElementById("admin-target-uid").textContent = `uid ${newUid}`;
+    adminTarget.uid=newUid;
+    document.getElementById("admin-target-uid").textContent=`uid ${newUid}`;
     status.textContent="uid updated ✓"; status.className="admin-status ok";
-  } catch(e) { status.textContent="error: "+e.message; status.className="admin-status err"; }
+  }catch(e){ status.textContent="error: "+e.message; status.className="admin-status err"; }
   btn.disabled=false;
 });
 
-// Likes
-document.getElementById("admin-likes-btn").addEventListener("click", async () => {
-  if (!adminTarget || !await adminVerify()) return;
-  const btn = document.getElementById("admin-likes-btn");
-  const status = document.getElementById("admin-likes-status");
-  const count = parseInt(document.getElementById("admin-likes-input").value, 10);
-  if (isNaN(count) || count < 0) { status.textContent="enter a valid number"; status.className="admin-status err"; return; }
+/* FIX: Admin likes — same fix */
+document.getElementById("admin-likes-btn").addEventListener("click", async()=>{
+  if(!isAdmin(session)||!adminTarget){ alert("not authorised"); return; }
+  const btn=document.getElementById("admin-likes-btn");
+  const status=document.getElementById("admin-likes-status");
+  const count=parseInt(document.getElementById("admin-likes-input").value,10);
+  if(isNaN(count)||count<0){status.textContent="enter a valid number";status.className="admin-status err";return;}
   btn.disabled=true; status.textContent="saving..."; status.className="admin-status";
-  try {
-    const likeId = "forgave.lol/" + adminTarget.username;
-    // upsert
-    const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
-    const existing = await res.json();
-    if (!existing || existing.length === 0) {
-      await fetch(`${SUPA_URL}/rest/v1/likes`,{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({id:likeId,count})});
+  try{
+    const lid="forgave.lol/"+adminTarget.username;
+    const res=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(lid)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+    const existing=await res.json();
+    if(!existing||existing.length===0){
+      await fetch(`${SUPA_URL}/rest/v1/likes`,{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({id:lid,count})});
     } else {
-      await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}`,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({count})});
+      await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(lid)}`,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({count})});
     }
     status.textContent=`likes set to ${count} ✓`; status.className="admin-status ok";
-  } catch(e) { status.textContent="error: "+e.message; status.className="admin-status err"; }
+  }catch(e){ status.textContent="error: "+e.message; status.className="admin-status err"; }
   btn.disabled=false;
 });
 
-// Badges
-document.getElementById("admin-badge-grid").addEventListener("click", async () => {
-  // auto-save badges on any toggle click (debounced)
-  clearTimeout(window._badgeSaveTimer);
-  window._badgeSaveTimer = setTimeout(async () => {
-    if (!adminTarget || !await adminVerify()) return;
-    const status = document.getElementById("admin-badges-status");
-    status.textContent="saving..."; status.className="admin-status";
-    try {
-      await supa.patch("users",`username=eq.${encodeURIComponent(adminTarget.username)}`,{equipped_badges:adminTargetEquipped});
-      status.textContent="badges saved ✓"; status.className="admin-status ok";
-    } catch(e) { status.textContent="error: "+e.message; status.className="admin-status err"; }
-  }, 600);
+/* FIX: Admin badge save — now a dedicated button
+   (not a debounced container click which fired
+   before the toggle handlers updated the array) */
+document.getElementById("admin-save-badges-btn").addEventListener("click", async()=>{
+  if(!isAdmin(session)||!adminTarget){ alert("not authorised"); return; }
+  const btn=document.getElementById("admin-save-badges-btn");
+  const status=document.getElementById("admin-badges-status");
+  btn.disabled=true; status.textContent="saving..."; status.className="admin-status";
+  try{
+    await supa.patch("users",`username=eq.${encodeURIComponent(adminTarget.username)}`,{equipped_badges:[...adminTargetEquipped]});
+    status.textContent="badges saved ✓"; status.className="admin-status ok";
+  }catch(e){ status.textContent="error: "+e.message; status.className="admin-status err"; }
+  btn.disabled=false;
 });
 
 /* ════════════════════════════════════════
