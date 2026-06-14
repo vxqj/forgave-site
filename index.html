@@ -13,1423 +13,217 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
     <style>
-        /* ========== ALL STYLES (clean, readable) ========== */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        html, body {
-            width: 100%;
-            height: 100%;
-            background: #000;
-            overflow: hidden;
-            font-family: "DM Mono", "Courier New", monospace;
-            color: #fff;
-        }
-        #bgvideo {
-            display: none;
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 0;
-            pointer-events: none;
-        }
-        #wordfield {
-            position: fixed;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
-        }
-        #trail {
-            position: fixed;
-            inset: 0;
-            z-index: 5;
-            pointer-events: none;
-        }
-        #auth-btn {
-            position: fixed;
-            top: 20px;
-            right: 22px;
-            z-index: 50;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.10);
-            border-top-color: rgba(255,255,255,0.18);
-            color: rgba(255,255,255,0.45);
-            width: 34px;
-            height: 34px;
-            border-radius: 9px;
-            cursor: pointer;
-            backdrop-filter: blur(12px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: color .2s, background .2s, border-color .2s;
-            opacity: 0;
-            animation: fadeUp .4s ease forwards;
-            animation-delay: 1.2s;
-            padding: 0;
-        }
-        #auth-btn:hover {
-            color: rgba(255,255,255,0.85);
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(255,255,255,0.2);
-        }
-        #auth-btn svg {
-            width: 17px;
-            height: 17px;
-            fill: currentColor;
-            display: block;
-        }
-        #card-stack {
-            position: fixed;
-            top: 40px;
-            left: 44px;
-            z-index: 10;
-            width: 300px;
-            transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
-        }
-        @media (max-width: 500px) {
-            #card-stack {
-                top: auto;
-                bottom: 28px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: calc(100vw - 32px);
-                max-width: 360px;
-            }
-            body.minimalistic-mode #card-stack {
-                transform: translate(-50%, -50%) !important;
-                top: 50% !important;
-                left: 50% !important;
-                bottom: auto !important;
-            }
-        }
-        body.minimalistic-mode #card-stack {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            bottom: auto;
-            right: auto;
-            margin: 0;
-        }
-        #content {
-            position: relative;
-            background: rgba(10,10,12,0.58);
-            backdrop-filter: blur(36px) saturate(160%) brightness(1.04);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-top-color: rgba(255,255,255,0.15);
-            border-radius: 18px;
-            padding: 22px 24px 20px;
-            box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 1px rgba(0,0,0,0.5), 0 28px 72px rgba(0,0,0,0.75), 0 8px 22px rgba(0,0,0,0.4);
-            transition: border-radius 0.2s ease, background 0.2s ease;
-            transform-style: preserve-3d;
-        }
-        #content::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 18px;
-            background: radial-gradient(ellipse at 30% 0%, rgba(255,255,255,0.03) 0%, transparent 60%);
-            pointer-events: none;
-            transition: border-radius 0.2s ease;
-        }
-        #second-card {
-            display: none;
-            margin-top: 20px;
-            background: rgba(10,10,12,0.58);
-            backdrop-filter: blur(36px) saturate(160%) brightness(1.04);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-top-color: rgba(255,255,255,0.15);
-            border-radius: 18px;
-            padding: 16px 22px;
-            box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 1px rgba(0,0,0,0.5), 0 12px 32px rgba(0,0,0,0.5);
-            transition: border-radius 0.2s ease, background 0.2s ease;
-            transform-style: preserve-3d;
-        }
-        #second-card .meta-line {
-            font-size: .7rem;
-            color: rgba(255,255,255,.48);
-            margin: 0;
-            opacity: 1;
-            animation: none;
-        }
-        #minimalistic-name {
-            display: none;
-        }
-        .card-header {
-            margin-bottom: 17px;
-            opacity: 0;
-            animation: fadeUp .45s ease forwards;
-            animation-delay: .5s;
-        }
-        .site-name {
-            font-size: 1.05rem;
-            font-weight: 500;
-            letter-spacing: -0.2px;
-            color: rgba(255,255,255,0.92);
-            line-height: 1;
-            min-height: 1.05rem;
-            margin-bottom: 7px;
-        }
-        .site-name::after {
-            content: "|";
-            animation: blink .65s step-end infinite;
-            margin-left: 1px;
-            opacity: .4;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: .4; }
-            50% { opacity: 0; }
-        }
-        .username-row {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            line-height: 1;
-        }
-        .username {
-            font-size: .68rem;
-            color: rgba(255,255,255,.28);
-            letter-spacing: .9px;
-            position: relative;
-            cursor: default;
-            display: flex;
-            align-items: center;
-            transition: color .15s;
-        }
-        .username:hover {
-            color: rgba(255,255,255,.55);
-        }
-        .username .tip, .badge .tip {
-            position: absolute;
-            bottom: calc(100% + 7px);
-            left: 50%;
-            transform: translateX(-50%) translateY(4px);
-            background: rgba(6,6,8,.98);
-            border: 1px solid rgba(255,255,255,.1);
-            color: rgba(255,255,255,.8);
-            font-size: .58rem;
-            font-family: "DM Mono", monospace;
-            letter-spacing: 1.6px;
-            text-transform: uppercase;
-            padding: 3px 8px;
-            border-radius: 5px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .15s, transform .15s;
-            z-index: 20;
-        }
-        .username:hover .tip, .badge:hover .tip {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        .badge {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-            cursor: default;
-        }
-        .badge svg {
-            width: 13px;
-            height: 13px;
-            color: rgba(255,255,255,.45);
-            transition: transform .15s, color .15s;
-            display: block;
-        }
-        .badge:hover svg {
-            transform: scale(1.2);
-            color: #fff;
-        }
-        .divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,.07) 30%, rgba(255,255,255,.07) 70%, transparent);
-            margin-bottom: 15px;
-            opacity: 0;
-            animation: fadeUp .4s ease forwards;
-            animation-delay: .6s;
-        }
-        .meta-section {
-            margin-bottom: 15px;
-        }
-        .meta-label {
-            font-size: .6rem;
-            color: rgba(255,255,255,.2);
-            letter-spacing: 1.4px;
-            text-transform: uppercase;
-            margin-bottom: 9px;
-            font-style: italic;
-            opacity: 0;
-            animation: fadeUp .4s ease forwards;
-            animation-delay: .65s;
-        }
-        .meta-line {
-            font-size: .72rem;
-            color: rgba(255,255,255,.48);
-            margin-bottom: 3px;
-            line-height: 1.65;
-            opacity: 0;
-            animation: fadeUp .4s ease forwards;
-        }
-        .meta-line:nth-of-type(1) { animation-delay: .72s; }
-        .meta-line:nth-of-type(2) { animation-delay: .79s; }
-        .meta-line:nth-of-type(3) { animation-delay: .86s; }
-        .meta-line:nth-of-type(4) { animation-delay: .93s; }
-        .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 14px;
-            border-top: 1px solid rgba(255,255,255,.05);
-            opacity: 0;
-            animation: fadeUp .4s ease forwards;
-            animation-delay: 1.0s;
-            margin-top: 4px;
-        }
-        .icon-links {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-        .icon-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            color: rgba(255,255,255,.35);
-            transition: color .18s, background .18s;
-            text-decoration: none;
-        }
-        .icon-link:hover {
-            color: rgba(255,255,255,.85);
-            background: rgba(255,255,255,.07);
-        }
-        .icon-link svg {
-            width: 17px;
-            height: 17px;
-            fill: currentColor;
-            display: block;
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        #like-btn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: none;
-            border: none;
-            padding: 4px 8px 4px 6px;
-            border-radius: 7px;
-            cursor: pointer;
-            color: rgba(255,255,255,.22);
-            font-family: "DM Mono", monospace;
-            font-size: .68rem;
-            transition: color .18s, background .18s;
-            user-select: none;
-            letter-spacing: .3px;
-        }
-        #like-btn:hover {
-            color: rgba(255,255,255,.6);
-            background: rgba(255,255,255,.06);
-        }
-        #like-btn.liked {
-            color: rgba(255,255,255,.85);
-        }
-        #like-btn svg {
-            width: 15px;
-            height: 15px;
-            fill: currentColor;
-            display: block;
-            flex-shrink: 0;
-        }
-        #like-num {
-            font-size: .66rem;
-            line-height: 1;
-            min-width: 14px;
-        }
-        #not-found {
-            position: fixed;
-            inset: 0;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 7px;
-            z-index: 10;
-        }
-        #not-found.show {
-            display: flex;
-        }
-        #not-found .nf-title {
-            font-size: 1rem;
-            color: rgba(255,255,255,.6);
-            letter-spacing: -.2px;
-        }
-        #not-found .nf-sub {
-            font-size: .68rem;
-            color: rgba(255,255,255,.2);
-            letter-spacing: 1px;
-        }
-        #overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: opacity .55s ease;
-        }
-        #overlay.hide {
-            opacity: 0;
-            pointer-events: none;
-        }
-        #overlay-text {
-            font-family: "DM Mono", monospace;
-            font-size: .7rem;
-            color: rgba(255,255,255,.2);
-            letter-spacing: 3.5px;
-            text-transform: uppercase;
-            animation: pulse 2.8s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: .2; }
-            50% { opacity: .6; }
-        }
-        .modal-bg {
-            position: fixed;
-            inset: 0;
-            z-index: 200;
-            background: rgba(0,0,0,0.75);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .25s ease;
-        }
-        .modal-bg.open {
-            opacity: 1;
-            pointer-events: all;
-        }
-        .modal {
-            background: rgba(10,10,13,0.97);
-            border: 1px solid rgba(255,255,255,0.09);
-            border-top-color: rgba(255,255,255,0.17);
-            border-radius: 20px;
-            padding: 30px 30px 26px;
-            width: 340px;
-            max-width: calc(100vw - 32px);
-            box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 32px 80px rgba(0,0,0,0.8);
-            transform: translateY(10px) scale(0.97);
-            transition: transform .25s cubic-bezier(0.22,1,0.36,1);
-            position: relative;
-        }
-        .modal-bg.open .modal {
-            transform: translateY(0) scale(1);
-        }
-        .modal-close {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: rgba(255,255,255,.25);
-            font-family: "DM Mono", monospace;
-            font-size: .9rem;
-            cursor: pointer;
-            line-height: 1;
-            transition: color .15s;
-        }
-        .modal-close:hover {
-            color: rgba(255,255,255,.7);
-        }
-        .modal-title {
-            font-size: .75rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,.35);
-            margin-bottom: 22px;
-            font-weight: 400;
-        }
-        .modal-tabs {
-            display: flex;
-            gap: 0;
-            margin-bottom: 22px;
-            border-bottom: 1px solid rgba(255,255,255,.07);
-        }
-        .modal-tab {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-family: "DM Mono", monospace;
-            font-size: .68rem;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,.25);
-            padding: 0 0 10px 0;
-            margin-right: 20px;
-            border-bottom: 1px solid transparent;
-            margin-bottom: -1px;
-            transition: color .15s, border-color .15s;
-        }
-        .modal-tab.active {
-            color: rgba(255,255,255,.8);
-            border-bottom-color: rgba(255,255,255,.5);
-        }
-        .field {
-            margin-bottom: 14px;
-        }
-        .field label {
-            display: block;
-            font-size: .6rem;
-            letter-spacing: 1.4px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,.25);
-            margin-bottom: 6px;
-            font-style: italic;
-        }
-        .field input, .field textarea, .field select {
-            width: 100%;
-            background: rgba(255,255,255,.04);
-            border: 1px solid rgba(255,255,255,.09);
-            border-radius: 9px;
-            padding: 9px 12px;
-            color: rgba(255,255,255,.8);
-            font-family: "DM Mono", monospace;
-            font-size: .72rem;
-            outline: none;
-            transition: border-color .15s, background .15s;
-            resize: none;
-        }
-        .field input:focus, .field textarea:focus {
-            border-color: rgba(255,255,255,.22);
-            background: rgba(255,255,255,.06);
-        }
-        .field input::placeholder, .field textarea::placeholder {
-            color: rgba(255,255,255,.2);
-        }
-        .field-hint {
-            font-size: .58rem;
-            color: rgba(255,255,255,.18);
-            letter-spacing: .8px;
-            margin-top: 4px;
-        }
-        .field-hint.error {
-            color: rgba(255,100,100,.6);
-        }
-        .field-hint.success {
-            color: rgba(100,220,150,.6);
-        }
-        .modal-btn {
-            width: 100%;
-            background: rgba(255,255,255,.07);
-            border: 1px solid rgba(255,255,255,.1);
-            border-top-color: rgba(255,255,255,.16);
-            border-radius: 10px;
-            padding: 11px;
-            color: rgba(255,255,255,.75);
-            font-family: "DM Mono", monospace;
-            font-size: .7rem;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 6px;
-            transition: background .18s, color .18s;
-            user-select: none;
-        }
-        .modal-btn:hover {
-            background: rgba(255,255,255,.12);
-            color: #fff;
-        }
-        .modal-btn:disabled {
-            opacity: .4;
-            cursor: not-allowed;
-        }
-        .modal-switch {
-            text-align: center;
-            margin-top: 14px;
-            font-size: .6rem;
-            color: rgba(255,255,255,.2);
-            letter-spacing: .8px;
-        }
-        .modal-switch span {
-            color: rgba(255,255,255,.45);
-            cursor: pointer;
-            text-decoration: underline;
-            text-underline-offset: 3px;
-            transition: color .15s;
-        }
-        .modal-switch span:hover {
-            color: rgba(255,255,255,.75);
-        }
-        #user-pill {
-            position: fixed;
-            top: 20px;
-            right: 22px;
-            z-index: 50;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            animation: fadeUp .4s ease forwards;
-            animation-delay: 1.2s;
-        }
-        #user-pill.visible {
-            display: flex;
-        }
-        #user-pill-name {
-            font-size: .62rem;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,.35);
-            cursor: default;
-        }
-        #user-pill-settings {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.10);
-            border-top-color: rgba(255,255,255,0.18);
-            color: rgba(255,255,255,.35);
-            width: 34px;
-            height: 34px;
-            border-radius: 9px;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(12px);
-            transition: color .2s, background .2s, border-color .2s;
-        }
-        #user-pill-settings:hover {
-            color: rgba(255,255,255,.85);
-            background: rgba(255,255,255,.08);
-            border-color: rgba(255,255,255,.2);
-        }
-        #user-pill-settings svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-            display: block;
-        }
-        #user-pill-logout {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.10);
-            border-top-color: rgba(255,255,255,0.18);
-            color: rgba(255,255,255,.35);
-            width: 34px;
-            height: 34px;
-            border-radius: 9px;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(12px);
-            transition: color .2s, background .2s, border-color .2s;
-        }
-        #user-pill-logout:hover {
-            color: rgba(255,100,100,.7);
-            background: rgba(255,50,50,.07);
-            border-color: rgba(255,80,80,.2);
-        }
-        #user-pill-logout svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-            display: block;
-        }
-        #dash-modal .modal {
-            width: 680px;
-            max-width: calc(100vw - 24px);
-            padding: 0;
-            overflow: hidden;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            max-height: calc(100vh - 48px);
-        }
-        .dash-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 22px 16px;
-            border-bottom: 1px solid rgba(255,255,255,.06);
-            flex-shrink: 0;
-        }
-        .dash-header-title {
-            font-size: .72rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,.3);
-            font-weight: 400;
-        }
-        .dash-header-user {
-            font-size: .65rem;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,.18);
-        }
-        .dash-header .modal-close {
-            position: static;
-            margin-left: 14px;
-        }
-        .dash-body {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            min-height: 0;
-        }
-        .dash-sidebar {
-            width: 140px;
-            flex-shrink: 0;
-            border-right: 1px solid rgba(255,255,255,.06);
-            padding: 14px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            overflow-y: auto;
-        }
-        .dash-nav-btn {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            width: 100%;
-            background: none;
-            border: none;
-            border-radius: 9px;
-            padding: 9px 11px;
-            cursor: pointer;
-            font-family: "DM Mono", monospace;
-            font-size: .64rem;
-            letter-spacing: 1.1px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,.28);
-            transition: color .15s, background .15s;
-            text-align: left;
-        }
-        .dash-nav-btn svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
-            flex-shrink: 0;
-            opacity: .7;
-        }
-        .dash-nav-btn:hover {
-            color: rgba(255,255,255,.65);
-            background: rgba(255,255,255,.05);
-        }
-        .dash-nav-btn.active {
-            color: rgba(255,255,255,.88);
-            background: rgba(255,255,255,.08);
-        }
-        .dash-nav-btn.active svg {
-            opacity: 1;
-        }
-        .dash-nav-btn.admin-nav {
-            color: rgba(255,180,80,.35);
-        }
-        .dash-nav-btn.admin-nav:hover {
-            color: rgba(255,190,90,.75);
-            background: rgba(255,160,50,.06);
-        }
-        .dash-nav-btn.admin-nav.active {
-            color: rgba(255,200,100,.9);
-            background: rgba(255,160,50,.1);
-        }
-        .dash-panels {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 22px 22px;
-        }
-        .dash-panel {
-            display: none;
-        }
-        .dash-panel.active {
-            display: block;
-        }
-        .dash-panel-title {
-            font-size: .62rem;
-            letter-spacing: 1.8px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,.2);
-            margin-bottom: 18px;
-            font-style: italic;
-        }
-        .dash-section {
-            margin-bottom: 22px;
-        }
-        .dash-section-label {
-            font-size: .56rem;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,.16);
-            margin-bottom: 9px;
-            font-style: italic;
-        }
-        .dash-links-list {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-            margin-bottom: 8px;
-        }
-        .dash-link-row {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-        .dash-link-row input {
-            flex: 1;
-        }
-        .dash-link-row select {
-            width: 100px;
-            flex-shrink: 0;
-        }
-        .dash-link-remove {
-            background: none;
-            border: none;
-            color: rgba(255,100,100,.4);
-            font-size: 1rem;
-            cursor: pointer;
-            line-height: 1;
-            padding: 0 4px;
-            transition: color .15s;
-            flex-shrink: 0;
-        }
-        .dash-link-remove:hover {
-            color: rgba(255,100,100,.8);
-        }
-        .dash-add-link {
-            background: none;
-            border: 1px dashed rgba(255,255,255,.1);
-            border-radius: 8px;
-            color: rgba(255,255,255,.25);
-            font-family: "DM Mono", monospace;
-            font-size: .62rem;
-            letter-spacing: 1px;
-            padding: 7px;
-            width: 100%;
-            cursor: pointer;
-            transition: all .15s;
-        }
-        .dash-add-link:hover {
-            border-color: rgba(255,255,255,.25);
-            color: rgba(255,255,255,.5);
-        }
-        .dash-footer {
-            padding: 14px 22px;
-            border-top: 1px solid rgba(255,255,255,.06);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-            gap: 12px;
-        }
-        .dash-save-status {
-            font-size: .6rem;
-            letter-spacing: 1px;
-            color: rgba(100,220,150,.5);
-            min-height: 1em;
-            flex: 1;
-        }
-        .dash-footer .modal-btn {
-            width: auto;
-            margin: 0;
-            padding: 9px 22px;
-            flex-shrink: 0;
-        }
-        .badge-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-        .badge-card {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: rgba(255,255,255,.03);
-            border: 1px solid rgba(255,255,255,.07);
-            border-radius: 13px;
-            padding: 14px 16px;
-            transition: border-color .2s;
-        }
-        .badge-card.unlocked {
-            border-color: rgba(255,210,100,.15);
-            background: rgba(255,200,80,.03);
-        }
-        .badge-card.locked {
-            opacity: .55;
-        }
-        .badge-icon-wrap {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            background: rgba(255,255,255,.05);
-            border: 1px solid rgba(255,255,255,.07);
-        }
-        .badge-card.unlocked .badge-icon-wrap {
-            background: rgba(255,200,80,.08);
-            border-color: rgba(255,200,80,.18);
-            box-shadow: 0 0 18px rgba(255,200,80,.08);
-        }
-        .badge-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .badge-name {
-            font-size: .72rem;
-            letter-spacing: .5px;
-            color: rgba(255,255,255,.75);
-            margin-bottom: 3px;
-        }
-        .badge-card.unlocked .badge-name {
-            color: rgba(255,220,120,.9);
-        }
-        .badge-desc {
-            font-size: .6rem;
-            color: rgba(255,255,255,.2);
-            letter-spacing: .5px;
-            line-height: 1.6;
-        }
-        .badge-status {
-            font-size: .56rem;
-            letter-spacing: 1.3px;
-            text-transform: uppercase;
-            padding: 3px 8px;
-            border-radius: 5px;
-            flex-shrink: 0;
-        }
-        .badge-status.unlocked {
-            color: rgba(255,210,100,.8);
-            background: rgba(255,200,80,.1);
-            border: 1px solid rgba(255,200,80,.15);
-        }
-        .badge-status.locked {
-            color: rgba(255,255,255,.2);
-            background: rgba(255,255,255,.04);
-            border: 1px solid rgba(255,255,255,.07);
-        }
-        .badge-equip-btn {
-            font-family: "DM Mono", monospace;
-            font-size: .58rem;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            border-radius: 7px;
-            padding: 5px 11px;
-            cursor: pointer;
-            border: 1px solid rgba(255,255,255,.12);
-            background: rgba(255,255,255,.06);
-            color: rgba(255,255,255,.5);
-            transition: background .15s, color .15s, border-color .15s;
-            flex-shrink: 0;
-            margin-top: 7px;
-        }
-        .badge-equip-btn:hover {
-            background: rgba(255,255,255,.1);
-            color: rgba(255,255,255,.85);
-            border-color: rgba(255,255,255,.22);
-        }
-        .badge-equip-btn.equipped {
-            background: rgba(255,200,80,.12);
-            color: rgba(255,220,120,.9);
-            border-color: rgba(255,200,80,.3);
-        }
-        .badge-equip-btn.equipped:hover {
-            background: rgba(255,80,80,.1);
-            color: rgba(255,120,120,.85);
-            border-color: rgba(255,80,80,.25);
-        }
-        .badge-card-right {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-        .og-badge-svg {
-            width: 26px;
-            height: 26px;
-            display: block;
-        }
-        .alias-row {
-            font-size: .62rem;
-            color: rgba(255,255,255,.22);
-            letter-spacing: .4px;
-            margin-top: 5px;
-            line-height: 1;
-        }
-        .alias-row a {
-            color: rgba(255,255,255,.38);
-            text-decoration: none;
-            transition: color .15s;
-        }
-        .alias-row a:hover {
-            color: rgba(255,255,255,.7);
-        }
-        .alias-row .alias-sep {
-            margin: 0 3px;
-            opacity: .4;
-        }
-        .alias-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .alias-entry {
-            background: rgba(255,255,255,.03);
-            border: 1px solid rgba(255,255,255,.07);
-            border-radius: 11px;
-            padding: 11px 13px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        .alias-entry-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .alias-entry-name {
-            font-size: .72rem;
-            color: rgba(255,255,255,.7);
-            letter-spacing: .3px;
-            margin-bottom: 2px;
-        }
-        .alias-entry-url {
-            font-size: .58rem;
-            color: rgba(255,255,255,.2);
-            letter-spacing: .5px;
-        }
-        .alias-remove {
-            background: none;
-            border: none;
-            color: rgba(255,100,100,.35);
-            font-size: .9rem;
-            cursor: pointer;
-            transition: color .15s;
-            padding: 0 2px;
-            line-height: 1;
-            flex-shrink: 0;
-        }
-        .alias-remove:hover {
-            color: rgba(255,100,100,.75);
-        }
-        .alias-add-form {
-            background: rgba(255,255,255,.02);
-            border: 1px dashed rgba(255,255,255,.09);
-            border-radius: 11px;
-            padding: 13px;
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .alias-add-form.open {
-            display: flex;
-        }
-        .alias-add-form .field {
-            margin-bottom: 0;
-        }
-        .alias-form-actions {
-            display: flex;
-            gap: 7px;
-            margin-top: 2px;
-        }
-        .alias-form-btn {
-            flex: 1;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 8px;
-            padding: 8px;
-            color: rgba(255,255,255,.6);
-            font-family: "DM Mono", monospace;
-            font-size: .64rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: background .15s, color .15s;
-        }
-        .alias-form-btn:hover {
-            background: rgba(255,255,255,.11);
-            color: #fff;
-        }
-        .alias-form-btn.cancel {
-            flex: 0 0 auto;
-            padding: 8px 14px;
-        }
-        .alias-form-hint {
-            font-size: .58rem;
-            letter-spacing: .8px;
-            min-height: 1em;
-        }
-        .alias-form-hint.error {
-            color: rgba(255,100,100,.6);
-        }
-        .alias-form-hint.success {
-            color: rgba(100,220,150,.6);
-        }
-        .alias-add-trigger {
-            background: none;
-            border: 1px dashed rgba(255,255,255,.1);
-            border-radius: 8px;
-            color: rgba(255,255,255,.25);
-            font-family: "DM Mono", monospace;
-            font-size: .62rem;
-            letter-spacing: 1px;
-            padding: 7px;
-            width: 100%;
-            cursor: pointer;
-            transition: all .15s;
-        }
-        .alias-add-trigger:hover {
-            border-color: rgba(255,255,255,.25);
-            color: rgba(255,255,255,.5);
-        }
-        .alias-limit-note {
-            font-size: .58rem;
-            color: rgba(255,255,255,.15);
-            letter-spacing: .8px;
-            text-align: center;
-            margin-top: 8px;
-            font-style: italic;
-        }
-        .admin-search-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 18px;
-        }
-        .admin-search-row input {
-            flex: 1;
-            background: rgba(255,255,255,.04);
-            border: 1px solid rgba(255,255,255,.09);
-            border-radius: 9px;
-            padding: 9px 12px;
-            color: rgba(255,255,255,.8);
-            font-family: "DM Mono", monospace;
-            font-size: .72rem;
-            outline: none;
-            transition: border-color .15s;
-        }
-        .admin-search-row input:focus {
-            border-color: rgba(255,255,255,.22);
-        }
-        .admin-search-btn {
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 9px;
-            padding: 9px 16px;
-            color: rgba(255,255,255,.6);
-            font-family: "DM Mono", monospace;
-            font-size: .65rem;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: background .15s, color .15s;
-            white-space: nowrap;
-        }
-        .admin-search-btn:hover {
-            background: rgba(255,255,255,.11);
-            color: #fff;
-        }
-        .admin-user-card {
-            background: rgba(255,255,255,.03);
-            border: 1px solid rgba(255,255,255,.08);
-            border-radius: 13px;
-            padding: 16px;
-            display: none;
-            flex-direction: column;
-            gap: 14px;
-        }
-        .admin-user-card.visible {
-            display: flex;
-        }
-        .admin-user-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,.06);
-        }
-        .admin-user-name {
-            font-size: .82rem;
-            color: rgba(255,255,255,.8);
-            letter-spacing: .3px;
-        }
-        .admin-user-uid {
-            font-size: .6rem;
-            color: rgba(255,255,255,.25);
-            letter-spacing: 1px;
-        }
-        .admin-section-title {
-            font-size: .56rem;
-            letter-spacing: 1.6px;
-            text-transform: uppercase;
-            color: rgba(255,180,80,.4);
-            margin-bottom: 8px;
-            font-style: italic;
-        }
-        .admin-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .admin-row input {
-            flex: 1;
-            background: rgba(255,255,255,.04);
-            border: 1px solid rgba(255,255,255,.09);
-            border-radius: 8px;
-            padding: 8px 11px;
-            color: rgba(255,255,255,.8);
-            font-family: "DM Mono", monospace;
-            font-size: .7rem;
-            outline: none;
-            transition: border-color .15s;
-        }
-        .admin-row input:focus {
-            border-color: rgba(255,255,255,.2);
-        }
-        .admin-apply-btn {
-            background: rgba(255,180,80,.08);
-            border: 1px solid rgba(255,180,80,.2);
-            border-radius: 8px;
-            padding: 8px 14px;
-            color: rgba(255,200,100,.7);
-            font-family: "DM Mono", monospace;
-            font-size: .62rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: background .15s, color .15s;
-            white-space: nowrap;
-        }
-        .admin-apply-btn:hover {
-            background: rgba(255,180,80,.15);
-            color: rgba(255,210,120,.95);
-        }
-        .admin-apply-btn:disabled {
-            opacity: .4;
-            cursor: not-allowed;
-        }
-        .admin-badge-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            gap: 8px;
-        }
-        .admin-badge-toggle {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,.03);
-            border: 1px solid rgba(255,255,255,.07);
-            border-radius: 10px;
-            padding: 10px 8px;
-            cursor: pointer;
-            transition: border-color .15s, background .15s;
-            font-family: "DM Mono", monospace;
-            font-size: .58rem;
-            letter-spacing: .8px;
-            color: rgba(255,255,255,.35);
-        }
-        .admin-badge-toggle.on {
-            border-color: rgba(255,200,80,.3);
-            background: rgba(255,200,80,.06);
-            color: rgba(255,220,120,.85);
-        }
-        .admin-badge-toggle:hover {
-            border-color: rgba(255,255,255,.18);
-        }
-        .admin-badge-toggle.on:hover {
-            border-color: rgba(255,100,100,.3);
-            background: rgba(255,80,80,.06);
-            color: rgba(255,140,140,.8);
-        }
-        .admin-status {
-            font-size: .6rem;
-            letter-spacing: 1px;
-            min-height: 1em;
-            margin-top: 4px;
-        }
-        .admin-status.ok {
-            color: rgba(100,220,150,.6);
-        }
-        .admin-status.err {
-            color: rgba(255,100,100,.6);
-        }
-        .admin-not-found {
-            font-size: .68rem;
-            color: rgba(255,100,100,.45);
-            letter-spacing: .8px;
-            display: none;
-            padding: 12px 0;
-        }
-        .admin-not-found.show {
-            display: block;
-        }
-        .admin-save-badges-btn {
-            margin-top: 10px;
-            background: rgba(255,180,80,.08);
-            border: 1px solid rgba(255,180,80,.2);
-            border-radius: 8px;
-            padding: 8px 14px;
-            color: rgba(255,200,100,.7);
-            font-family: "DM Mono", monospace;
-            font-size: .62rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: background .15s, color .15s;
-            width: 100%;
-        }
-        .admin-save-badges-btn:hover {
-            background: rgba(255,180,80,.15);
-            color: rgba(255,210,120,.95);
-        }
-        .admin-save-badges-btn:disabled {
-            opacity: .4;
-            cursor: not-allowed;
-        }
-        .slider-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 6px;
-        }
-        .slider-container label {
-            flex: 0 0 50px;
-            font-size: .58rem;
-            letter-spacing: 1px;
-            color: rgba(255,255,255,.3);
-        }
-        input[type="range"] {
-            flex: 1;
-            height: 3px;
-            -webkit-appearance: none;
-            background: rgba(255,255,255,.1);
-            border-radius: 3px;
-            outline: none;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255,255,255,.6);
-            cursor: pointer;
-            transition: background .15s;
-        }
-        input[type="range"]::-webkit-slider-thumb:hover {
-            background: #fff;
-        }
-        .slider-value {
-            width: 32px;
-            font-size: .58rem;
-            text-align: right;
-            color: rgba(255,255,255,.4);
-        }
-        select {
-            background: rgba(255,255,255,.04);
-            border: 1px solid rgba(255,255,255,.09);
-            border-radius: 9px;
-            padding: 9px 12px;
-            color: rgba(255,255,255,.8);
-            font-family: "DM Mono", monospace;
-            font-size: .72rem;
-            outline: none;
-            cursor: pointer;
-        }
-        select option {
-            background: #0a0a0c;
-        }
-        /* Custom cursor upload preview */
-        .cursor-preview {
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .cursor-preview-img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-            padding: 4px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .cursor-reset-btn {
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 6px;
-            padding: 5px 10px;
-            font-size: .6rem;
-            cursor: pointer;
-            transition: background .15s;
-        }
-        .cursor-reset-btn:hover {
-            background: rgba(255,255,255,.12);
-        }
-        .file-upload-btn {
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 9px;
-            padding: 9px 12px;
-            font-family: "DM Mono", monospace;
-            font-size: .68rem;
-            cursor: pointer;
-            width: 100%;
-            text-align: center;
-            transition: background .15s;
-        }
-        .file-upload-btn:hover {
-            background: rgba(255,255,255,.12);
-        }
-        #custom-cursor-file {
-            display: none;
-        }
-        @media (max-width: 600px) {
-            #dash-modal .modal {
-                width: calc(100vw - 24px);
-            }
-            .dash-body {
-                flex-direction: column;
-            }
-            .dash-sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid rgba(255,255,255,.06);
-                flex-direction: row;
-                padding: 10px 12px;
-                overflow-x: auto;
-                gap: 4px;
-            }
-            .dash-nav-btn {
-                white-space: nowrap;
-                flex-shrink: 0;
-            }
-            .dash-panels {
-                padding: 16px;
-            }
-        }
+        /* ========== FULL STYLES (same as before, plus embed & cursor url) ========== */
+        *{box-sizing:border-box;margin:0;padding:0}
+        html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono","Courier New",monospace;color:#fff}
+        #bgvideo{display:none;position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
+        #wordfield{position:fixed;inset:0;z-index:1;pointer-events:none}
+        #trail{position:fixed;inset:0;z-index:5;pointer-events:none}
+        #auth-btn{position:fixed;top:20px;right:22px;z-index:50;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.45);width:34px;height:34px;border-radius:9px;cursor:pointer;backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;transition:color .2s,background .2s,border-color .2s;opacity:0;animation:fadeUp .4s ease forwards;animation-delay:1.2s;padding:0}
+        #auth-btn:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2)}
+        #auth-btn svg{width:17px;height:17px;fill:currentColor;display:block}
+        #card-stack{position:fixed;top:40px;left:44px;z-index:10;width:300px;transform-style:preserve-3d;transition:transform 0.1s ease-out}
+        @media (max-width:500px){#card-stack{top:auto;bottom:28px;left:50%;transform:translateX(-50%);width:calc(100vw - 32px);max-width:360px}body.minimalistic-mode #card-stack{transform:translate(-50%,-50%)!important;top:50%!important;left:50%!important;bottom:auto!important}}
+        body.minimalistic-mode #card-stack{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);bottom:auto;right:auto;margin:0}
+        #content{position:relative;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:22px 24px 20px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 28px 72px rgba(0,0,0,0.75),0 8px 22px rgba(0,0,0,0.4);transition:border-radius 0.2s ease,background 0.2s ease;transform-style:preserve-3d}
+        #content::after{content:"";position:absolute;inset:0;border-radius:18px;background:radial-gradient(ellipse at 30% 0%,rgba(255,255,255,0.03) 0%,transparent 60%);pointer-events:none;transition:border-radius 0.2s ease}
+        #second-card{display:none;margin-top:20px;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:16px 22px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 12px 32px rgba(0,0,0,0.5);transition:border-radius 0.2s ease,background 0.2s ease;transform-style:preserve-3d}
+        #second-card .meta-line{font-size:.7rem;color:rgba(255,255,255,.48);margin:0;opacity:1;animation:none}
+        #minimalistic-name{display:none}
+        .card-header{margin-bottom:17px;opacity:0;animation:fadeUp .45s ease forwards;animation-delay:.5s}
+        .site-name{font-size:1.05rem;font-weight:500;letter-spacing:-0.2px;color:rgba(255,255,255,0.92);line-height:1;min-height:1.05rem;margin-bottom:7px}
+        .site-name::after{content:"|";animation:blink .65s step-end infinite;margin-left:1px;opacity:.4}
+        @keyframes blink{0%,100%{opacity:.4}50%{opacity:0}}
+        .username-row{display:flex;align-items:center;gap:5px;line-height:1}
+        .username{font-size:.68rem;color:rgba(255,255,255,.28);letter-spacing:.9px;position:relative;cursor:default;display:flex;align-items:center;transition:color .15s}
+        .username:hover{color:rgba(255,255,255,.55)}
+        .username .tip,.badge .tip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%) translateY(4px);background:rgba(6,6,8,.98);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.8);font-size:.58rem;font-family:"DM Mono",monospace;letter-spacing:1.6px;text-transform:uppercase;padding:3px 8px;border-radius:5px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:20}
+        .username:hover .tip,.badge:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}
+        .badge{position:relative;display:flex;align-items:center;justify-content:center;width:16px;height:16px;flex-shrink:0;cursor:default}
+        .badge svg{width:13px;height:13px;color:rgba(255,255,255,.45);transition:transform .15s,color .15s;display:block}
+        .badge:hover svg{transform:scale(1.2);color:#fff}
+        .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07) 30%,rgba(255,255,255,.07) 70%,transparent);margin-bottom:15px;opacity:0;animation:fadeUp .4s ease forwards;animation-delay:.6s}
+        .meta-section{margin-bottom:15px}
+        .meta-label{font-size:.6rem;color:rgba(255,255,255,.2);letter-spacing:1.4px;text-transform:uppercase;margin-bottom:9px;font-style:italic;opacity:0;animation:fadeUp .4s ease forwards;animation-delay:.65s}
+        .meta-line{font-size:.72rem;color:rgba(255,255,255,.48);margin-bottom:3px;line-height:1.65;opacity:0;animation:fadeUp .4s ease forwards}
+        .meta-line:nth-of-type(1){animation-delay:.72s}
+        .meta-line:nth-of-type(2){animation-delay:.79s}
+        .meta-line:nth-of-type(3){animation-delay:.86s}
+        .meta-line:nth-of-type(4){animation-delay:.93s}
+        .card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(255,255,255,.05);opacity:0;animation:fadeUp .4s ease forwards;animation-delay:1.0s;margin-top:4px}
+        .icon-links{display:flex;gap:4px;align-items:center}
+        .icon-link{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:rgba(255,255,255,.35);transition:color .18s,background .18s;text-decoration:none}
+        .icon-link:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.07)}
+        .icon-link svg{width:17px;height:17px;fill:currentColor;display:block}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+        #like-btn{display:flex;align-items:center;gap:5px;background:none;border:none;padding:4px 8px 4px 6px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.22);font-family:"DM Mono",monospace;font-size:.68rem;transition:color .18s,background .18s;user-select:none;letter-spacing:.3px}
+        #like-btn:hover{color:rgba(255,255,255,.6);background:rgba(255,255,255,.06)}
+        #like-btn.liked{color:rgba(255,255,255,.85)}
+        #like-btn svg{width:15px;height:15px;fill:currentColor;display:block;flex-shrink:0}
+        #like-num{font-size:.66rem;line-height:1;min-width:14px}
+        #not-found{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:7px;z-index:10}
+        #not-found.show{display:flex}
+        #not-found .nf-title{font-size:1rem;color:rgba(255,255,255,.6);letter-spacing:-.2px}
+        #not-found .nf-sub{font-size:.68rem;color:rgba(255,255,255,.2);letter-spacing:1px}
+        #overlay{position:fixed;inset:0;z-index:100;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity .55s ease}
+        #overlay.hide{opacity:0;pointer-events:none}
+        #overlay-text{font-family:"DM Mono",monospace;font-size:.7rem;color:rgba(255,255,255,.2);letter-spacing:3.5px;text-transform:uppercase;animation:pulse 2.8s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:.2}50%{opacity:.6}}
+        .modal-bg{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease}
+        .modal-bg.open{opacity:1;pointer-events:all}
+        .modal{background:rgba(10,10,13,0.97);border:1px solid rgba(255,255,255,0.09);border-top-color:rgba(255,255,255,0.17);border-radius:20px;padding:30px 30px 26px;width:340px;max-width:calc(100vw - 32px);box-shadow:0 0 0 1px rgba(0,0,0,0.6),0 32px 80px rgba(0,0,0,0.8);transform:translateY(10px) scale(0.97);transition:transform .25s cubic-bezier(0.22,1,0.36,1);position:relative}
+        .modal-bg.open .modal{transform:translateY(0) scale(1)}
+        .modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(255,255,255,.25);font-family:"DM Mono",monospace;font-size:.9rem;cursor:pointer;line-height:1;transition:color .15s}
+        .modal-close:hover{color:rgba(255,255,255,.7)}
+        .modal-title{font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:22px;font-weight:400}
+        .modal-tabs{display:flex;gap:0;margin-bottom:22px;border-bottom:1px solid rgba(255,255,255,.07)}
+        .modal-tab{background:none;border:none;cursor:pointer;font-family:"DM Mono",monospace;font-size:.68rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.25);padding:0 0 10px 0;margin-right:20px;border-bottom:1px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s}
+        .modal-tab.active{color:rgba(255,255,255,.8);border-bottom-color:rgba(255,255,255,.5)}
+        .field{margin-bottom:14px}
+        .field label{display:block;font-size:.6rem;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:6px;font-style:italic}
+        .field input,.field textarea,.field select{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 12px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.72rem;outline:none;transition:border-color .15s,background .15s;resize:none}
+        .field input:focus,.field textarea:focus{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06)}
+        .field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,.2)}
+        .field-hint{font-size:.58rem;color:rgba(255,255,255,.18);letter-spacing:.8px;margin-top:4px}
+        .field-hint.error{color:rgba(255,100,100,.6)}
+        .field-hint.success{color:rgba(100,220,150,.6)}
+        .modal-btn{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-top-color:rgba(255,255,255,.16);border-radius:10px;padding:11px;color:rgba(255,255,255,.75);font-family:"DM Mono",monospace;font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:background .18s,color .18s;user-select:none}
+        .modal-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+        .modal-btn:disabled{opacity:.4;cursor:not-allowed}
+        .modal-switch{text-align:center;margin-top:14px;font-size:.6rem;color:rgba(255,255,255,.2);letter-spacing:.8px}
+        .modal-switch span{color:rgba(255,255,255,.45);cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .15s}
+        .modal-switch span:hover{color:rgba(255,255,255,.75)}
+        #user-pill{position:fixed;top:20px;right:22px;z-index:50;display:none;align-items:center;gap:8px;opacity:0;animation:fadeUp .4s ease forwards;animation-delay:1.2s}
+        #user-pill.visible{display:flex}
+        #user-pill-name{font-size:.62rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.35);cursor:default}
+        #user-pill-settings{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,.35);width:34px;height:34px;border-radius:9px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);transition:color .2s,background .2s,border-color .2s}
+        #user-pill-settings:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)}
+        #user-pill-settings svg{width:16px;height:16px;fill:currentColor;display:block}
+        #user-pill-logout{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,.35);width:34px;height:34px;border-radius:9px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);transition:color .2s,background .2s,border-color .2s}
+        #user-pill-logout:hover{color:rgba(255,100,100,.7);background:rgba(255,50,50,.07);border-color:rgba(255,80,80,.2)}
+        #user-pill-logout svg{width:16px;height:16px;fill:currentColor;display:block}
+        #dash-modal .modal{width:680px;max-width:calc(100vw - 24px);padding:0;overflow:hidden;border-radius:20px;display:flex;flex-direction:column;max-height:calc(100vh - 48px)}
+        .dash-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 16px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
+        .dash-header-title{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:400}
+        .dash-header-user{font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.18)}
+        .dash-header .modal-close{position:static;margin-left:14px}
+        .dash-body{display:flex;flex:1;overflow:hidden;min-height:0}
+        .dash-sidebar{width:140px;flex-shrink:0;border-right:1px solid rgba(255,255,255,.06);padding:14px 10px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+        .dash-nav-btn{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;border-radius:9px;padding:9px 11px;cursor:pointer;font-family:"DM Mono",monospace;font-size:.64rem;letter-spacing:1.1px;text-transform:uppercase;color:rgba(255,255,255,.28);transition:color .15s,background .15s;text-align:left}
+        .dash-nav-btn svg{width:14px;height:14px;fill:currentColor;flex-shrink:0;opacity:.7}
+        .dash-nav-btn:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.05)}
+        .dash-nav-btn.active{color:rgba(255,255,255,.88);background:rgba(255,255,255,.08)}
+        .dash-nav-btn.active svg{opacity:1}
+        .dash-nav-btn.admin-nav{color:rgba(255,180,80,.35)}
+        .dash-nav-btn.admin-nav:hover{color:rgba(255,190,90,.75);background:rgba(255,160,50,.06)}
+        .dash-nav-btn.admin-nav.active{color:rgba(255,200,100,.9);background:rgba(255,160,50,.1)}
+        .dash-panels{flex:1;overflow-y:auto;padding:20px 22px 22px}
+        .dash-panel{display:none}
+        .dash-panel.active{display:block}
+        .dash-panel-title{font-size:.62rem;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:18px;font-style:italic}
+        .dash-section{margin-bottom:22px}
+        .dash-section-label{font-size:.56rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.16);margin-bottom:9px;font-style:italic}
+        .dash-links-list{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+        .dash-link-row{display:flex;gap:6px;align-items:center}
+        .dash-link-row input{flex:1}
+        .dash-link-row select{width:100px;flex-shrink:0}
+        .dash-link-remove{background:none;border:none;color:rgba(255,100,100,.4);font-size:1rem;cursor:pointer;line-height:1;padding:0 4px;transition:color .15s;flex-shrink:0}
+        .dash-link-remove:hover{color:rgba(255,100,100,.8)}
+        .dash-add-link{background:none;border:1px dashed rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.25);font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:1px;padding:7px;width:100%;cursor:pointer;transition:all .15s}
+        .dash-add-link:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.5)}
+        .dash-footer{padding:14px 22px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px}
+        .dash-save-status{font-size:.6rem;letter-spacing:1px;color:rgba(100,220,150,.5);min-height:1em;flex:1}
+        .dash-footer .modal-btn{width:auto;margin:0;padding:9px 22px;flex-shrink:0}
+        .badge-grid{display:grid;grid-template-columns:1fr;gap:12px}
+        .badge-card{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:14px 16px;transition:border-color .2s}
+        .badge-card.unlocked{border-color:rgba(255,210,100,.15);background:rgba(255,200,80,.03)}
+        .badge-card.locked{opacity:.55}
+        .badge-icon-wrap{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)}
+        .badge-card.unlocked .badge-icon-wrap{background:rgba(255,200,80,.08);border-color:rgba(255,200,80,.18);box-shadow:0 0 18px rgba(255,200,80,.08)}
+        .badge-info{flex:1;min-width:0}
+        .badge-name{font-size:.72rem;letter-spacing:.5px;color:rgba(255,255,255,.75);margin-bottom:3px}
+        .badge-card.unlocked .badge-name{color:rgba(255,220,120,.9)}
+        .badge-desc{font-size:.6rem;color:rgba(255,255,255,.2);letter-spacing:.5px;line-height:1.6}
+        .badge-status{font-size:.56rem;letter-spacing:1.3px;text-transform:uppercase;padding:3px 8px;border-radius:5px;flex-shrink:0}
+        .badge-status.unlocked{color:rgba(255,210,100,.8);background:rgba(255,200,80,.1);border:1px solid rgba(255,200,80,.15)}
+        .badge-status.locked{color:rgba(255,255,255,.2);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
+        .badge-equip-btn{font-family:"DM Mono",monospace;font-size:.58rem;letter-spacing:1.2px;text-transform:uppercase;border-radius:7px;padding:5px 11px;cursor:pointer;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);transition:background .15s,color .15s,border-color .15s;flex-shrink:0;margin-top:7px}
+        .badge-equip-btn:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.22)}
+        .badge-equip-btn.equipped{background:rgba(255,200,80,.12);color:rgba(255,220,120,.9);border-color:rgba(255,200,80,.3)}
+        .badge-equip-btn.equipped:hover{background:rgba(255,80,80,.1);color:rgba(255,120,120,.85);border-color:rgba(255,80,80,.25)}
+        .badge-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+        .og-badge-svg{width:26px;height:26px;display:block}
+        .alias-row{font-size:.62rem;color:rgba(255,255,255,.22);letter-spacing:.4px;margin-top:5px;line-height:1}
+        .alias-row a{color:rgba(255,255,255,.38);text-decoration:none;transition:color .15s}
+        .alias-row a:hover{color:rgba(255,255,255,.7)}
+        .alias-row .alias-sep{margin:0 3px;opacity:.4}
+        .alias-list{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+        .alias-entry{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+        .alias-entry-info{flex:1;min-width:0}
+        .alias-entry-name{font-size:.72rem;color:rgba(255,255,255,.7);letter-spacing:.3px;margin-bottom:2px}
+        .alias-entry-url{font-size:.58rem;color:rgba(255,255,255,.2);letter-spacing:.5px}
+        .alias-remove{background:none;border:none;color:rgba(255,100,100,.35);font-size:.9rem;cursor:pointer;transition:color .15s;padding:0 2px;line-height:1;flex-shrink:0}
+        .alias-remove:hover{color:rgba(255,100,100,.75)}
+        .alias-add-form{background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.09);border-radius:11px;padding:13px;display:none;flex-direction:column;gap:8px}
+        .alias-add-form.open{display:flex}
+        .alias-add-form .field{margin-bottom:0}
+        .alias-form-actions{display:flex;gap:7px;margin-top:2px}
+        .alias-form-btn{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px;color:rgba(255,255,255,.6);font-family:"DM Mono",monospace;font-size:.64rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .15s,color .15s}
+        .alias-form-btn:hover{background:rgba(255,255,255,.11);color:#fff}
+        .alias-form-btn.cancel{flex:0 0 auto;padding:8px 14px}
+        .alias-form-hint{font-size:.58rem;letter-spacing:.8px;min-height:1em}
+        .alias-form-hint.error{color:rgba(255,100,100,.6)}
+        .alias-form-hint.success{color:rgba(100,220,150,.6)}
+        .alias-add-trigger{background:none;border:1px dashed rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.25);font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:1px;padding:7px;width:100%;cursor:pointer;transition:all .15s}
+        .alias-add-trigger:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.5)}
+        .alias-limit-note{font-size:.58rem;color:rgba(255,255,255,.15);letter-spacing:.8px;text-align:center;margin-top:8px;font-style:italic}
+        .admin-search-row{display:flex;gap:8px;margin-bottom:18px}
+        .admin-search-row input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 12px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.72rem;outline:none;transition:border-color .15s}
+        .admin-search-row input:focus{border-color:rgba(255,255,255,.22)}
+        .admin-search-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 16px;color:rgba(255,255,255,.6);font-family:"DM Mono",monospace;font-size:.65rem;letter-spacing:1px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
+        .admin-search-btn:hover{background:rgba(255,255,255,.11);color:#fff}
+        .admin-user-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:16px;display:none;flex-direction:column;gap:14px}
+        .admin-user-card.visible{display:flex}
+        .admin-user-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+        .admin-user-name{font-size:.82rem;color:rgba(255,255,255,.8);letter-spacing:.3px}
+        .admin-user-uid{font-size:.6rem;color:rgba(255,255,255,.25);letter-spacing:1px}
+        .admin-section-title{font-size:.56rem;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,180,80,.4);margin-bottom:8px;font-style:italic}
+        .admin-row{display:flex;gap:8px;align-items:center}
+        .admin-row input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:8px 11px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.7rem;outline:none;transition:border-color .15s}
+        .admin-row input:focus{border-color:rgba(255,255,255,.2)}
+        .admin-apply-btn{background:rgba(255,180,80,.08);border:1px solid rgba(255,180,80,.2);border-radius:8px;padding:8px 14px;color:rgba(255,200,100,.7);font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
+        .admin-apply-btn:hover{background:rgba(255,180,80,.15);color:rgba(255,210,120,.95)}
+        .admin-apply-btn:disabled{opacity:.4;cursor:not-allowed}
+        .admin-badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+        .admin-badge-toggle{display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 8px;cursor:pointer;transition:border-color .15s,background .15s;font-family:"DM Mono",monospace;font-size:.58rem;letter-spacing:.8px;color:rgba(255,255,255,.35)}
+        .admin-badge-toggle.on{border-color:rgba(255,200,80,.3);background:rgba(255,200,80,.06);color:rgba(255,220,120,.85)}
+        .admin-badge-toggle:hover{border-color:rgba(255,255,255,.18)}
+        .admin-badge-toggle.on:hover{border-color:rgba(255,100,100,.3);background:rgba(255,80,80,.06);color:rgba(255,140,140,.8)}
+        .admin-status{font-size:.6rem;letter-spacing:1px;min-height:1em;margin-top:4px}
+        .admin-status.ok{color:rgba(100,220,150,.6)}
+        .admin-status.err{color:rgba(255,100,100,.6)}
+        .admin-not-found{font-size:.68rem;color:rgba(255,100,100,.45);letter-spacing:.8px;display:none;padding:12px 0}
+        .admin-not-found.show{display:block}
+        .admin-save-badges-btn{margin-top:10px;background:rgba(255,180,80,.08);border:1px solid rgba(255,180,80,.2);border-radius:8px;padding:8px 14px;color:rgba(255,200,100,.7);font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .15s,color .15s;width:100%}
+        .admin-save-badges-btn:hover{background:rgba(255,180,80,.15);color:rgba(255,210,120,.95)}
+        .admin-save-badges-btn:disabled{opacity:.4;cursor:not-allowed}
+        .slider-container{display:flex;align-items:center;gap:12px;margin-top:6px}
+        .slider-container label{flex:0 0 50px;font-size:.58rem;letter-spacing:1px;color:rgba(255,255,255,.3)}
+        input[type="range"]{flex:1;height:3px;-webkit-appearance:none;background:rgba(255,255,255,.1);border-radius:3px;outline:none}
+        input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.6);cursor:pointer}
+        input[type="range"]::-webkit-slider-thumb:hover{background:#fff}
+        .slider-value{width:32px;font-size:.58rem;text-align:right;color:rgba(255,255,255,.4)}
+        select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 12px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.72rem;outline:none;cursor:pointer}
+        select option{background:#0a0a0c}
+        .cursor-preview{margin-top:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+        .cursor-preview-img{width:40px;height:40px;object-fit:contain;background:rgba(255,255,255,0.05);border-radius:8px;padding:4px;border:1px solid rgba(255,255,255,0.1)}
+        .cursor-reset-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:.6rem;cursor:pointer}
+        .cursor-reset-btn:hover{background:rgba(255,255,255,.12)}
+        .embed-preview{margin-top:12px;padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px}
+        .embed-preview-title{font-size:.75rem;color:rgba(255,255,255,0.7);margin-bottom:4px}
+        .embed-preview-desc{font-size:.65rem;color:rgba(255,255,255,0.4)}
+        .embed-preview-image{margin-top:8px;max-width:100%;max-height:100px;border-radius:8px}
+        @media (max-width:600px){#dash-modal .modal{width:calc(100vw - 24px)}.dash-body{flex-direction:column}.dash-sidebar{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);flex-direction:row;padding:10px 12px;overflow-x:auto;gap:4px}.dash-nav-btn{white-space:nowrap;flex-shrink:0}.dash-panels{padding:16px}}
     </style>
 </head>
 <body>
@@ -1523,8 +317,10 @@
                 <button class="dash-nav-btn" data-panel="alias"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>alias</button>
                 <button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
                 <button class="dash-nav-btn" data-panel="cursor"><svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>cursor</button>
+                <button class="dash-nav-btn" data-panel="embed"><svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zM5 7h14v2H5V7zm0 4h14v2H5v-2zm0 4h8v2H5v-2z"/></svg>embed</button>
             </nav>
             <div class="dash-panels">
+                <!-- Existing panels: bio, socials, background, badges, alias, card, cursor -->
                 <div class="dash-panel active" id="panel-bio">
                     <div class="dash-panel-title">bio lines</div>
                     <div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"></div>
@@ -1570,15 +366,37 @@
                     <div class="dash-panel-title">cursor trail</div>
                     <div class="field"><label>effect</label><select id="d-cursor-effect"><option value="ghost">Ghost (default arrows)</option><option value="sparkle">Sparkle (stars)</option><option value="trail">Trail Dots</option><option value="simple">Simple Dot</option><option value="none">None</option></select></div>
                     <div class="field">
-                        <label>custom cursor image (square PNG)</label>
-                        <input type="file" id="custom-cursor-file" accept="image/png,image/jpeg,image/gif">
-                        <button class="file-upload-btn" id="custom-cursor-upload-btn">click to upload</button>
+                        <label>custom cursor image URL (square PNG)</label>
+                        <input type="text" id="d-custom-cursor" placeholder="https://files.catbox.moe/yourcursor.png">
                         <div class="cursor-preview" id="cursor-preview-container" style="display:none;">
                             <span style="font-size:.58rem;">preview:</span>
                             <img id="cursor-preview-img" class="cursor-preview-img" alt="cursor preview">
                             <button id="cursor-reset-btn" class="cursor-reset-btn">reset</button>
                         </div>
-                        <div class="field-hint" id="cursor-upload-status"></div>
+                        <div class="field-hint">upload your image to <a href="https://catbox.moe/" target="_blank">catbox.moe</a> and paste the direct URL</div>
+                    </div>
+                </div>
+                <div class="dash-panel" id="panel-embed">
+                    <div class="dash-panel-title">discord embed customization</div>
+                    <div class="field">
+                        <label>embed title</label>
+                        <input type="text" id="d-embed-title" placeholder="forgave.lol/username" maxlength="100">
+                        <div class="field-hint">shown as the large bold text in Discord</div>
+                    </div>
+                    <div class="field">
+                        <label>embed description</label>
+                        <textarea id="d-embed-desc" rows="2" placeholder="check out my profile..." maxlength="200"></textarea>
+                        <div class="field-hint">shown below the title</div>
+                    </div>
+                    <div class="field">
+                        <label>embed image URL</label>
+                        <input type="text" id="d-embed-image" placeholder="https://files.catbox.moe/....png">
+                        <div class="field-hint">square image recommended (upload to catbox.moe)</div>
+                    </div>
+                    <div class="embed-preview" id="embed-preview">
+                        <div class="embed-preview-title">preview</div>
+                        <div class="embed-preview-desc" id="embed-preview-desc"></div>
+                        <img id="embed-preview-img" class="embed-preview-image" style="display:none;">
                     </div>
                 </div>
                 <div class="dash-panel" id="panel-admin">
@@ -1663,26 +481,11 @@
         }
     };
 
-    // ========== CATBOX UPLOAD ==========
-    async function uploadToCatbox(file) {
-        const formData = new FormData();
-        formData.append("reqtype", "fileupload");
-        formData.append("fileToUpload", file);
-        const res = await fetch("https://catbox.moe/user/api.php", {
-            method: "POST",
-            body: formData
-        });
-        const url = await res.text();
-        if (!res.ok || !url.startsWith("http")) throw new Error("Upload failed");
-        return url.trim();
-    }
-
     // ========== PASSWORD HASHING & GENERATION ==========
     async function hashPassword(pw) {
         const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw));
         return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
     }
-
     function generateRandomPassword(length = 8) {
         const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
         let result = "";
@@ -1711,7 +514,8 @@
         links: [{ label: "tiktok", url: "https://tiktok.com/@factor", icon: "tiktok" }, { label: "discord", url: "https://discord.gg/factor", icon: "discord" }],
         bgVideo: { urls: ["https://files.catbox.moe/q77n42.mp4"], opacity: 0.45 },
         bgWords: ["forgave", "frgv", "</>", "///"],
-        wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: []
+        wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [],
+        embed_title: "", embed_description: "", embed_image: "", custom_cursor: ""
     };
     const STATIC_USERS = {
         "prada": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "prada", uid: "1", badges: [], lines: ["@juliasfanboy / on discord", "rich", "take risks"], discord: "", links: [{ label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok" }], bgVideo: { urls: ["https://files.catbox.moe/aned1c.mp4"], opacity: 0.45 }, bgWords: ["prada", "</>"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [] },
@@ -1816,7 +620,10 @@
                     card_opacity: u.card_opacity !== undefined ? u.card_opacity : 0.58,
                     parallax_enabled: u.parallax_enabled !== undefined ? u.parallax_enabled : true,
                     cursor_effect: u.cursor_effect || "ghost",
-                    custom_cursor: u.custom_cursor || ""
+                    custom_cursor: u.custom_cursor || "",
+                    embed_title: u.embed_title || "",
+                    embed_description: u.embed_description || "",
+                    embed_image: u.embed_image || ""
                 };
                 likeId = "forgave.lol/" + slug;
                 return;
@@ -1827,12 +634,27 @@
         C = null;
     }
 
-    // Apply custom cursor to body
+    // Apply custom cursor from URL
     function applyCustomCursor(url) {
-        if (url && url.startsWith("http")) {
+        if (url && url.trim() && url.startsWith("http")) {
             document.body.style.cursor = `url('${url}'), auto`;
         } else {
             document.body.style.cursor = "";
+        }
+    }
+
+    // Update embed preview
+    function updateEmbedPreview(title, desc, img) {
+        const previewDesc = document.getElementById("embed-preview-desc");
+        const previewImg = document.getElementById("embed-preview-img");
+        if (previewDesc) previewDesc.textContent = desc || "(no description)";
+        if (previewImg) {
+            if (img && img.trim()) {
+                previewImg.src = img;
+                previewImg.style.display = "block";
+            } else {
+                previewImg.style.display = "none";
+            }
         }
     }
 
@@ -1862,10 +684,8 @@
     function initParallax() {
         const cardStack = document.getElementById("card-stack");
         if (!cardStack) return;
-        // Remove old listeners to avoid duplicates
         const handleMouseMove = (e) => {
             if (!C || !C.parallax_enabled) return;
-            // In minimalistic mode, the card-stack is centered, but we still apply transform to it
             const target = cardStack;
             if (!target) return;
             const rect = target.getBoundingClientRect();
@@ -1878,7 +698,6 @@
             const translateX = ((x - centerX) / centerX) * 8;
             const translateY = ((y - centerY) / centerY) * 8;
             target.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateX(${translateX}px) translateY(${translateY}px)`;
-            // Also preserve the centered positioning if in minimalistic mode
             if (C.card_style === "minimalistic") {
                 target.style.top = "50%";
                 target.style.left = "50%";
@@ -1902,127 +721,37 @@
     // ========== CURSOR EFFECTS ==========
     let cursorEffect = "ghost";
     let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
-
     function initCursorEffect() {
         const canvas = document.getElementById("trail");
         const ctx = canvas.getContext("2d");
         let dots = [];
         let particles = [];
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener("resize", resize);
         resize();
-
         window.addEventListener("mousemove", (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
-            if (cursorEffect === "trail") {
-                dots.push({ x: mouseX, y: mouseY, life: 1.0 });
-                if (dots.length > 30) dots.shift();
-            }
+            if (cursorEffect === "trail") { dots.push({ x: mouseX, y: mouseY, life: 1.0 }); if (dots.length > 30) dots.shift(); }
             if (cursorEffect === "sparkle") {
-                for (let i = 0; i < 3; i++) {
-                    particles.push({
-                        x: mouseX + (Math.random() - 0.5) * 8,
-                        y: mouseY + (Math.random() - 0.5) * 8,
-                        vx: (Math.random() - 0.5) * 2,
-                        vy: (Math.random() - 0.5) * 2 - 1,
-                        life: 0.8,
-                        size: 2 + Math.random() * 3
-                    });
-                }
+                for (let i = 0; i < 3; i++) particles.push({ x: mouseX + (Math.random() - 0.5) * 8, y: mouseY + (Math.random() - 0.5) * 8, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2 - 1, life: 0.8, size: 2 + Math.random() * 3 });
                 if (particles.length > 100) particles.splice(0, 50);
             }
         });
-
-        function drawArrow(x, y, alpha, scale) {
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.scale(scale, scale);
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(0, 16);
-            ctx.lineTo(3.5, 12.5);
-            ctx.lineTo(6, 18);
-            ctx.lineTo(8, 17);
-            ctx.lineTo(5.5, 11.5);
-            ctx.lineTo(10, 11.5);
-            ctx.closePath();
-            ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-            ctx.fill();
-            ctx.strokeStyle = `rgba(0,0,0,${alpha * 0.5})`;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-            ctx.restore();
+        function drawArrow(x, y, a, s) {
+            ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 16); ctx.lineTo(3.5, 12.5); ctx.lineTo(6, 18); ctx.lineTo(8, 17); ctx.lineTo(5.5, 11.5); ctx.lineTo(10, 11.5); ctx.closePath(); ctx.fillStyle = `rgba(255,255,255,${a})`; ctx.fill(); ctx.strokeStyle = `rgba(0,0,0,${a * 0.5})`; ctx.lineWidth = 0.8; ctx.stroke(); ctx.restore();
         }
-
         function drawGhost() {
-            const ghosts = [
-                { x: mouseX, y: mouseY, lag: 0.18, alpha: 0.20, scale: 0.95 },
-                { x: mouseX, y: mouseY, lag: 0.10, alpha: 0.12, scale: 0.90 },
-                { x: mouseX, y: mouseY, lag: 0.06, alpha: 0.06, scale: 0.85 }
-            ];
-            ghosts.forEach(g => {
-                g.x += (mouseX - g.x) * g.lag;
-                g.y += (mouseY - g.y) * g.lag;
-                drawArrow(g.x, g.y, g.alpha, g.scale);
-            });
+            let ghosts = [{ x: mouseX, y: mouseY, lag: 0.18, alpha: 0.20, scale: 0.95 }, { x: mouseX, y: mouseY, lag: 0.10, alpha: 0.12, scale: 0.90 }, { x: mouseX, y: mouseY, lag: 0.06, alpha: 0.06, scale: 0.85 }];
+            ghosts.forEach(g => { g.x += (mouseX - g.x) * g.lag; g.y += (mouseY - g.y) * g.lag; drawArrow(g.x, g.y, g.alpha, g.scale); });
         }
-
-        function drawSparkle() {
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255,200,100,${p.life * 0.8})`;
-                ctx.fill();
-                p.x += p.vx;
-                p.y += p.vy;
-                p.life -= 0.02;
-                p.size *= 0.98;
-                if (p.life <= 0.02) particles.splice(i, 1);
-            }
-        }
-
-        function drawTrailDots() {
-            for (let i = 0; i < dots.length; i++) {
-                const d = dots[i];
-                ctx.beginPath();
-                ctx.arc(d.x, d.y, 3 * d.life, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255,255,255,${d.life * 0.4})`;
-                ctx.fill();
-                d.life -= 0.03;
-            }
-            dots = dots.filter(d => d.life > 0.02);
-        }
-
-        function drawSimpleDot() {
-            ctx.beginPath();
-            ctx.arc(mouseX, mouseY, 3, 0, Math.PI * 2);
-            ctx.fillStyle = "rgba(255,255,255,0.6)";
-            ctx.fill();
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            switch (cursorEffect) {
-                case "ghost": drawGhost(); break;
-                case "sparkle": drawSparkle(); break;
-                case "trail": drawTrailDots(); break;
-                case "simple": drawSimpleDot(); break;
-                default: drawGhost();
-            }
-            requestAnimationFrame(animate);
-        }
+        function drawSparkle() { for (let i = particles.length - 1; i >= 0; i--) { const p = particles[i]; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fillStyle = `rgba(255,200,100,${p.life * 0.8})`; ctx.fill(); p.x += p.vx; p.y += p.vy; p.life -= 0.02; p.size *= 0.98; if (p.life <= 0.02) particles.splice(i, 1); } }
+        function drawTrailDots() { for (let i = 0; i < dots.length; i++) { const d = dots[i]; ctx.beginPath(); ctx.arc(d.x, d.y, 3 * d.life, 0, Math.PI * 2); ctx.fillStyle = `rgba(255,255,255,${d.life * 0.4})`; ctx.fill(); d.life -= 0.03; } dots = dots.filter(d => d.life > 0.02); }
+        function drawSimpleDot() { ctx.beginPath(); ctx.arc(mouseX, mouseY, 3, 0, Math.PI * 2); ctx.fillStyle = "rgba(255,255,255,0.6)"; ctx.fill(); }
+        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); switch (cursorEffect) { case "ghost": drawGhost(); break; case "sparkle": drawSparkle(); break; case "trail": drawTrailDots(); break; case "simple": drawSimpleDot(); break; default: drawGhost(); } requestAnimationFrame(animate); }
         animate();
     }
-
-    function setCursorEffect(effect) {
-        cursorEffect = effect;
-    }
+    function setCursorEffect(effect) { cursorEffect = effect; }
 
     // ========== RENDER CARD ==========
     function renderCard() {
@@ -2032,254 +761,93 @@
             document.getElementById("nf-slug").textContent = slug;
             return;
         }
-
         document.getElementById("last-change-date").textContent = C.lastChange;
-
-        // Username row
         const usernameRow = document.getElementById("username-row");
         usernameRow.innerHTML = "";
         const unSpan = document.createElement("span");
         unSpan.className = "username";
         unSpan.innerHTML = `${C.username}<span class="tip">UID: ${C.uid}</span>`;
         usernameRow.appendChild(unSpan);
-
         (C.badges || []).forEach(b => {
-            const d = document.createElement("div");
-            d.className = "badge";
+            const d = document.createElement("div"); d.className = "badge";
             if (b.isOG && b.svgInline) {
                 const w = document.createElement("div");
                 w.style.cssText = "width:15px;height:15px;display:flex;align-items:center;justify-content:center;opacity:0.85;";
                 w.innerHTML = b.svgInline.replace('class="og-badge-svg"', 'style="width:15px;height:15px;display:block;"');
                 d.appendChild(w);
-            } else if (b.svg) {
-                d.innerHTML = b.svg;
-            } else if (b.img) {
+            } else if (b.svg) { d.innerHTML = b.svg; } else if (b.img) {
                 const img = document.createElement("img");
                 img.src = b.img;
                 img.style.cssText = `width:${b.size || 18}px;height:${b.size || 18}px;filter:brightness(0) invert(1);opacity:0.45;`;
                 d.appendChild(img);
             }
-            const tip = document.createElement("span");
-            tip.className = "tip";
-            tip.textContent = b.tip;
-            d.appendChild(tip);
-            usernameRow.appendChild(d);
+            const tip = document.createElement("span"); tip.className = "tip"; tip.textContent = b.tip;
+            d.appendChild(tip); usernameRow.appendChild(d);
         });
-
-        // Alias row
         const aliasRow = document.getElementById("alias-row");
         const aliases = Array.isArray(C.aliases) ? C.aliases.filter(a => a && a.trim().length > 0) : [];
-        if (aliases.length > 0) {
-            aliasRow.style.display = "block";
-            aliasRow.innerHTML = "also known as: " + aliases.map((a, i) => `<a href="https://forgave.lol/${a}" target="_blank">${a}</a>${i < aliases.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`).join("");
-        } else {
-            aliasRow.style.display = "none";
-            aliasRow.innerHTML = "";
-        }
-
-        // Bio lines
-        ["line1", "line2", "line3"].forEach((id, i) => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = C.lines[i] || "";
-        });
-
+        if (aliases.length > 0) { aliasRow.style.display = "block"; aliasRow.innerHTML = "also known as: " + aliases.map((a, i) => `<a href="https://forgave.lol/${a}" target="_blank">${a}</a>${i < aliases.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`).join(""); } else { aliasRow.style.display = "none"; aliasRow.innerHTML = ""; }
+        ["line1", "line2", "line3"].forEach((id, i) => { const el = document.getElementById(id); if (el) el.textContent = C.lines[i] || ""; });
         const discordLine = document.getElementById("discord-line");
-        if (C.discord) {
-            discordLine.style.display = "";
-            document.getElementById("discord-val").textContent = C.discord;
-        } else {
-            discordLine.style.display = "none";
-        }
-
-        // Social links
+        if (C.discord) { discordLine.style.display = ""; document.getElementById("discord-val").textContent = C.discord; } else { discordLine.style.display = "none"; }
         const linksContainer = document.getElementById("links-container");
         linksContainer.innerHTML = "";
-        (C.links || []).forEach(lk => {
-            const a = document.createElement("a");
-            a.className = "icon-link";
-            a.href = lk.url;
-            a.target = "_blank";
-            a.rel = "noopener";
-            a.title = lk.label;
-            a.innerHTML = ICONS[lk.icon] || lk.label;
-            linksContainer.appendChild(a);
-        });
-
-        // Typing effect
+        (C.links || []).forEach(lk => { const a = document.createElement("a"); a.className = "icon-link"; a.href = lk.url; a.target = "_blank"; a.rel = "noopener"; a.title = lk.label; a.innerHTML = ICONS[lk.icon] || lk.label; linksContainer.appendChild(a); });
         const nameEl = document.getElementById("site-name");
         const typeText = C.siteName;
         let ti = 0, deleting = false;
         function typeStep() {
-            if (!deleting) {
-                nameEl.textContent = typeText.slice(0, ++ti);
-                if (ti === typeText.length) {
-                    deleting = true;
-                    setTimeout(typeStep, 2200);
-                } else {
-                    setTimeout(typeStep, 85);
-                }
-            } else {
-                nameEl.textContent = typeText.slice(0, --ti);
-                if (ti === 0) {
-                    deleting = false;
-                    setTimeout(typeStep, 500);
-                } else {
-                    setTimeout(typeStep, 50);
-                }
-            }
+            if (!deleting) { nameEl.textContent = typeText.slice(0, ++ti); if (ti === typeText.length) { deleting = true; setTimeout(typeStep, 2200); } else setTimeout(typeStep, 85); }
+            else { nameEl.textContent = typeText.slice(0, --ti); if (ti === 0) { deleting = false; setTimeout(typeStep, 500); } else setTimeout(typeStep, 50); }
         }
         setTimeout(typeStep, 700);
-
-        // Background video & floating words
         const bgvideo = document.getElementById("bgvideo");
         const wordCanvas = document.getElementById("wordfield");
         const wordCtx = wordCanvas.getContext("2d");
         const hasVideo = C.bgVideo.urls && C.bgVideo.urls.length > 0;
-        if (hasVideo) {
-            bgvideo.src = C.bgVideo.urls[Math.floor(Math.random() * C.bgVideo.urls.length)];
-            bgvideo.style.display = "block";
-            bgvideo.style.opacity = C.bgVideo.opacity;
-            wordCanvas.style.display = "none";
-        }
-
+        if (hasVideo) { bgvideo.src = C.bgVideo.urls[Math.floor(Math.random() * C.bgVideo.urls.length)]; bgvideo.style.display = "block"; bgvideo.style.opacity = C.bgVideo.opacity; wordCanvas.style.display = "none"; }
         const audio = document.getElementById("audio");
         const overlay = document.getElementById("overlay");
-        overlay.onclick = () => {
-            overlay.classList.add("hide");
-            setTimeout(() => overlay.remove(), 700);
-            if (hasVideo) bgvideo.play().catch(() => {});
-            if (C.music?.url) {
-                audio.src = C.music.url;
-                audio.volume = C.music.volume;
-                audio.play().catch(() => {});
-            }
-        };
-
-        function resizeWords() {
-            wordCanvas.width = window.innerWidth;
-            wordCanvas.height = window.innerHeight;
-        }
-        resizeWords();
-        window.addEventListener("resize", () => {
-            resizeWords();
-            initWords();
-        });
-
+        overlay.onclick = () => { overlay.classList.add("hide"); setTimeout(() => overlay.remove(), 700); if (hasVideo) bgvideo.play().catch(() => { }); if (C.music?.url) { audio.src = C.music.url; audio.volume = C.music.volume; audio.play().catch(() => { }); } };
+        function resizeWords() { wordCanvas.width = window.innerWidth; wordCanvas.height = window.innerHeight; }
+        resizeWords(); window.addEventListener("resize", () => { resizeWords(); initWords(); });
         const words = [];
-        function randWord() {
-            return C.bgWords[Math.floor(Math.random() * C.bgWords.length)];
-        }
-        function makeWord(top) {
-            const depth = Math.random();
-            const size = C.wordSize[0] + depth * (C.wordSize[1] - C.wordSize[0]);
-            const speed = C.wordSpeed[0] + depth * (C.wordSpeed[1] - C.wordSpeed[0]);
-            return {
-                text: randWord(),
-                x: Math.random() * wordCanvas.width,
-                y: top ? -(size * 2 + Math.random() * 80) : Math.random() * wordCanvas.height,
-                size: size,
-                speed: speed,
-                depth: depth,
-                rot: (Math.random() - 0.5) * Math.PI * 2,
-                rotSpeed: (Math.random() > 0.5 ? 1 : -1) * (0.002 + Math.random() * C.wordSpin),
-                drift: (Math.random() - 0.5) * 0.15,
-                opacity: 0.03 + depth * 0.20
-            };
-        }
-        function initWords() {
-            words.length = 0;
-            for (let i = 0; i < C.wordCount; i++) {
-                words.push(makeWord(false));
-            }
-        }
+        function randWord() { return C.bgWords[Math.floor(Math.random() * C.bgWords.length)]; }
+        function makeWord(top) { const depth = Math.random(); const size = C.wordSize[0] + depth * (C.wordSize[1] - C.wordSize[0]); const speed = C.wordSpeed[0] + depth * (C.wordSpeed[1] - C.wordSpeed[0]); return { text: randWord(), x: Math.random() * wordCanvas.width, y: top ? -(size * 2 + Math.random() * 80) : Math.random() * wordCanvas.height, size: size, speed: speed, depth: depth, rot: (Math.random() - 0.5) * Math.PI * 2, rotSpeed: (Math.random() > 0.5 ? 1 : -1) * (0.002 + Math.random() * C.wordSpin), drift: (Math.random() - 0.5) * 0.15, opacity: 0.03 + depth * 0.20 }; }
+        function initWords() { words.length = 0; for (let i = 0; i < C.wordCount; i++) words.push(makeWord(false)); }
         initWords();
-
         function drawWords() {
             wordCtx.clearRect(0, 0, wordCanvas.width, wordCanvas.height);
-            for (const w of words) {
-                wordCtx.save();
-                wordCtx.translate(w.x, w.y);
-                wordCtx.rotate(w.rot);
-                wordCtx.font = `300 ${w.size}px "DM Mono", "Courier New", monospace`;
-                wordCtx.fillStyle = C.wordColor + w.opacity + ")";
-                wordCtx.fillText(w.text, 0, 0);
-                wordCtx.restore();
-                w.y += w.speed;
-                w.x += w.drift;
-                w.rot += w.rotSpeed;
-                if (w.y > wordCanvas.height + w.size * 3) {
-                    Object.assign(w, makeWord(true));
-                    w.x = Math.random() * wordCanvas.width;
-                }
-            }
+            for (const w of words) { wordCtx.save(); wordCtx.translate(w.x, w.y); wordCtx.rotate(w.rot); wordCtx.font = `300 ${w.size}px "DM Mono", "Courier New", monospace`; wordCtx.fillStyle = C.wordColor + w.opacity + ")"; wordCtx.fillText(w.text, 0, 0); wordCtx.restore(); w.y += w.speed; w.x += w.drift; w.rot += w.rotSpeed; if (w.y > wordCanvas.height + w.size * 3) { Object.assign(w, makeWord(true)); w.x = Math.random() * wordCanvas.width; } }
             requestAnimationFrame(drawWords);
         }
         drawWords();
-
-        // Likes system
         const likeBtn = document.getElementById("like-btn");
         const likeNum = document.getElementById("like-num");
         const likeKey = "liked_" + likeId.replace(/\//g, "_");
         let hasLiked = localStorage.getItem(likeKey) === "1";
         if (hasLiked) likeBtn.classList.add("liked");
-
         async function fetchLikes() {
             try {
-                const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`, {
-                    headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
-                });
+                const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`, { headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY } });
                 const data = await res.json();
-                if (!data[0]) {
-                    await fetch(`${SUPA_URL}/rest/v1/likes`, {
-                        method: "POST",
-                        headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" },
-                        body: JSON.stringify({ id: likeId, count: 0 })
-                    });
-                    likeNum.textContent = 0;
-                } else {
-                    likeNum.textContent = data[0].count;
-                }
-            } catch (e) {
-                likeNum.textContent = "?";
-            }
+                if (!data[0]) { await fetch(`${SUPA_URL}/rest/v1/likes`, { method: "POST", headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ id: likeId, count: 0 }) }); likeNum.textContent = 0; } else likeNum.textContent = data[0].count;
+            } catch (e) { likeNum.textContent = "?"; }
         }
-
         async function updateLike(delta) {
             try {
-                const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`, {
-                    headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
-                });
+                const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`, { headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY } });
                 const data = await res.json();
                 const newCount = Math.max(0, (data[0]?.count || 0) + delta);
-                await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}`, {
-                    method: "PATCH",
-                    headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" },
-                    body: JSON.stringify({ count: newCount })
-                });
+                await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}`, { method: "PATCH", headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ count: newCount }) });
                 likeNum.textContent = newCount;
-            } catch (e) {}
+            } catch (e) { }
         }
-
-        likeBtn.onclick = () => {
-            if (!hasLiked) {
-                hasLiked = true;
-                localStorage.setItem(likeKey, "1");
-                likeBtn.classList.add("liked");
-                updateLike(1);
-            } else {
-                hasLiked = false;
-                localStorage.removeItem(likeKey);
-                likeBtn.classList.remove("liked");
-                updateLike(-1);
-            }
-        };
+        likeBtn.onclick = () => { if (!hasLiked) { hasLiked = true; localStorage.setItem(likeKey, "1"); likeBtn.classList.add("liked"); updateLike(1); } else { hasLiked = false; localStorage.removeItem(likeKey); likeBtn.classList.remove("liked"); updateLike(-1); } };
         fetchLikes();
-
-        // Card style mode
         const body = document.body;
         const stack = document.getElementById("card-stack");
         const secondCardDiv = document.getElementById("second-card");
-
         if (C.card_style === "minimalistic") {
             body.classList.add("minimalistic-mode");
             stack.style.display = "";
@@ -2300,7 +868,6 @@
                 if (lastChangeMeta) lastChangeMeta.style.display = "";
             }
         }
-
         applyCardStyles();
         initParallax();
         setCursorEffect(C.cursor_effect);
@@ -2312,65 +879,39 @@
     const dashModal = document.getElementById("dash-modal");
     const authBtn = document.getElementById("auth-btn");
     const userPill = document.getElementById("user-pill");
-
     function openModal(modal) { modal.classList.add("open"); }
     function closeModal(modal) { modal.classList.remove("open"); }
-
     authBtn.onclick = () => openModal(authModal);
     document.getElementById("auth-close").onclick = () => closeModal(authModal);
-    document.getElementById("dash-close").onclick = () => {
-        saveDashboard(true);
-        closeModal(dashModal);
-    };
+    document.getElementById("dash-close").onclick = () => { saveDashboard(true); closeModal(dashModal); };
     authModal.onclick = e => { if (e.target === authModal) closeModal(authModal); };
     dashModal.onclick = e => { if (e.target === dashModal) { saveDashboard(true); closeModal(dashModal); } };
-
     document.getElementById("tab-signup").onclick = () => switchTab("signup");
     document.getElementById("tab-login").onclick = () => switchTab("login");
     document.getElementById("sw-to-login").onclick = () => switchTab("login");
     document.getElementById("sw-to-signup").onclick = () => switchTab("signup");
-
     function switchTab(tab) {
         document.getElementById("panel-signup").style.display = tab === "signup" ? "" : "none";
         document.getElementById("panel-login").style.display = tab === "login" ? "" : "none";
         document.getElementById("tab-signup").classList.toggle("active", tab === "signup");
         document.getElementById("tab-login").classList.toggle("active", tab === "login");
     }
-
     let checkTimer = null;
     document.getElementById("su-username").addEventListener("input", e => {
         let val = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "");
         e.target.value = val;
         const hint = document.getElementById("su-username-hint");
-        if (!val || val.length < 2) {
-            hint.textContent = "";
-            hint.className = "field-hint";
-            return;
-        }
-        if (STATIC_USERS[val] || val === "chloryl") {
-            hint.textContent = "taken";
-            hint.className = "field-hint error";
-            return;
-        }
-        hint.textContent = "checking...";
-        hint.className = "field-hint";
+        if (!val || val.length < 2) { hint.textContent = ""; hint.className = "field-hint"; return; }
+        if (STATIC_USERS[val] || val === "chloryl") { hint.textContent = "taken"; hint.className = "field-hint error"; return; }
+        hint.textContent = "checking..."; hint.className = "field-hint";
         clearTimeout(checkTimer);
         checkTimer = setTimeout(async () => {
             try {
                 const rows = await supa.get("users", `username=eq.${encodeURIComponent(val)}`);
-                if (rows && rows.length > 0) {
-                    hint.textContent = "taken";
-                    hint.className = "field-hint error";
-                } else {
-                    hint.textContent = "available ✓";
-                    hint.className = "field-hint success";
-                }
-            } catch (e) {
-                hint.textContent = "";
-            }
+                if (rows && rows.length > 0) { hint.textContent = "taken"; hint.className = "field-hint error"; } else { hint.textContent = "available ✓"; hint.className = "field-hint success"; }
+            } catch (e) { hint.textContent = ""; }
         }, 400);
     });
-
     document.getElementById("su-submit").onclick = async () => {
         const btn = document.getElementById("su-submit");
         const username = document.getElementById("su-username").value.trim().toLowerCase();
@@ -2378,64 +919,26 @@
         const confirm = document.getElementById("su-confirm").value;
         const err = document.getElementById("su-error");
         err.textContent = "";
-        if (!username || username.length < 1) {
-            err.textContent = "username too short";
-            return;
-        }
-        if (STATIC_USERS[username] || username === "chloryl") {
-            err.textContent = "username taken";
-            return;
-        }
-        if (pw.length < 6) {
-            err.textContent = "password must be 6+ chars";
-            return;
-        }
-        if (pw !== confirm) {
-            err.textContent = "passwords don't match";
-            return;
-        }
+        if (!username || username.length < 1) { err.textContent = "username too short"; return; }
+        if (STATIC_USERS[username] || username === "chloryl") { err.textContent = "username taken"; return; }
+        if (pw.length < 6) { err.textContent = "password must be 6+ chars"; return; }
+        if (pw !== confirm) { err.textContent = "passwords don't match"; return; }
         const hint = document.getElementById("su-username-hint");
-        if (hint.classList.contains("error")) {
-            err.textContent = "username taken";
-            return;
-        }
-        btn.disabled = true;
-        btn.textContent = "creating...";
+        if (hint.classList.contains("error")) { err.textContent = "username taken"; return; }
+        btn.disabled = true; btn.textContent = "creating...";
         try {
             const existing = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
-            if (existing && existing.length > 0) {
-                err.textContent = "username already taken";
-                btn.disabled = false;
-                btn.textContent = "create account";
-                return;
-            }
+            if (existing && existing.length > 0) { err.textContent = "username already taken"; btn.disabled = false; btn.textContent = "create account"; return; }
             let nextUid = STATIC_UID_START;
-            try {
-                const allUsers = await supa.get("users", "order=uid.desc&limit=1");
-                if (allUsers && allUsers.length > 0) nextUid = allUsers[0].uid + 1;
-            } catch (e) {}
+            try { const allUsers = await supa.get("users", "order=uid.desc&limit=1"); if (allUsers && allUsers.length > 0) nextUid = allUsers[0].uid + 1; } catch (e) { }
             const hash = await hashPassword(pw);
             const now = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
             const result = await supa.post("users", {
-                username: username,
-                password_hash: hash,
-                uid: nextUid,
-                lines: ["", "", ""],
-                discord: "",
-                links: [],
-                bg_video_urls: [],
-                bg_video_opacity: 0.45,
-                bg_words: ["</>", "///"],
-                last_change: now,
-                aliases: [],
-                equipped_badges: [],
-                is_admin: false,
-                card_style: "default",
-                border_radius: 18,
-                card_opacity: 0.58,
-                parallax_enabled: true,
-                cursor_effect: "ghost",
-                custom_cursor: ""
+                username: username, password_hash: hash, uid: nextUid,
+                lines: ["", "", ""], discord: "", links: [], bg_video_urls: [], bg_video_opacity: 0.45,
+                bg_words: ["</>", "///"], last_change: now, aliases: [], equipped_badges: [], is_admin: false,
+                card_style: "default", border_radius: 18, card_opacity: 0.58, parallax_enabled: true,
+                cursor_effect: "ghost", custom_cursor: "", embed_title: "", embed_description: "", embed_image: ""
             });
             if (result && result[0]) {
                 notifyDiscord(username, nextUid);
@@ -2443,55 +946,29 @@
                 closeModal(authModal);
                 updateAuthUI();
                 openDashboard();
-            } else {
-                err.textContent = "something went wrong";
-            }
-        } catch (e) {
-            console.error(e);
-            err.textContent = e.message?.includes("duplicate") ? "username taken" : "error — check console";
-        }
-        btn.disabled = false;
-        btn.textContent = "create account";
+            } else { err.textContent = "something went wrong"; }
+        } catch (e) { console.error(e); err.textContent = e.message?.includes("duplicate") ? "username taken" : "error — check console"; }
+        btn.disabled = false; btn.textContent = "create account";
     };
-
     document.getElementById("li-submit").onclick = async () => {
         const btn = document.getElementById("li-submit");
         const username = document.getElementById("li-username").value.trim().toLowerCase();
         const pw = document.getElementById("li-password").value;
         const err = document.getElementById("li-error");
         err.textContent = "";
-        if (!username || !pw) {
-            err.textContent = "fill in all fields";
-            return;
-        }
-        btn.disabled = true;
-        btn.textContent = "logging in...";
+        if (!username || !pw) { err.textContent = "fill in all fields"; return; }
+        btn.disabled = true; btn.textContent = "logging in...";
         try {
             const rows = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
-            if (!rows || rows.length === 0) {
-                err.textContent = "user not found";
-                btn.disabled = false;
-                btn.textContent = "log in";
-                return;
-            }
+            if (!rows || rows.length === 0) { err.textContent = "user not found"; btn.disabled = false; btn.textContent = "log in"; return; }
             const hash = await hashPassword(pw);
-            if (rows[0].password_hash !== hash) {
-                err.textContent = "wrong password";
-                btn.disabled = false;
-                btn.textContent = "log in";
-                return;
-            }
+            if (rows[0].password_hash !== hash) { err.textContent = "wrong password"; btn.disabled = false; btn.textContent = "log in"; return; }
             saveSession({ username: username, uid: rows[0].uid });
             closeModal(authModal);
             updateAuthUI();
-        } catch (e) {
-            console.error(e);
-            err.textContent = "error — try again";
-        }
-        btn.disabled = false;
-        btn.textContent = "log in";
+        } catch (e) { console.error(e); err.textContent = "error — try again"; }
+        btn.disabled = false; btn.textContent = "log in";
     };
-
     function updateAuthUI() {
         if (session) {
             authBtn.style.display = "none";
@@ -2503,13 +980,8 @@
             userPill.classList.remove("visible");
         }
     }
-
     document.getElementById("user-pill-settings").onclick = openDashboard;
-    document.getElementById("user-pill-logout").onclick = () => {
-        clearSession();
-        updateAuthUI();
-    };
-
+    document.getElementById("user-pill-logout").onclick = () => { clearSession(); updateAuthUI(); };
     function injectAdminTab() {
         if (!isAdmin(session)) return;
         if (document.getElementById("admin-nav-btn")) return;
@@ -2531,7 +1003,6 @@
             b.addEventListener("click", () => { document.getElementById("d-save").style.display = ""; });
         });
     }
-
     document.querySelectorAll(".dash-nav-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".dash-nav-btn").forEach(b => b.classList.remove("active"));
@@ -2540,10 +1011,7 @@
             document.getElementById("panel-" + btn.dataset.panel).classList.add("active");
         });
     });
-
-    // ========== DASHBOARD LOGIC ==========
     let dashEquipped = [];
-
     async function openDashboard() {
         if (!session) return;
         closeModal(authModal);
@@ -2564,9 +1032,7 @@
                 document.getElementById("d-bgvideo").value = u.bg_video_urls?.[0] || "";
                 document.getElementById("d-bgwords").value = (u.bg_words || []).join(", ");
                 renderDashLinks(u.links || []);
-                const likeRes = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/" + session.username)}&select=count`, {
-                    headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
-                });
+                const likeRes = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/" + session.username)}&select=count`, { headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY } });
                 const likeData = await likeRes.json();
                 const likeCount = likeData?.[0]?.count || 0;
                 renderBadges(u.uid, u.equipped_badges || [], likeCount);
@@ -2577,23 +1043,23 @@
                 document.getElementById("d-card-opacity").value = u.card_opacity !== undefined ? u.card_opacity : 0.58;
                 document.getElementById("d-parallax").checked = u.parallax_enabled !== undefined ? u.parallax_enabled : true;
                 document.getElementById("d-cursor-effect").value = u.cursor_effect || "ghost";
-                // Load custom cursor preview
-                const customCursor = u.custom_cursor || "";
-                if (customCursor) {
+                document.getElementById("d-custom-cursor").value = u.custom_cursor || "";
+                document.getElementById("d-embed-title").value = u.embed_title || "";
+                document.getElementById("d-embed-desc").value = u.embed_description || "";
+                document.getElementById("d-embed-image").value = u.embed_image || "";
+                updateEmbedPreview(u.embed_title, u.embed_description, u.embed_image);
+                if (u.custom_cursor) {
                     document.getElementById("cursor-preview-container").style.display = "flex";
-                    document.getElementById("cursor-preview-img").src = customCursor;
+                    document.getElementById("cursor-preview-img").src = u.custom_cursor;
                 } else {
                     document.getElementById("cursor-preview-container").style.display = "none";
                 }
                 document.getElementById("border-radius-val").textContent = (u.border_radius !== undefined ? u.border_radius : 18) + "px";
                 document.getElementById("card-opacity-val").textContent = (u.card_opacity !== undefined ? u.card_opacity : 0.58).toFixed(2);
             }
-        } catch (e) {
-            console.error("[openDashboard]", e);
-        }
+        } catch (e) { console.error("[openDashboard]", e); }
         openModal(dashModal);
     }
-
     function renderBadges(uid, equippedList, likeCount) {
         dashEquipped.length = 0;
         (equippedList || []).forEach(id => dashEquipped.push(id));
@@ -2611,214 +1077,111 @@
             { id: "bug_hunter", name: "Bug Hunter", desc: "Found and reported a bug.", svg: BUG_HUNTER_BADGE_SVG, unlocked: dashEquipped.includes("bug_hunter") }
         ];
         allBadges.forEach(b => {
-            const isEquipped = dashEquipped.includes(b.id);
+            const isEq = dashEquipped.includes(b.id);
             const card = document.createElement("div");
             card.className = `badge-card ${b.unlocked ? "unlocked" : "locked"}`;
-            card.innerHTML = `
-                <div class="badge-icon-wrap">${b.svg}</div>
-                <div class="badge-info">
-                    <div class="badge-name">${b.name}</div>
-                    <div class="badge-desc">${b.desc}</div>
-                </div>
-                <div class="badge-card-right">
-                    <span class="badge-status ${b.unlocked ? "unlocked" : "locked"}">${b.unlocked ? "unlocked" : "locked"}</span>
-                    ${b.unlocked ? `<button class="badge-equip-btn ${isEquipped ? "equipped" : ""}" data-badge="${b.id}">${isEquipped ? "unequip" : "equip"}</button>` : ""}
-                </div>
-            `;
+            card.innerHTML = `<div class="badge-icon-wrap">${b.svg}</div><div class="badge-info"><div class="badge-name">${b.name}</div><div class="badge-desc">${b.desc}</div></div><div class="badge-card-right"><span class="badge-status ${b.unlocked ? "unlocked" : "locked"}">${b.unlocked ? "unlocked" : "locked"}</span>${b.unlocked ? `<button class="badge-equip-btn ${isEq ? "equipped" : ""}" data-badge="${b.id}">${isEq ? "unequip" : "equip"}</button>` : ""}</div>`;
             if (b.unlocked) {
-                card.querySelector(".badge-equip-btn").addEventListener("click", function() {
+                card.querySelector(".badge-equip-btn").addEventListener("click", function () {
                     const idx = dashEquipped.indexOf(b.id);
-                    if (idx !== -1) {
-                        dashEquipped.splice(idx, 1);
-                        this.textContent = "equip";
-                        this.classList.remove("equipped");
-                    } else {
-                        dashEquipped.push(b.id);
-                        this.textContent = "unequip";
-                        this.classList.add("equipped");
-                    }
+                    if (idx !== -1) { dashEquipped.splice(idx, 1); this.textContent = "equip"; this.classList.remove("equipped"); } else { dashEquipped.push(b.id); this.textContent = "unequip"; this.classList.add("equipped"); }
                 });
             }
             grid.appendChild(card);
         });
     }
-
-    // Aliases
     const ALIAS_MAX = 3;
     let dashAliases = [];
-
     function renderAliasList() {
-        const list = document.getElementById("alias-list");
-        const trigger = document.getElementById("alias-add-trigger");
+        const list = document.getElementById("alias-list"), trigger = document.getElementById("alias-add-trigger");
         list.innerHTML = "";
         dashAliases.forEach((name, i) => {
-            const entry = document.createElement("div");
-            entry.className = "alias-entry";
-            entry.innerHTML = `
-                <div class="alias-entry-info">
-                    <div class="alias-entry-name">${name}</div>
-                    <div class="alias-entry-url">forgave.lol/${name}</div>
-                </div>
-                <button class="alias-remove">×</button>
-            `;
-            entry.querySelector(".alias-remove").onclick = () => {
-                dashAliases.splice(i, 1);
-                renderAliasList();
-            };
-            list.appendChild(entry);
+            const e = document.createElement("div"); e.className = "alias-entry";
+            e.innerHTML = `<div class="alias-entry-info"><div class="alias-entry-name">${name}</div><div class="alias-entry-url">forgave.lol/${name}</div></div><button class="alias-remove">×</button>`;
+            e.querySelector(".alias-remove").onclick = () => { dashAliases.splice(i, 1); renderAliasList(); };
+            list.appendChild(e);
         });
         trigger.style.display = dashAliases.length >= ALIAS_MAX ? "none" : "";
     }
-
     function openAliasForm() {
-        document.getElementById("alias-input-user").value = "";
-        document.getElementById("alias-input-pw").value = "";
-        document.getElementById("alias-form-hint").textContent = "";
-        document.getElementById("alias-form-hint").className = "alias-form-hint";
-        document.getElementById("alias-add-form").classList.add("open");
-        document.getElementById("alias-add-trigger").style.display = "none";
+        document.getElementById("alias-input-user").value = ""; document.getElementById("alias-input-pw").value = "";
+        document.getElementById("alias-form-hint").textContent = ""; document.getElementById("alias-form-hint").className = "alias-form-hint";
+        document.getElementById("alias-add-form").classList.add("open"); document.getElementById("alias-add-trigger").style.display = "none";
     }
-
-    function closeAliasForm() {
-        document.getElementById("alias-add-form").classList.remove("open");
-        renderAliasList();
-    }
-
+    function closeAliasForm() { document.getElementById("alias-add-form").classList.remove("open"); renderAliasList(); }
     document.getElementById("alias-add-trigger").onclick = openAliasForm;
     document.getElementById("alias-cancel-btn").onclick = closeAliasForm;
     document.getElementById("alias-verify-btn").onclick = async () => {
-        const btn = document.getElementById("alias-verify-btn");
-        const hint = document.getElementById("alias-form-hint");
-        const user = document.getElementById("alias-input-user").value.trim().toLowerCase();
-        const pw = document.getElementById("alias-input-pw").value;
-        hint.className = "alias-form-hint";
-        hint.textContent = "";
-        if (!user) {
-            hint.className = "alias-form-hint error";
-            hint.textContent = "enter a username";
-            return;
-        }
-        if (!pw) {
-            hint.className = "alias-form-hint error";
-            hint.textContent = "enter the password";
-            return;
-        }
-        if (user === session?.username) {
-            hint.className = "alias-form-hint error";
-            hint.textContent = "that's your own account";
-            return;
-        }
-        if (dashAliases.includes(user)) {
-            hint.className = "alias-form-hint error";
-            hint.textContent = "already added";
-            return;
-        }
-        if (dashAliases.length >= ALIAS_MAX) {
-            hint.className = "alias-form-hint error";
-            hint.textContent = "max 3 aliases reached";
-            return;
-        }
-        btn.disabled = true;
-        btn.textContent = "verifying...";
+        const btn = document.getElementById("alias-verify-btn"), hint = document.getElementById("alias-form-hint");
+        const user = document.getElementById("alias-input-user").value.trim().toLowerCase(), pw = document.getElementById("alias-input-pw").value;
+        hint.className = "alias-form-hint"; hint.textContent = "";
+        if (!user) { hint.className = "alias-form-hint error"; hint.textContent = "enter a username"; return; }
+        if (!pw) { hint.className = "alias-form-hint error"; hint.textContent = "enter the password"; return; }
+        if (user === session?.username) { hint.className = "alias-form-hint error"; hint.textContent = "that's your own account"; return; }
+        if (dashAliases.includes(user)) { hint.className = "alias-form-hint error"; hint.textContent = "already added"; return; }
+        if (dashAliases.length >= ALIAS_MAX) { hint.className = "alias-form-hint error"; hint.textContent = "max 3 aliases reached"; return; }
+        btn.disabled = true; btn.textContent = "verifying...";
         try {
-            if (STATIC_USERS[user]) {
-                hint.className = "alias-form-hint error";
-                hint.textContent = "can't verify static profiles";
-                btn.disabled = false;
-                btn.textContent = "verify & add";
-                return;
-            }
+            if (STATIC_USERS[user]) { hint.className = "alias-form-hint error"; hint.textContent = "can't verify static profiles"; btn.disabled = false; btn.textContent = "verify & add"; return; }
             const rows = await supa.get("users", `username=eq.${encodeURIComponent(user)}`);
-            if (!rows || rows.length === 0) {
-                hint.className = "alias-form-hint error";
-                hint.textContent = "account not found";
-                btn.disabled = false;
-                btn.textContent = "verify & add";
-                return;
-            }
+            if (!rows || rows.length === 0) { hint.className = "alias-form-hint error"; hint.textContent = "account not found"; btn.disabled = false; btn.textContent = "verify & add"; return; }
             const hash = await hashPassword(pw);
-            if (rows[0].password_hash !== hash) {
-                hint.className = "alias-form-hint error";
-                hint.textContent = "wrong password";
-                btn.disabled = false;
-                btn.textContent = "verify & add";
-                return;
-            }
-            dashAliases.push(user);
-            hint.className = "alias-form-hint success";
-            hint.textContent = "verified ✓";
+            if (rows[0].password_hash !== hash) { hint.className = "alias-form-hint error"; hint.textContent = "wrong password"; btn.disabled = false; btn.textContent = "verify & add"; return; }
+            dashAliases.push(user); hint.className = "alias-form-hint success"; hint.textContent = "verified ✓";
             setTimeout(() => closeAliasForm(), 700);
-        } catch (e) {
-            console.error(e);
-            hint.className = "alias-form-hint error";
-            hint.textContent = "error — try again";
-        }
-        btn.disabled = false;
-        btn.textContent = "verify & add";
+        } catch (e) { console.error(e); hint.className = "alias-form-hint error"; hint.textContent = "error — try again"; }
+        btn.disabled = false; btn.textContent = "verify & add";
     };
-
-    // Links
-    function renderDashLinks(links) {
-        const list = document.getElementById("d-links-list");
-        list.innerHTML = "";
-        links.forEach((lk, i) => addDashLinkRow(lk.label || "", lk.url || "", lk.icon || "tiktok", i));
-    }
-
+    function renderDashLinks(links) { const list = document.getElementById("d-links-list"); list.innerHTML = ""; links.forEach((lk, i) => addDashLinkRow(lk.label || "", lk.url || "", lk.icon || "tiktok", i)); }
     function addDashLinkRow(label, url, icon, idx) {
-        const list = document.getElementById("d-links-list");
-        const row = document.createElement("div");
-        row.className = "dash-link-row";
-        row.dataset.idx = idx ?? list.children.length;
-        row.innerHTML = `
-            <select class="dl-icon">${["tiktok", "discord", "twitter", "youtube", "instagram", "roblox"].map(ic => `<option value="${ic}" ${ic === icon ? "selected" : ""}>${ic}</option>`).join("")}</select>
-            <input class="dl-url" type="text" placeholder="https://..." value="${url}">
-            <button class="dash-link-remove">×</button>
-        `;
+        const list = document.getElementById("d-links-list"), row = document.createElement("div");
+        row.className = "dash-link-row"; row.dataset.idx = idx ?? list.children.length;
+        row.innerHTML = `<select class="dl-icon">${["tiktok", "discord", "twitter", "youtube", "instagram", "roblox"].map(ic => `<option value="${ic}" ${ic === icon ? "selected" : ""}>${ic}</option>`).join("")}</select><input class="dl-url" type="text" placeholder="https://..." value="${url}"><button class="dash-link-remove">×</button>`;
         row.querySelector(".dash-link-remove").onclick = () => row.remove();
         list.appendChild(row);
     }
-
     document.getElementById("d-add-link").onclick = () => addDashLinkRow("", "", "tiktok", document.getElementById("d-links-list").children.length);
-
-    // Sliders
-    const radiusSlider = document.getElementById("d-border-radius");
-    const opacitySlider = document.getElementById("d-card-opacity");
-    radiusSlider.addEventListener("input", () => {
-        document.getElementById("border-radius-val").textContent = radiusSlider.value + "px";
+    const radiusSlider = document.getElementById("d-border-radius"), opacitySlider = document.getElementById("d-card-opacity");
+    radiusSlider.addEventListener("input", () => { document.getElementById("border-radius-val").textContent = radiusSlider.value + "px"; });
+    opacitySlider.addEventListener("input", () => { document.getElementById("card-opacity-val").textContent = parseFloat(opacitySlider.value).toFixed(2); });
+    // cursor preview update when URL changes
+    const customCursorInput = document.getElementById("d-custom-cursor");
+    customCursorInput.addEventListener("input", () => {
+        const url = customCursorInput.value.trim();
+        if (url && url.startsWith("http")) {
+            document.getElementById("cursor-preview-container").style.display = "flex";
+            document.getElementById("cursor-preview-img").src = url;
+        } else {
+            document.getElementById("cursor-preview-container").style.display = "none";
+        }
     });
-    opacitySlider.addEventListener("input", () => {
-        document.getElementById("card-opacity-val").textContent = parseFloat(opacitySlider.value).toFixed(2);
-    });
-
-    // Save dashboard
+    document.getElementById("cursor-reset-btn").onclick = () => {
+        customCursorInput.value = "";
+        document.getElementById("cursor-preview-container").style.display = "none";
+        document.getElementById("cursor-preview-img").src = "";
+    };
+    // embed preview live
+    const embedTitleInput = document.getElementById("d-embed-title");
+    const embedDescInput = document.getElementById("d-embed-desc");
+    const embedImageInput = document.getElementById("d-embed-image");
+    function refreshEmbedPreview() { updateEmbedPreview(embedTitleInput.value, embedDescInput.value, embedImageInput.value); }
+    embedTitleInput.addEventListener("input", refreshEmbedPreview);
+    embedDescInput.addEventListener("input", refreshEmbedPreview);
+    embedImageInput.addEventListener("input", refreshEmbedPreview);
     async function saveDashboard(silent = false) {
         if (!session) return;
         const adminPanel = document.getElementById("panel-admin");
         if (adminPanel && adminPanel.classList.contains("active")) return;
-        const btn = document.getElementById("d-save");
-        const status = document.getElementById("d-save-status");
-        if (!silent) {
-            btn.disabled = true;
-            btn.textContent = "saving...";
-            status.textContent = "";
-        }
-        const lines = [
-            document.getElementById("d-line1").value.trim(),
-            document.getElementById("d-line2").value.trim(),
-            document.getElementById("d-line3").value.trim()
-        ];
+        const btn = document.getElementById("d-save"), status = document.getElementById("d-save-status");
+        if (!silent) { btn.disabled = true; btn.textContent = "saving..."; status.textContent = ""; }
+        const lines = [document.getElementById("d-line1").value.trim(), document.getElementById("d-line2").value.trim(), document.getElementById("d-line3").value.trim()];
         const discord = document.getElementById("d-discord").value.trim();
         const bgVideoRaw = document.getElementById("d-bgvideo").value.trim();
         const bgWordsRaw = document.getElementById("d-bgwords").value.trim();
         const bg_video_urls = bgVideoRaw ? [bgVideoRaw] : [];
         const bg_words = bgWordsRaw.split(",").map(w => w.trim()).filter(Boolean);
-        const linkRows = document.querySelectorAll(".dash-link-row");
-        const links = [];
-        linkRows.forEach(row => {
-            const url = row.querySelector(".dl-url").value.trim();
-            const icon = row.querySelector(".dl-icon").value;
-            if (url) links.push({ label: icon, url: url, icon: icon });
-        });
+        const linkRows = document.querySelectorAll(".dash-link-row"), links = [];
+        linkRows.forEach(row => { const url = row.querySelector(".dl-url").value.trim(), icon = row.querySelector(".dl-icon").value; if (url) links.push({ label: icon, url: url, icon: icon }); });
         const now = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
         const cleanAliases = dashAliases.filter(a => typeof a === "string" && a.trim().length > 0);
         const card_style = document.getElementById("d-card-style").value;
@@ -2826,156 +1189,61 @@
         const card_opacity = parseFloat(opacitySlider.value);
         const parallax_enabled = document.getElementById("d-parallax").checked;
         const cursor_effect = document.getElementById("d-cursor-effect").value;
-        // custom cursor is handled separately via upload button, but we need to include it in payload if changed
-        // we'll get it from a global variable set by upload
-        const custom_cursor = window._pendingCustomCursor || (C ? C.custom_cursor : "");
-        delete window._pendingCustomCursor;
-
+        const custom_cursor = document.getElementById("d-custom-cursor").value.trim();
+        const embed_title = document.getElementById("d-embed-title").value.trim();
+        const embed_description = document.getElementById("d-embed-desc").value.trim();
+        const embed_image = document.getElementById("d-embed-image").value.trim();
         const payload = {
             lines, discord, links, bg_video_urls, bg_words, last_change: now,
             equipped_badges: [...dashEquipped], aliases: cleanAliases,
             card_style, border_radius, card_opacity, parallax_enabled, cursor_effect,
-            custom_cursor: custom_cursor
+            custom_cursor, embed_title, embed_description, embed_image
         };
         try {
             await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
             updateAliasRowOnCard(cleanAliases);
-            if (!silent) {
-                status.textContent = "saved ✓";
-                status.style.color = "rgba(100,220,150,.5)";
-                setTimeout(() => { status.textContent = ""; }, 3000);
-                if (slug === session.username) location.reload();
-            } else {
-                if (slug === session.username) location.reload();
-            }
-        } catch (e) {
-            console.error("[save]", e);
-            if (!silent) {
-                status.textContent = "error: " + e.message;
-                status.style.color = "rgba(255,100,100,.6)";
-                setTimeout(() => { status.textContent = ""; }, 5000);
-            }
-        }
-        if (!silent) {
-            btn.disabled = false;
-            btn.textContent = "save changes";
-        }
+            if (!silent) { status.textContent = "saved ✓"; status.style.color = "rgba(100,220,150,.5)"; setTimeout(() => { status.textContent = ""; }, 3000); if (slug === session.username) location.reload(); }
+            else { if (slug === session.username) location.reload(); }
+        } catch (e) { console.error("[save]", e); if (!silent) { status.textContent = "error: " + e.message; status.style.color = "rgba(255,100,100,.6)"; setTimeout(() => { status.textContent = ""; }, 5000); } }
+        if (!silent) { btn.disabled = false; btn.textContent = "save changes"; }
     }
-
     function updateAliasRowOnCard(aliases) {
         const aliasRow = document.getElementById("alias-row");
         if (!aliasRow) return;
         const clean = (aliases || []).filter(a => a && a.trim().length > 0);
-        if (clean.length > 0) {
-            aliasRow.style.display = "block";
-            aliasRow.innerHTML = "also known as: " + clean.map((a, i) => `<a href="https://forgave.lol/${a}" target="_blank">${a}</a>${i < clean.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`).join("");
-        } else {
-            aliasRow.style.display = "none";
-            aliasRow.innerHTML = "";
-        }
+        if (clean.length > 0) { aliasRow.style.display = "block"; aliasRow.innerHTML = "also known as: " + clean.map((a, i) => `<a href="https://forgave.lol/${a}" target="_blank">${a}</a>${i < clean.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`).join(""); } else { aliasRow.style.display = "none"; aliasRow.innerHTML = ""; }
     }
-
     document.getElementById("d-save").onclick = () => saveDashboard(false);
-
-    // ========== CUSTOM CURSOR UPLOAD ==========
-    const fileInput = document.getElementById("custom-cursor-file");
-    const uploadBtn = document.getElementById("custom-cursor-upload-btn");
-    const previewContainer = document.getElementById("cursor-preview-container");
-    const previewImg = document.getElementById("cursor-preview-img");
-    const resetBtn = document.getElementById("cursor-reset-btn");
-    const uploadStatus = document.getElementById("cursor-upload-status");
-
-    uploadBtn.onclick = () => fileInput.click();
-    fileInput.onchange = async () => {
-        const file = fileInput.files[0];
-        if (!file) return;
-        if (!file.type.startsWith("image/")) {
-            uploadStatus.textContent = "please select an image file";
-            uploadStatus.className = "field-hint error";
-            return;
-        }
-        uploadStatus.textContent = "uploading...";
-        uploadStatus.className = "field-hint";
-        try {
-            const url = await uploadToCatbox(file);
-            // show preview
-            previewImg.src = url;
-            previewContainer.style.display = "flex";
-            window._pendingCustomCursor = url;
-            uploadStatus.textContent = "uploaded! save your changes to apply.";
-            uploadStatus.className = "field-hint success";
-            // apply immediately for testing?
-            applyCustomCursor(url);
-        } catch (e) {
-            uploadStatus.textContent = "upload failed: " + e.message;
-            uploadStatus.className = "field-hint error";
-        }
-    };
-    resetBtn.onclick = () => {
-        window._pendingCustomCursor = "";
-        previewContainer.style.display = "none";
-        previewImg.src = "";
-        fileInput.value = "";
-        uploadStatus.textContent = "reset to default cursor. save changes.";
-        uploadStatus.className = "field-hint success";
-        applyCustomCursor("");
-    };
-
-    // ========== ADMIN PASSWORD RESET ==========
+    // Admin password reset modal
     const resetPwModal = document.getElementById("reset-pw-modal");
     const resetPwClose = document.getElementById("reset-pw-close");
     const resetPwValue = document.getElementById("reset-pw-value");
     const copyPwBtn = document.getElementById("copy-pw-btn");
-
     resetPwClose.onclick = () => closeModal(resetPwModal);
     resetPwModal.onclick = (e) => { if (e.target === resetPwModal) closeModal(resetPwModal); };
-    copyPwBtn.onclick = () => {
-        resetPwValue.select();
-        navigator.clipboard.writeText(resetPwValue.value);
-        copyPwBtn.textContent = "copied!";
-        setTimeout(() => copyPwBtn.textContent = "copy to clipboard", 2000);
-    };
-
+    copyPwBtn.onclick = () => { resetPwValue.select(); navigator.clipboard.writeText(resetPwValue.value); copyPwBtn.textContent = "copied!"; setTimeout(() => copyPwBtn.textContent = "copy to clipboard", 2000); };
     document.getElementById("admin-reset-pw-btn").onclick = async () => {
-        if (!isAdmin(session) || !adminTarget) {
-            alert("not authorised or no user selected");
-            return;
-        }
-        const btn = document.getElementById("admin-reset-pw-btn");
-        const status = document.getElementById("admin-pw-status");
-        btn.disabled = true;
-        status.textContent = "generating...";
-        status.className = "admin-status";
+        if (!isAdmin(session) || !adminTarget) { alert("not authorised or no user selected"); return; }
+        const btn = document.getElementById("admin-reset-pw-btn"), status = document.getElementById("admin-pw-status");
+        btn.disabled = true; status.textContent = "generating..."; status.className = "admin-status";
         try {
             const newPassword = generateRandomPassword(8);
             const hash = await hashPassword(newPassword);
             await supa.patch("users", `username=eq.${encodeURIComponent(adminTarget.username)}`, { password_hash: hash });
-            resetPwValue.value = newPassword;
-            openModal(resetPwModal);
-            status.textContent = "password reset ✓";
-            status.className = "admin-status ok";
-        } catch (e) {
-            status.textContent = "error: " + e.message;
-            status.className = "admin-status err";
-        }
+            resetPwValue.value = newPassword; openModal(resetPwModal);
+            status.textContent = "password reset ✓"; status.className = "admin-status ok";
+        } catch (e) { status.textContent = "error: " + e.message; status.className = "admin-status err"; }
         btn.disabled = false;
     };
-
-    // ========== ADMIN PANEL SEARCH ETC. ==========
-    let adminTarget = null;
-    let adminTargetEquipped = [];
-
+    let adminTarget = null, adminTargetEquipped = [];
     document.getElementById("admin-search-btn").onclick = adminSearch;
     document.getElementById("admin-search-input").addEventListener("keydown", e => { if (e.key === "Enter") adminSearch(); });
-
     async function adminSearch() {
         if (!isAdmin(session)) { alert("not authorised"); return; }
         const q = document.getElementById("admin-search-input").value.trim().toLowerCase();
         if (!q) return;
-        const card = document.getElementById("admin-user-card");
-        const nf = document.getElementById("admin-not-found");
-        card.classList.remove("visible");
-        nf.classList.remove("show");
+        const card = document.getElementById("admin-user-card"), nf = document.getElementById("admin-not-found");
+        card.classList.remove("visible"); nf.classList.remove("show");
         clearAdminStatuses();
         try {
             const rows = await supa.get("users", `username=eq.${encodeURIComponent(q)}`);
@@ -2986,148 +1254,59 @@
             document.getElementById("admin-target-uid").textContent = `uid ${adminTarget.uid}`;
             document.getElementById("admin-uid-input").value = adminTarget.uid;
             try {
-                const lr = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/" + adminTarget.username)}&select=count`, {
-                    headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
-                });
+                const lr = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/" + adminTarget.username)}&select=count`, { headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY } });
                 const ld = await lr.json();
                 document.getElementById("admin-likes-input").value = ld?.[0]?.count || 0;
-            } catch (e) {
-                document.getElementById("admin-likes-input").value = 0;
-            }
+            } catch (e) { document.getElementById("admin-likes-input").value = 0; }
             renderAdminBadges();
             card.classList.add("visible");
-        } catch (e) {
-            console.error(e);
-            nf.classList.add("show");
-        }
+        } catch (e) { console.error(e); nf.classList.add("show"); }
     }
-
-    function clearAdminStatuses() {
-        ["admin-uid-status", "admin-likes-status", "admin-badges-status", "admin-pw-status"].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) { el.textContent = ""; el.className = "admin-status"; }
-        });
-    }
-
+    function clearAdminStatuses() { ["admin-uid-status", "admin-likes-status", "admin-badges-status", "admin-pw-status"].forEach(id => { const el = document.getElementById(id); if (el) { el.textContent = ""; el.className = "admin-status"; } }); }
     function renderAdminBadges() {
-        const grid = document.getElementById("admin-badge-grid");
-        grid.innerHTML = "";
+        const grid = document.getElementById("admin-badge-grid"); grid.innerHTML = "";
         ALL_BADGE_DEFS.forEach(b => {
             const on = adminTargetEquipped.includes(b.id);
             const btn = document.createElement("button");
             btn.className = `admin-badge-toggle ${on ? "on" : ""}`;
             btn.innerHTML = `<div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;">${b.svg.replace('class="og-badge-svg"', 'style="width:24px;height:24px;display:block;"')}</div><span>${b.name}</span>`;
-            btn.onclick = () => {
-                const isOn = adminTargetEquipped.includes(b.id);
-                if (isOn) {
-                    adminTargetEquipped.splice(adminTargetEquipped.indexOf(b.id), 1);
-                    btn.classList.remove("on");
-                } else {
-                    adminTargetEquipped.push(b.id);
-                    btn.classList.add("on");
-                }
-            };
+            btn.onclick = () => { const isOn = adminTargetEquipped.includes(b.id); if (isOn) { adminTargetEquipped.splice(adminTargetEquipped.indexOf(b.id), 1); btn.classList.remove("on"); } else { adminTargetEquipped.push(b.id); btn.classList.add("on"); } };
             grid.appendChild(btn);
         });
     }
-
     document.getElementById("admin-uid-btn").onclick = async () => {
         if (!isAdmin(session) || !adminTarget) { alert("not authorised"); return; }
-        const btn = document.getElementById("admin-uid-btn");
-        const status = document.getElementById("admin-uid-status");
-        const newUid = parseInt(document.getElementById("admin-uid-input").value, 10);
-        if (isNaN(newUid)) {
-            status.textContent = "enter a valid number";
-            status.className = "admin-status err";
-            return;
-        }
-        btn.disabled = true;
-        status.textContent = "saving...";
-        status.className = "admin-status";
-        try {
-            await supa.patch("users", `username=eq.${encodeURIComponent(adminTarget.username)}`, { uid: newUid });
-            adminTarget.uid = newUid;
-            document.getElementById("admin-target-uid").textContent = `uid ${newUid}`;
-            status.textContent = "uid updated ✓";
-            status.className = "admin-status ok";
-        } catch (e) {
-            status.textContent = "error: " + e.message;
-            status.className = "admin-status err";
-        }
+        const btn = document.getElementById("admin-uid-btn"), status = document.getElementById("admin-uid-status");
+        const nu = parseInt(document.getElementById("admin-uid-input").value, 10);
+        if (isNaN(nu)) { status.textContent = "enter a valid number"; status.className = "admin-status err"; return; }
+        btn.disabled = true; status.textContent = "saving..."; status.className = "admin-status";
+        try { await supa.patch("users", `username=eq.${encodeURIComponent(adminTarget.username)}`, { uid: nu }); adminTarget.uid = nu; document.getElementById("admin-target-uid").textContent = `uid ${nu}`; status.textContent = "uid updated ✓"; status.className = "admin-status ok"; } catch (e) { status.textContent = "error: " + e.message; status.className = "admin-status err"; }
         btn.disabled = false;
     };
-
     document.getElementById("admin-likes-btn").onclick = async () => {
         if (!isAdmin(session) || !adminTarget) { alert("not authorised"); return; }
-        const btn = document.getElementById("admin-likes-btn");
-        const status = document.getElementById("admin-likes-status");
-        const count = parseInt(document.getElementById("admin-likes-input").value, 10);
-        if (isNaN(count) || count < 0) {
-            status.textContent = "enter a valid number";
-            status.className = "admin-status err";
-            return;
-        }
-        btn.disabled = true;
-        status.textContent = "saving...";
-        status.className = "admin-status";
+        const btn = document.getElementById("admin-likes-btn"), status = document.getElementById("admin-likes-status");
+        const cnt = parseInt(document.getElementById("admin-likes-input").value, 10);
+        if (isNaN(cnt) || cnt < 0) { status.textContent = "enter a valid number"; status.className = "admin-status err"; return; }
+        btn.disabled = true; status.textContent = "saving..."; status.className = "admin-status";
         try {
             const lid = "forgave.lol/" + adminTarget.username;
-            const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(lid)}&select=count`, {
-                headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY }
-            });
-            const existing = await res.json();
-            if (!existing || existing.length === 0) {
-                await fetch(`${SUPA_URL}/rest/v1/likes`, {
-                    method: "POST",
-                    headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" },
-                    body: JSON.stringify({ id: lid, count: count })
-                });
-            } else {
-                await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(lid)}`, {
-                    method: "PATCH",
-                    headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" },
-                    body: JSON.stringify({ count: count })
-                });
-            }
-            status.textContent = `likes set to ${count} ✓`;
-            status.className = "admin-status ok";
-        } catch (e) {
-            status.textContent = "error: " + e.message;
-            status.className = "admin-status err";
-        }
+            const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(lid)}&select=count`, { headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY } });
+            const ex = await res.json();
+            if (!ex || ex.length === 0) { await fetch(`${SUPA_URL}/rest/v1/likes`, { method: "POST", headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ id: lid, count: cnt }) }); }
+            else { await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(lid)}`, { method: "PATCH", headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ count: cnt }) }); }
+            status.textContent = `likes set to ${cnt} ✓`; status.className = "admin-status ok";
+        } catch (e) { status.textContent = "error: " + e.message; status.className = "admin-status err"; }
         btn.disabled = false;
     };
-
     document.getElementById("admin-save-badges-btn").onclick = async () => {
         if (!isAdmin(session) || !adminTarget) { alert("not authorised"); return; }
-        const btn = document.getElementById("admin-save-badges-btn");
-        const status = document.getElementById("admin-badges-status");
-        btn.disabled = true;
-        status.textContent = "saving...";
-        status.className = "admin-status";
-        try {
-            await supa.patch("users", `username=eq.${encodeURIComponent(adminTarget.username)}`, { equipped_badges: [...adminTargetEquipped] });
-            status.textContent = "badges saved ✓";
-            status.className = "admin-status ok";
-        } catch (e) {
-            status.textContent = "error: " + e.message;
-            status.className = "admin-status err";
-        }
+        const btn = document.getElementById("admin-save-badges-btn"), status = document.getElementById("admin-badges-status");
+        btn.disabled = true; status.textContent = "saving..."; status.className = "admin-status";
+        try { await supa.patch("users", `username=eq.${encodeURIComponent(adminTarget.username)}`, { equipped_badges: [...adminTargetEquipped] }); status.textContent = "badges saved ✓"; status.className = "admin-status ok"; } catch (e) { status.textContent = "error: " + e.message; status.className = "admin-status err"; }
         btn.disabled = false;
     };
-
-    // ========== DISCORD WEBHOOK ==========
-    async function notifyDiscord(username, uid) {
-        try {
-            await fetch("https://discord.com/api/webhooks/1383870699321909398/TsimELiMHMKQ3I8gJdkq5TtBovVfCY5HE4TcIJGJCbEBW_aP3fKZ3x5hLDPaqnX1xJJb", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ embeds: [{ description: `new user: **${username}** (uid ${uid})`, color: 0x2b2d31 }] })
-            });
-        } catch (e) {}
-    }
-
-    // ========== BOOT ==========
+    async function notifyDiscord(username, uid) { try { await fetch("https://discord.com/api/webhooks/1383870699321909398/TsimELiMHMKQ3I8gJdkq5TtBovVfCY5HE4TcIJGJCbEBW_aP3fKZ3x5hLDPaqnX1xJJb", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ embeds: [{ description: `new user: **${username}** (uid ${uid})`, color: 0x2b2d31 }] }) }); } catch (e) { } }
     initCursorEffect();
     updateAuthUI();
     resolveRoute().then(() => renderCard());
