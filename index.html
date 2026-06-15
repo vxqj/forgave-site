@@ -228,6 +228,8 @@
         .cursor-upload-status{font-size:.58rem;color:rgba(255,255,255,.18);margin-top:4px}
         .cursor-upload-status.success{color:rgba(100,220,150,.6)}
         .cursor-upload-status.error{color:rgba(255,100,100,.6)}
+        .reset-btn-sm{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:.58rem;cursor:pointer;margin-left:8px;transition:all .15s}
+        .reset-btn-sm:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
         @media (max-width:600px){#dash-modal .modal{width:calc(100vw - 24px)}.dash-body{flex-direction:column}.dash-sidebar{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);flex-direction:row;padding:10px 12px;overflow-x:auto;gap:4px}.dash-nav-btn{white-space:nowrap;flex-shrink:0}.dash-panels{padding:16px}}
     </style>
 </head>
@@ -364,8 +366,8 @@
                     <div class="field"><label>card style</label><select id="d-card-style"><option value="default">Default (original)</option><option value="minimalistic">Minimalistic (centered card)</option><option value="modern">Modern (extra card below)</option></select></div>
                     <div class="field"><label>border radius</label><div class="slider-container"><label>▯</label><input type="range" id="d-border-radius" min="0" max="30" step="1" value="18"><span class="slider-value" id="border-radius-val">18px</span></div></div>
                     <div class="field"><label>card opacity</label><div class="slider-container"><label>◐</label><input type="range" id="d-card-opacity" min="0.2" max="1.0" step="0.01" value="0.58"><span class="slider-value" id="card-opacity-val">0.58</span></div></div>
-                    <div class="field"><label>card background color</label><input type="color" id="d-card-bg-color" value="#0a0a0c"><div class="field-hint">overrides the default dark background (opacity still applies)</div></div>
-                    <div class="field"><label>border color</label><input type="color" id="d-border-color" value="#ffffff"><div class="field-hint">changes the card's border color</div></div>
+                    <div class="field"><label>card background color</label><div style="display:flex; align-items:center; gap:8px;"><input type="color" id="d-card-bg-color" value="#0a0a0c"><button class="reset-btn-sm" id="reset-bg-color">reset</button></div><div class="field-hint">overrides the default dark background (opacity still applies)</div></div>
+                    <div class="field"><label>border color</label><div style="display:flex; align-items:center; gap:8px;"><input type="color" id="d-border-color" value="#ffffff"><button class="reset-btn-sm" id="reset-border-color">reset</button></div><div class="field-hint">changes the card's border color</div></div>
                     <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-parallax" style="width:auto;margin:0;"> parallax effect</label></div>
                     <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background (no card background, only border and text)</label><div class="field-hint">makes the card background fully transparent (ignores color picker)</div></div>
                     <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow (removes drop shadow)</label></div>
@@ -615,9 +617,8 @@
     }
 
     // ========== VIEWS COUNTER ==========
-    const viewCountedKey = `viewed_${slug}_${Date.now()}`;
     async function incrementViews() {
-        if (!slug || slug === "" || slug === "n") return; // skip main page
+        if (!slug || slug === "" || slug === "n") return;
         const viewedBefore = localStorage.getItem(`frgv_viewed_${slug}`);
         if (viewedBefore) return;
         localStorage.setItem(`frgv_viewed_${slug}`, "1");
@@ -632,7 +633,19 @@
         return num.toString();
     }
 
-    // ========== CARD STYLES ==========
+    // ========== GLOBAL CURSOR OVERRIDE ==========
+    function applyCustomCursor(url) {
+        let styleTag = document.getElementById("force-cursor-style");
+        if (styleTag) styleTag.remove();
+        if (url && url.trim() && url.startsWith("http")) {
+            styleTag = document.createElement("style");
+            styleTag.id = "force-cursor-style";
+            styleTag.textContent = `* { cursor: url('${url}'), auto !important; }`;
+            document.head.appendChild(styleTag);
+        }
+    }
+
+    // ========== CARD STYLES (transparent bg fix) ==========
     function applyCardStyles() {
         if (!C) return;
         const mainCard = document.getElementById("content");
@@ -644,6 +657,14 @@
         let bgColor;
         if (C.transparent_bg) {
             bgColor = "transparent";
+            mainCard.style.backdropFilter = "none";
+            mainCard.style.webkitBackdropFilter = "none";
+            if (secondCard) {
+                secondCard.style.backdropFilter = "none";
+                secondCard.style.webkitBackdropFilter = "none";
+            }
+            // hide glossy pseudo-element
+            mainCard.style.setProperty("--gloss-display", "none");
         } else if (C.card_bg_color && C.card_bg_color !== "#0a0a0c") {
             bgColor = C.card_bg_color;
             mainCard.style.backdropFilter = "none";
@@ -652,6 +673,7 @@
                 secondCard.style.backdropFilter = "none";
                 secondCard.style.webkitBackdropFilter = "none";
             }
+            mainCard.style.setProperty("--gloss-display", "none");
         } else {
             bgColor = `rgba(10,10,12,${opacity})`;
             if (!C.transparent_bg) {
@@ -661,6 +683,9 @@
                     secondCard.style.backdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
                     secondCard.style.webkitBackdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
                 }
+                mainCard.style.setProperty("--gloss-display", "");
+            } else {
+                mainCard.style.setProperty("--gloss-display", "none");
             }
         }
         mainCard.style.background = bgColor;
@@ -691,7 +716,13 @@
         if (style) style.remove();
         style = document.createElement("style");
         style.id = "dynamic-card-styles";
-        style.textContent = `#content::after { border-radius: ${radius}px; } #second-card::after { border-radius: ${radius}px; }`;
+        let glossRule = "";
+        if (C.transparent_bg || (C.card_bg_color && C.card_bg_color !== "#0a0a0c")) {
+            glossRule = "#content::after { display: none; } #second-card::after { display: none; }";
+        } else {
+            glossRule = `#content::after { border-radius: ${radius}px; } #second-card::after { border-radius: ${radius}px; }`;
+        }
+        style.textContent = glossRule;
         document.head.appendChild(style);
     }
 
@@ -1163,8 +1194,10 @@
                 if (u.custom_cursor) {
                     document.getElementById("cursor-preview-container").style.display = "flex";
                     document.getElementById("cursor-preview-img").src = u.custom_cursor;
+                    pendingCursorUrl = u.custom_cursor;
                 } else {
                     document.getElementById("cursor-preview-container").style.display = "none";
+                    pendingCursorUrl = null;
                 }
                 document.getElementById("border-radius-val").textContent = (u.border_radius !== undefined ? u.border_radius : 18) + "px";
                 document.getElementById("card-opacity-val").textContent = (u.card_opacity !== undefined ? u.card_opacity : 0.58).toFixed(2);
@@ -1257,6 +1290,10 @@
     radiusSlider.addEventListener("input", () => { document.getElementById("border-radius-val").textContent = radiusSlider.value + "px"; });
     opacitySlider.addEventListener("input", () => { document.getElementById("card-opacity-val").textContent = parseFloat(opacitySlider.value).toFixed(2); });
     
+    // RESET color buttons
+    document.getElementById("reset-bg-color").onclick = () => { document.getElementById("d-card-bg-color").value = "#0a0a0c"; };
+    document.getElementById("reset-border-color").onclick = () => { document.getElementById("d-border-color").value = "#ffffff"; };
+    
     // CURSOR UPLOAD
     const cursorFileInput = document.getElementById("cursor-file-input");
     const cursorUploadBtn = document.getElementById("cursor-upload-btn");
@@ -1305,7 +1342,8 @@
             cursorPreviewContainer.style.display = "flex";
             cursorUploadStatus.textContent = "uploaded! save changes to apply.";
             cursorUploadStatus.className = "cursor-upload-status success";
-            document.body.style.cursor = `url('${url}'), auto`;
+            // immediate preview on body
+            applyCustomCursor(url);
         } catch (e) {
             cursorUploadStatus.textContent = "upload failed: " + e.message;
             cursorUploadStatus.className = "cursor-upload-status error";
@@ -1318,16 +1356,8 @@
         cursorPreviewImg.src = "";
         cursorUploadStatus.textContent = "reset to default cursor. save changes.";
         cursorUploadStatus.className = "cursor-upload-status";
-        document.body.style.cursor = "";
+        applyCustomCursor("");
     };
-    
-    function applyCustomCursor(url) {
-        if (url && url.trim() && url.startsWith("http")) {
-            document.body.style.cursor = `url('${url}'), auto`;
-        } else {
-            document.body.style.cursor = "";
-        }
-    }
     
     async function saveDashboard(silent = false) {
         if (!session) return;
