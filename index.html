@@ -12,7 +12,7 @@
     <meta name="twitter:image" content="https://files.catbox.moe/fjrfis.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Fira+Code:wght@300..700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&family=Fira+Code:wght@300..700&family=IBM+Plex+Mono:wght@100..700&display=swap" rel="stylesheet">
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono","Courier New",monospace;color:#fff}
@@ -327,7 +327,7 @@
                         <input type="text" id="d-line1" maxlength="60">
                         <div style="display:flex; align-items:center; gap:8px; margin-top:5px;">
                             <input type="checkbox" id="d-typewriter1" style="width:auto; margin:0;">
-                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line</label>
+                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label>
                         </div>
                     </div>
                     <div class="field">
@@ -335,7 +335,7 @@
                         <input type="text" id="d-line2" maxlength="60">
                         <div style="display:flex; align-items:center; gap:8px; margin-top:5px;">
                             <input type="checkbox" id="d-typewriter2" style="width:auto; margin:0;">
-                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line</label>
+                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label>
                         </div>
                     </div>
                     <div class="field">
@@ -343,7 +343,7 @@
                         <input type="text" id="d-line3" maxlength="60">
                         <div style="display:flex; align-items:center; gap:8px; margin-top:5px;">
                             <input type="checkbox" id="d-typewriter3" style="width:auto; margin:0;">
-                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line</label>
+                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label>
                         </div>
                     </div>
                     <div class="field"><label>discord tag</label><input type="text" id="d-discord" maxlength="80"></div>
@@ -534,7 +534,7 @@
         roblox: `<svg viewBox="0 0 24 24"><path d="M5.16 0L0 18.84 18.84 24 24 5.16 5.16 0zm8.32 13.65l-3.13-.86.86-3.13 3.13.86-.86 3.13z"/></svg>`
     };
 
-    // ========== BADGE SVGS (same as before) ==========
+    // ========== BADGE SVGS ==========
     const OG_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 2L4 5.5V12c0 5 3.8 9.4 9 10.9C18.2 21.4 22 17 22 12V5.5L13 2Z" fill="url(#og-shield-fill)" stroke="url(#og-shield-stroke)" stroke-width="0.8"/><g opacity="0.55"><line x1="13" y1="5" x2="13" y2="3.5" stroke="#FFD97A" stroke-width="0.7"/><line x1="16.5" y1="6.2" x2="17.5" y2="5" stroke="#FFD97A" stroke-width="0.7"/><line x1="9.5" y1="6.2" x2="8.5" y2="5" stroke="#FFD97A" stroke-width="0.7"/></g><text x="13" y="14.5" text-anchor="middle" font-family="'DM Mono', monospace" font-size="5.5" fill="url(#og-text-fill)">OG</text><path d="M13 2L4 5.5V9c3.5-0.5 7-2 9-4.5C15 7 18.5 8.5 22 9V5.5L13 2Z" fill="url(#og-shine)" opacity="0.25"/><defs><linearGradient id="og-shield-fill" x1="13" y1="2" x2="13" y2="23"><stop offset="0%" stop-color="#3D2A00"/><stop offset="100%" stop-color="#1A1200"/></linearGradient><linearGradient id="og-shield-stroke" x1="4" y1="2" x2="22" y2="23"><stop offset="0%" stop-color="#FFD97A"/><stop offset="50%" stop-color="#C8860A"/><stop offset="100%" stop-color="#FFD97A"/></linearGradient><linearGradient id="og-text-fill" x1="8" y1="9" x2="18" y2="15"><stop offset="0%" stop-color="#FFE999"/><stop offset="100%" stop-color="#D4920F"/></linearGradient><linearGradient id="og-shine" x1="4" y1="2" x2="22" y2="9"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="transparent"/></linearGradient></defs></svg>`;
     const OG_PLUS_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 3L10.5 8.5L4.5 9.5L9 13.5L7.5 19.5L13 16.5L18.5 19.5L17 13.5L21.5 9.5L15.5 8.5Z" fill="url(#diamond-fill)" stroke="url(#diamond-stroke)" stroke-width="0.8"/><defs><linearGradient id="diamond-fill" x1="13" y1="3" x2="13" y2="20"><stop offset="0%" stop-color="#a8edff"/><stop offset="100%" stop-color="#1a8cff"/></linearGradient><linearGradient id="diamond-stroke" x1="4" y1="3" x2="22" y2="20"><stop offset="0%" stop-color="#e0f7ff"/><stop offset="100%" stop-color="#1a8cff"/></linearGradient></defs></svg>`;
     const EARLY_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 3L15.5 9.5L22.5 10L17.5 14.5L19.5 21.5L13 18L6.5 21.5L8.5 14.5L3.5 10L10.5 9.5Z" fill="url(#star-fill)" stroke="url(#star-stroke)" stroke-width="0.8"/><defs><linearGradient id="star-fill" x1="13" y1="3" x2="13" y2="22"><stop offset="0%" stop-color="#fffba0"/><stop offset="100%" stop-color="#f0a500"/></linearGradient><linearGradient id="star-stroke" x1="3" y1="3" x2="23" y2="22"><stop offset="0%" stop-color="#fff5c0"/><stop offset="100%" stop-color="#c87000"/></linearGradient></defs></svg>`;
@@ -730,19 +730,47 @@
     }
     function setCursorEffect(effect) { cursorEffect = effect; }
 
-    // ========== TYPEWRITER EFFECT (adjusted delays after fade-in) ==========
-    function applyTypewriter(element, text, callback) {
-        if (!element) return;
-        element.textContent = "";
-        let i = 0;
-        function type() {
-            if (i < text.length) {
-                element.textContent += text.charAt(i);
-                i++;
-                setTimeout(type, 40 + Math.random() * 30);
-            } else if (callback) callback();
+    // ========== LOOPING TYPEWRITER (with cursor) ==========
+    function startLoopingTypewriter(element, text, delayBeforeStart = 0) {
+        if (!element || !text) return;
+        let timeoutId = null;
+        let intervalId = null;
+        let isDeleting = false;
+        let currentText = "";
+        let pos = 0;
+        // remove any existing content
+        element.innerHTML = "";
+        function update() {
+            element.innerHTML = currentText + '<span class="typewriter-cursor" style="opacity:1; display:inline-block; width:0.5em; overflow:visible;">|</span>';
         }
-        type();
+        function typeStep() {
+            if (!isDeleting) {
+                if (pos < text.length) {
+                    currentText += text[pos];
+                    pos++;
+                    update();
+                    setTimeout(typeStep, 70 + Math.random() * 40);
+                } else {
+                    // finished typing, wait then start deleting
+                    isDeleting = true;
+                    setTimeout(typeStep, 2000);
+                }
+            } else {
+                if (pos > 0) {
+                    currentText = currentText.slice(0, -1);
+                    pos--;
+                    update();
+                    setTimeout(typeStep, 50);
+                } else {
+                    // finished deleting, restart loop
+                    isDeleting = false;
+                    setTimeout(typeStep, 500);
+                }
+            }
+        }
+        setTimeout(() => {
+            typeStep();
+        }, delayBeforeStart);
     }
 
     // ========== RENDER CARD ==========
@@ -804,22 +832,31 @@
         const line3El = document.getElementById("line3");
         const lineTexts = [C.lines[0] || "", C.lines[1] || "", C.lines[2] || ""];
         
-        // Fade-in delays: 0.72s, 0.79s, 0.86s. Start typing after fade-in (add 0.1s buffer)
+        // Clear any existing typewriter intervals
+        if (window._typewriterTimeouts) {
+            window._typewriterTimeouts.forEach(t => clearTimeout(t));
+            window._typewriterTimeouts = [];
+        } else window._typewriterTimeouts = [];
+        
+        // Start loop only if enabled and text not empty
         if (C.typewriter_line1 && lineTexts[0]) {
-            line1El.textContent = "";
-            setTimeout(() => applyTypewriter(line1El, lineTexts[0]), 820);
+            line1El.innerHTML = "";
+            const t = setTimeout(() => startLoopingTypewriter(line1El, lineTexts[0], 0), 820);
+            window._typewriterTimeouts.push(t);
         } else {
             line1El.textContent = lineTexts[0];
         }
         if (C.typewriter_line2 && lineTexts[1]) {
-            line2El.textContent = "";
-            setTimeout(() => applyTypewriter(line2El, lineTexts[1]), 900);
+            line2El.innerHTML = "";
+            const t = setTimeout(() => startLoopingTypewriter(line2El, lineTexts[1], 0), 900);
+            window._typewriterTimeouts.push(t);
         } else {
             line2El.textContent = lineTexts[1];
         }
         if (C.typewriter_line3 && lineTexts[2]) {
-            line3El.textContent = "";
-            setTimeout(() => applyTypewriter(line3El, lineTexts[2]), 980);
+            line3El.innerHTML = "";
+            const t = setTimeout(() => startLoopingTypewriter(line3El, lineTexts[2], 0), 980);
+            window._typewriterTimeouts.push(t);
         } else {
             line3El.textContent = lineTexts[2];
         }
@@ -1292,6 +1329,8 @@
             updateAliasRowOnCard(cleanAliases);
             if (!silent) { status.textContent = "saved ✓"; status.style.color = "rgba(100,220,150,.5)"; setTimeout(() => { status.textContent = ""; }, 3000); if (slug === session.username) location.reload(); }
             else { if (slug === session.username) location.reload(); }
+            // After save, clear pending cursor so it doesn't get reapplied stale
+            pendingCursorUrl = null;
         } catch (e) { console.error("[save]", e); if (!silent) { status.textContent = "error: " + e.message; status.style.color = "rgba(255,100,100,.6)"; setTimeout(() => { status.textContent = ""; }, 5000); } }
         if (!silent) { btn.disabled = false; btn.textContent = "save changes"; }
     }
