@@ -25,9 +25,9 @@
         #card-stack{position:fixed;top:40px;left:44px;z-index:10;width:300px;transform-style:preserve-3d;transition:transform 0.1s ease-out}
         @media (max-width:500px){#card-stack{top:auto;bottom:28px;left:50%;transform:translateX(-50%);width:calc(100vw - 32px);max-width:360px}body.minimalistic-mode #card-stack{transform:translate(-50%,-50%)!important;top:50%!important;left:50%!important;bottom:auto!important}}
         body.minimalistic-mode #card-stack{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);bottom:auto;right:auto;margin:0}
-        #content{position:relative;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:22px 24px 20px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 28px 72px rgba(0,0,0,0.75),0 8px 22px rgba(0,0,0,0.4);transition:border-radius 0.2s ease,background 0.2s ease,box-shadow 0.2s ease;transform-style:preserve-3d}
+        #content{position:relative;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:22px 24px 20px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 28px 72px rgba(0,0,0,0.75),0 8px 22px rgba(0,0,0,0.4);transition:border-radius 0.2s ease,background 0.2s ease,box-shadow 0.2s ease,border-color 0.2s ease;transform-style:preserve-3d}
         #content::after{content:"";position:absolute;inset:0;border-radius:18px;background:radial-gradient(ellipse at 30% 0%,rgba(255,255,255,0.03) 0%,transparent 60%);pointer-events:none;transition:border-radius 0.2s ease}
-        #second-card{display:none;margin-top:20px;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:16px 22px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 12px 32px rgba(0,0,0,0.5);transition:border-radius 0.2s ease,background 0.2s ease,box-shadow 0.2s ease;transform-style:preserve-3d}
+        #second-card{display:none;margin-top:20px;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:16px 22px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 12px 32px rgba(0,0,0,0.5);transition:border-radius 0.2s ease,background 0.2s ease,box-shadow 0.2s ease,border-color 0.2s ease;transform-style:preserve-3d}
         #second-card .meta-line{font-size:.7rem;color:rgba(255,255,255,.48);margin:0;opacity:1;animation:none}
         #minimalistic-name{display:none}
         .card-header{margin-bottom:17px;opacity:0;animation:fadeUp .45s ease forwards;animation-delay:.5s}
@@ -354,8 +354,10 @@
                     <div class="field"><label>card style</label><select id="d-card-style"><option value="default">Default (original)</option><option value="minimalistic">Minimalistic (centered card)</option><option value="modern">Modern (extra card below)</option></select></div>
                     <div class="field"><label>border radius</label><div class="slider-container"><label>▯</label><input type="range" id="d-border-radius" min="0" max="30" step="1" value="18"><span class="slider-value" id="border-radius-val">18px</span></div></div>
                     <div class="field"><label>card opacity</label><div class="slider-container"><label>◐</label><input type="range" id="d-card-opacity" min="0.2" max="1.0" step="0.01" value="0.58"><span class="slider-value" id="card-opacity-val">0.58</span></div></div>
+                    <div class="field"><label>card background color</label><input type="color" id="d-card-bg-color" value="#0a0a0c"><div class="field-hint">overrides the default dark background (opacity still applies)</div></div>
+                    <div class="field"><label>border color</label><input type="color" id="d-border-color" value="#ffffff"><div class="field-hint">changes the card's border color</div></div>
                     <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-parallax" style="width:auto;margin:0;"> parallax effect</label></div>
-                    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background (no card background, only border and text)</label><div class="field-hint">makes the card background fully transparent</div></div>
+                    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background (no card background, only border and text)</label><div class="field-hint">makes the card background fully transparent (ignores color picker)</div></div>
                     <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow (removes drop shadow)</label></div>
                 </div>
                 <div class="dash-panel" id="panel-cursor">
@@ -477,7 +479,7 @@
         bgWords: ["forgave", "frgv", "</>", "///"],
         wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [],
         custom_cursor: "", custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
-        transparent_bg: false, disable_shadow: false
+        transparent_bg: false, disable_shadow: false, card_bg_color: "", border_color: ""
     };
     const STATIC_USERS = {
         "prada": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "prada", uid: "1", badges: [], lines: ["@juliasfanboy / on discord", "rich", "take risks"], discord: "", links: [{ label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok" }], bgVideo: { urls: ["https://files.catbox.moe/aned1c.mp4"], opacity: 0.45 }, bgWords: ["prada", "</>"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [] },
@@ -496,7 +498,7 @@
         roblox: `<svg viewBox="0 0 24 24"><path d="M5.16 0L0 18.84 18.84 24 24 5.16 5.16 0zm8.32 13.65l-3.13-.86.86-3.13 3.13.86-.86 3.13z"/></svg>`
     };
 
-    // ========== BADGE SVGS (same as before) ==========
+    // ========== BADGE SVGS ==========
     const OG_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 2L4 5.5V12c0 5 3.8 9.4 9 10.9C18.2 21.4 22 17 22 12V5.5L13 2Z" fill="url(#og-shield-fill)" stroke="url(#og-shield-stroke)" stroke-width="0.8"/><g opacity="0.55"><line x1="13" y1="5" x2="13" y2="3.5" stroke="#FFD97A" stroke-width="0.7"/><line x1="16.5" y1="6.2" x2="17.5" y2="5" stroke="#FFD97A" stroke-width="0.7"/><line x1="9.5" y1="6.2" x2="8.5" y2="5" stroke="#FFD97A" stroke-width="0.7"/></g><text x="13" y="14.5" text-anchor="middle" font-family="'DM Mono', monospace" font-size="5.5" fill="url(#og-text-fill)">OG</text><path d="M13 2L4 5.5V9c3.5-0.5 7-2 9-4.5C15 7 18.5 8.5 22 9V5.5L13 2Z" fill="url(#og-shine)" opacity="0.25"/><defs><linearGradient id="og-shield-fill" x1="13" y1="2" x2="13" y2="23"><stop offset="0%" stop-color="#3D2A00"/><stop offset="100%" stop-color="#1A1200"/></linearGradient><linearGradient id="og-shield-stroke" x1="4" y1="2" x2="22" y2="23"><stop offset="0%" stop-color="#FFD97A"/><stop offset="50%" stop-color="#C8860A"/><stop offset="100%" stop-color="#FFD97A"/></linearGradient><linearGradient id="og-text-fill" x1="8" y1="9" x2="18" y2="15"><stop offset="0%" stop-color="#FFE999"/><stop offset="100%" stop-color="#D4920F"/></linearGradient><linearGradient id="og-shine" x1="4" y1="2" x2="22" y2="9"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="transparent"/></linearGradient></defs></svg>`;
     const OG_PLUS_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 3L10.5 8.5L4.5 9.5L9 13.5L7.5 19.5L13 16.5L18.5 19.5L17 13.5L21.5 9.5L15.5 8.5Z" fill="url(#diamond-fill)" stroke="url(#diamond-stroke)" stroke-width="0.8"/><defs><linearGradient id="diamond-fill" x1="13" y1="3" x2="13" y2="20"><stop offset="0%" stop-color="#a8edff"/><stop offset="100%" stop-color="#1a8cff"/></linearGradient><linearGradient id="diamond-stroke" x1="4" y1="3" x2="22" y2="20"><stop offset="0%" stop-color="#e0f7ff"/><stop offset="100%" stop-color="#1a8cff"/></linearGradient></defs></svg>`;
     const EARLY_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 3L15.5 9.5L22.5 10L17.5 14.5L19.5 21.5L13 18L6.5 21.5L8.5 14.5L3.5 10L10.5 9.5Z" fill="url(#star-fill)" stroke="url(#star-stroke)" stroke-width="0.8"/><defs><linearGradient id="star-fill" x1="13" y1="3" x2="13" y2="22"><stop offset="0%" stop-color="#fffba0"/><stop offset="100%" stop-color="#f0a500"/></linearGradient><linearGradient id="star-stroke" x1="3" y1="3" x2="23" y2="22"><stop offset="0%" stop-color="#fff5c0"/><stop offset="100%" stop-color="#c87000"/></linearGradient></defs></svg>`;
@@ -588,7 +590,9 @@
                     typewriter_line2: u.typewriter_line2 || false,
                     typewriter_line3: u.typewriter_line3 || false,
                     transparent_bg: u.transparent_bg || false,
-                    disable_shadow: u.disable_shadow || false
+                    disable_shadow: u.disable_shadow || false,
+                    card_bg_color: u.card_bg_color || "",
+                    border_color: u.border_color || ""
                 };
                 likeId = "forgave.lol/" + slug;
                 return;
@@ -599,7 +603,7 @@
         C = null;
     }
 
-    // ========== CARD STYLES (with new options) ==========
+    // ========== CARD STYLES (with new color options) ==========
     function applyCardStyles() {
         if (!C) return;
         const mainCard = document.getElementById("content");
@@ -607,37 +611,58 @@
         const radius = C.border_radius;
         let opacity = C.card_opacity;
         if (C.transparent_bg) opacity = 0;
-        const bgColor = `rgba(10,10,12,${opacity})`;
-        mainCard.style.borderRadius = `${radius}px`;
-        mainCard.style.background = bgColor;
+        
+        // Background color logic
+        let bgColor;
         if (C.transparent_bg) {
+            bgColor = "transparent";
+        } else if (C.card_bg_color && C.card_bg_color !== "#0a0a0c") {
+            // Custom color – remove backdrop filter for solid color
+            bgColor = C.card_bg_color;
             mainCard.style.backdropFilter = "none";
             mainCard.style.webkitBackdropFilter = "none";
-        } else {
-            mainCard.style.backdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
-            mainCard.style.webkitBackdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
-        }
-        if (C.disable_shadow) {
-            mainCard.style.boxShadow = "none";
-        } else {
-            mainCard.style.boxShadow = "0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 1px rgba(0,0,0,0.5), 0 28px 72px rgba(0,0,0,0.75), 0 8px 22px rgba(0,0,0,0.4)";
-        }
-        if (secondCard) {
-            secondCard.style.borderRadius = `${radius}px`;
-            secondCard.style.background = bgColor;
-            if (C.transparent_bg) {
+            if (secondCard) {
                 secondCard.style.backdropFilter = "none";
                 secondCard.style.webkitBackdropFilter = "none";
-            } else {
-                secondCard.style.backdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
-                secondCard.style.webkitBackdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
             }
-            if (C.disable_shadow) {
-                secondCard.style.boxShadow = "none";
-            } else {
-                secondCard.style.boxShadow = "0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 1px rgba(0,0,0,0.5), 0 12px 32px rgba(0,0,0,0.5)";
+        } else {
+            // Default dark background with blur
+            bgColor = `rgba(10,10,12,${opacity})`;
+            if (!C.transparent_bg) {
+                mainCard.style.backdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
+                mainCard.style.webkitBackdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
+                if (secondCard) {
+                    secondCard.style.backdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
+                    secondCard.style.webkitBackdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
+                }
             }
         }
+        mainCard.style.background = bgColor;
+        mainCard.style.borderRadius = `${radius}px`;
+        if (secondCard) {
+            secondCard.style.background = bgColor;
+            secondCard.style.borderRadius = `${radius}px`;
+        }
+        
+        // Border color
+        const borderColor = C.border_color && C.border_color !== "#ffffff" ? C.border_color : "rgba(255,255,255,0.07)";
+        const borderTopColor = C.border_color && C.border_color !== "#ffffff" ? C.border_color : "rgba(255,255,255,0.15)";
+        mainCard.style.border = `1px solid ${borderColor}`;
+        mainCard.style.borderTopColor = borderTopColor;
+        if (secondCard) {
+            secondCard.style.border = `1px solid ${borderColor}`;
+            secondCard.style.borderTopColor = borderTopColor;
+        }
+        
+        // Shadow
+        if (C.disable_shadow) {
+            mainCard.style.boxShadow = "none";
+            if (secondCard) secondCard.style.boxShadow = "none";
+        } else {
+            mainCard.style.boxShadow = "0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 1px rgba(0,0,0,0.5), 0 28px 72px rgba(0,0,0,0.75), 0 8px 22px rgba(0,0,0,0.4)";
+            if (secondCard) secondCard.style.boxShadow = "0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 1px rgba(0,0,0,0.5), 0 12px 32px rgba(0,0,0,0.5)";
+        }
+        
         let style = document.getElementById("dynamic-card-styles");
         if (style) style.remove();
         style = document.createElement("style");
@@ -993,7 +1018,7 @@
                 card_style: "default", border_radius: 18, card_opacity: 0.58, parallax_enabled: true,
                 cursor_effect: "ghost", custom_cursor: "", custom_font: "DM Mono",
                 typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
-                transparent_bg: false, disable_shadow: false
+                transparent_bg: false, disable_shadow: false, card_bg_color: "", border_color: ""
             });
             if (result && result[0]) {
                 await notifyDiscord(username, nextUid);
@@ -1104,6 +1129,8 @@
                 document.getElementById("d-typewriter3").checked = u.typewriter_line3 || false;
                 document.getElementById("d-transparent-bg").checked = u.transparent_bg || false;
                 document.getElementById("d-disable-shadow").checked = u.disable_shadow || false;
+                document.getElementById("d-card-bg-color").value = u.card_bg_color || "#0a0a0c";
+                document.getElementById("d-border-color").value = u.border_color || "#ffffff";
                 if (u.custom_cursor) {
                     document.getElementById("cursor-preview-container").style.display = "flex";
                     document.getElementById("cursor-preview-img").src = u.custom_cursor;
@@ -1201,7 +1228,7 @@
     radiusSlider.addEventListener("input", () => { document.getElementById("border-radius-val").textContent = radiusSlider.value + "px"; });
     opacitySlider.addEventListener("input", () => { document.getElementById("card-opacity-val").textContent = parseFloat(opacitySlider.value).toFixed(2); });
     
-    // CURSOR UPLOAD
+    // CURSOR UPLOAD (fixed CORS)
     const cursorFileInput = document.getElementById("cursor-file-input");
     const cursorUploadBtn = document.getElementById("cursor-upload-btn");
     const cursorPreviewContainer = document.getElementById("cursor-preview-container");
@@ -1239,6 +1266,7 @@
             formData.append("fileToUpload", blob, "cursor.png");
             const uploadRes = await fetch("https://catbox.moe/user/api.php", {
                 method: "POST",
+                mode: "cors",
                 body: formData
             });
             const url = await uploadRes.text();
@@ -1248,6 +1276,7 @@
             cursorPreviewContainer.style.display = "flex";
             cursorUploadStatus.textContent = "uploaded! save changes to apply.";
             cursorUploadStatus.className = "cursor-upload-status success";
+            // Preview immediately
             document.body.style.cursor = `url('${url}'), auto`;
         } catch (e) {
             cursorUploadStatus.textContent = "upload failed: " + e.message;
@@ -1300,13 +1329,15 @@
         const typewriter_line3 = document.getElementById("d-typewriter3").checked;
         const transparent_bg = document.getElementById("d-transparent-bg").checked;
         const disable_shadow = document.getElementById("d-disable-shadow").checked;
+        const card_bg_color = document.getElementById("d-card-bg-color").value;
+        const border_color = document.getElementById("d-border-color").value;
         
         const payload = {
             lines, discord, links, bg_video_urls, bg_words, last_change: now,
             equipped_badges: [...dashEquipped], aliases: cleanAliases,
             card_style, border_radius, card_opacity, parallax_enabled, cursor_effect,
             custom_cursor, custom_font, typewriter_line1, typewriter_line2, typewriter_line3,
-            transparent_bg, disable_shadow
+            transparent_bg, disable_shadow, card_bg_color, border_color
         };
         try {
             await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
