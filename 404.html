@@ -25,9 +25,9 @@
         #card-stack{position:fixed;top:40px;left:44px;z-index:10;width:300px;transform-style:preserve-3d;transition:transform 0.1s ease-out}
         @media (max-width:500px){#card-stack{top:auto;bottom:28px;left:50%;transform:translateX(-50%);width:calc(100vw - 32px);max-width:360px}body.minimalistic-mode #card-stack{transform:translate(-50%,-50%)!important;top:50%!important;left:50%!important;bottom:auto!important}}
         body.minimalistic-mode #card-stack{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);bottom:auto;right:auto;margin:0}
-        #content{position:relative;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:22px 24px 20px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 28px 72px rgba(0,0,0,0.75),0 8px 22px rgba(0,0,0,0.4);transition:border-radius 0.2s ease,background 0.2s ease;transform-style:preserve-3d}
+        #content{position:relative;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:22px 24px 20px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 28px 72px rgba(0,0,0,0.75),0 8px 22px rgba(0,0,0,0.4);transition:border-radius 0.2s ease,background 0.2s ease,box-shadow 0.2s ease;transform-style:preserve-3d}
         #content::after{content:"";position:absolute;inset:0;border-radius:18px;background:radial-gradient(ellipse at 30% 0%,rgba(255,255,255,0.03) 0%,transparent 60%);pointer-events:none;transition:border-radius 0.2s ease}
-        #second-card{display:none;margin-top:20px;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:16px 22px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 12px 32px rgba(0,0,0,0.5);transition:border-radius 0.2s ease,background 0.2s ease;transform-style:preserve-3d}
+        #second-card{display:none;margin-top:20px;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:16px 22px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 12px 32px rgba(0,0,0,0.5);transition:border-radius 0.2s ease,background 0.2s ease,box-shadow 0.2s ease;transform-style:preserve-3d}
         #second-card .meta-line{font-size:.7rem;color:rgba(255,255,255,.48);margin:0;opacity:1;animation:none}
         #minimalistic-name{display:none}
         .card-header{margin-bottom:17px;opacity:0;animation:fadeUp .45s ease forwards;animation-delay:.5s}
@@ -322,42 +322,11 @@
             <div class="dash-panels">
                 <div class="dash-panel active" id="panel-bio">
                     <div class="dash-panel-title">bio lines</div>
-                    <div class="field">
-                        <label>line 1</label>
-                        <input type="text" id="d-line1" maxlength="60">
-                        <div style="display:flex; align-items:center; gap:8px; margin-top:5px;">
-                            <input type="checkbox" id="d-typewriter1" style="width:auto; margin:0;">
-                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label>line 2</label>
-                        <input type="text" id="d-line2" maxlength="60">
-                        <div style="display:flex; align-items:center; gap:8px; margin-top:5px;">
-                            <input type="checkbox" id="d-typewriter2" style="width:auto; margin:0;">
-                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label>line 3</label>
-                        <input type="text" id="d-line3" maxlength="60">
-                        <div style="display:flex; align-items:center; gap:8px; margin-top:5px;">
-                            <input type="checkbox" id="d-typewriter3" style="width:auto; margin:0;">
-                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label>
-                        </div>
-                    </div>
+                    <div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter1" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
+                    <div class="field"><label>line 2</label><input type="text" id="d-line2" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter2" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
+                    <div class="field"><label>line 3</label><input type="text" id="d-line3" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter3" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
                     <div class="field"><label>discord tag</label><input type="text" id="d-discord" maxlength="80"></div>
-                    <div class="field">
-                        <label>card font</label>
-                        <select id="d-card-font">
-                            <option value="DM Mono">Default (DM Mono)</option>
-                            <option value="JetBrains Mono">JetBrains Mono</option>
-                            <option value="Fira Code">Fira Code</option>
-                            <option value="IBM Plex Mono">IBM Plex Mono</option>
-                            <option value="Courier New">Courier New</option>
-                        </select>
-                        <div class="field-hint">changes the font of your card text</div>
-                    </div>
+                    <div class="field"><label>card font</label><select id="d-card-font"><option value="DM Mono">Default (DM Mono)</option><option value="JetBrains Mono">JetBrains Mono</option><option value="Fira Code">Fira Code</option><option value="IBM Plex Mono">IBM Plex Mono</option><option value="Courier New">Courier New</option></select><div class="field-hint">changes the font of your card text</div></div>
                 </div>
                 <div class="dash-panel" id="panel-socials">
                     <div class="dash-panel-title">links</div>
@@ -377,14 +346,8 @@
                     <div class="dash-panel-title">aliases</div>
                     <div style="font-size:.62rem;color:rgba(255,255,255,.2);margin-bottom:16px;">link other profiles.<br><span style="color:rgba(255,255,255,.35);">also known as: name, name</span></div>
                     <div class="alias-list" id="alias-list"></div>
-                    <div class="alias-add-form" id="alias-add-form">
-                        <div class="field"><label>username</label><input type="text" id="alias-input-user" maxlength="24"></div>
-                        <div class="field"><label>password</label><input type="password" id="alias-input-pw"></div>
-                        <div class="alias-form-hint" id="alias-form-hint"></div>
-                        <div class="alias-form-actions"><button class="alias-form-btn" id="alias-verify-btn">verify & add</button><button class="alias-form-btn cancel" id="alias-cancel-btn">cancel</button></div>
-                    </div>
-                    <button class="alias-add-trigger" id="alias-add-trigger">+ add alias</button>
-                    <div class="alias-limit-note">max 3 aliases</div>
+                    <div class="alias-add-form" id="alias-add-form"><div class="field"><label>username</label><input type="text" id="alias-input-user" maxlength="24"></div><div class="field"><label>password</label><input type="password" id="alias-input-pw"></div><div class="alias-form-hint" id="alias-form-hint"></div><div class="alias-form-actions"><button class="alias-form-btn" id="alias-verify-btn">verify & add</button><button class="alias-form-btn cancel" id="alias-cancel-btn">cancel</button></div></div>
+                    <button class="alias-add-trigger" id="alias-add-trigger">+ add alias</button><div class="alias-limit-note">max 3 aliases</div>
                 </div>
                 <div class="dash-panel" id="panel-card">
                     <div class="dash-panel-title">card appearance</div>
@@ -392,6 +355,8 @@
                     <div class="field"><label>border radius</label><div class="slider-container"><label>▯</label><input type="range" id="d-border-radius" min="0" max="30" step="1" value="18"><span class="slider-value" id="border-radius-val">18px</span></div></div>
                     <div class="field"><label>card opacity</label><div class="slider-container"><label>◐</label><input type="range" id="d-card-opacity" min="0.2" max="1.0" step="0.01" value="0.58"><span class="slider-value" id="card-opacity-val">0.58</span></div></div>
                     <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-parallax" style="width:auto;margin:0;"> parallax effect</label></div>
+                    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background (no card background, only border and text)</label><div class="field-hint">makes the card background fully transparent</div></div>
+                    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow (removes drop shadow)</label></div>
                 </div>
                 <div class="dash-panel" id="panel-cursor">
                     <div class="dash-panel-title">cursor trail</div>
@@ -400,11 +365,7 @@
                         <label>custom cursor image (upload square PNG)</label>
                         <input type="file" id="cursor-file-input" accept="image/png,image/jpeg,image/gif" style="display:none;">
                         <button class="file-upload-btn" id="cursor-upload-btn">choose image (auto‑resize to 32×32)</button>
-                        <div class="cursor-preview" id="cursor-preview-container" style="display:none;">
-                            <span style="font-size:.58rem;">preview:</span>
-                            <img id="cursor-preview-img" class="cursor-preview-img" alt="cursor preview">
-                            <button id="cursor-reset-btn" class="cursor-reset-btn">reset</button>
-                        </div>
+                        <div class="cursor-preview" id="cursor-preview-container" style="display:none;"><span style="font-size:.58rem;">preview:</span><img id="cursor-preview-img" class="cursor-preview-img" alt="cursor preview"><button id="cursor-reset-btn" class="cursor-reset-btn">reset</button></div>
                         <div id="cursor-upload-status" class="cursor-upload-status"></div>
                         <div class="field-hint">image will be resized to 32×32 and uploaded to catbox.moe</div>
                     </div>
@@ -515,7 +476,8 @@
         bgVideo: { urls: ["https://files.catbox.moe/q77n42.mp4"], opacity: 0.45 },
         bgWords: ["forgave", "frgv", "</>", "///"],
         wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [],
-        custom_cursor: "", custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false
+        custom_cursor: "", custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
+        transparent_bg: false, disable_shadow: false
     };
     const STATIC_USERS = {
         "prada": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "prada", uid: "1", badges: [], lines: ["@juliasfanboy / on discord", "rich", "take risks"], discord: "", links: [{ label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok" }], bgVideo: { urls: ["https://files.catbox.moe/aned1c.mp4"], opacity: 0.45 }, bgWords: ["prada", "</>"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [] },
@@ -534,7 +496,7 @@
         roblox: `<svg viewBox="0 0 24 24"><path d="M5.16 0L0 18.84 18.84 24 24 5.16 5.16 0zm8.32 13.65l-3.13-.86.86-3.13 3.13.86-.86 3.13z"/></svg>`
     };
 
-    // ========== BADGE SVGS ==========
+    // ========== BADGE SVGS (same as before) ==========
     const OG_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 2L4 5.5V12c0 5 3.8 9.4 9 10.9C18.2 21.4 22 17 22 12V5.5L13 2Z" fill="url(#og-shield-fill)" stroke="url(#og-shield-stroke)" stroke-width="0.8"/><g opacity="0.55"><line x1="13" y1="5" x2="13" y2="3.5" stroke="#FFD97A" stroke-width="0.7"/><line x1="16.5" y1="6.2" x2="17.5" y2="5" stroke="#FFD97A" stroke-width="0.7"/><line x1="9.5" y1="6.2" x2="8.5" y2="5" stroke="#FFD97A" stroke-width="0.7"/></g><text x="13" y="14.5" text-anchor="middle" font-family="'DM Mono', monospace" font-size="5.5" fill="url(#og-text-fill)">OG</text><path d="M13 2L4 5.5V9c3.5-0.5 7-2 9-4.5C15 7 18.5 8.5 22 9V5.5L13 2Z" fill="url(#og-shine)" opacity="0.25"/><defs><linearGradient id="og-shield-fill" x1="13" y1="2" x2="13" y2="23"><stop offset="0%" stop-color="#3D2A00"/><stop offset="100%" stop-color="#1A1200"/></linearGradient><linearGradient id="og-shield-stroke" x1="4" y1="2" x2="22" y2="23"><stop offset="0%" stop-color="#FFD97A"/><stop offset="50%" stop-color="#C8860A"/><stop offset="100%" stop-color="#FFD97A"/></linearGradient><linearGradient id="og-text-fill" x1="8" y1="9" x2="18" y2="15"><stop offset="0%" stop-color="#FFE999"/><stop offset="100%" stop-color="#D4920F"/></linearGradient><linearGradient id="og-shine" x1="4" y1="2" x2="22" y2="9"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="transparent"/></linearGradient></defs></svg>`;
     const OG_PLUS_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 3L10.5 8.5L4.5 9.5L9 13.5L7.5 19.5L13 16.5L18.5 19.5L17 13.5L21.5 9.5L15.5 8.5Z" fill="url(#diamond-fill)" stroke="url(#diamond-stroke)" stroke-width="0.8"/><defs><linearGradient id="diamond-fill" x1="13" y1="3" x2="13" y2="20"><stop offset="0%" stop-color="#a8edff"/><stop offset="100%" stop-color="#1a8cff"/></linearGradient><linearGradient id="diamond-stroke" x1="4" y1="3" x2="22" y2="20"><stop offset="0%" stop-color="#e0f7ff"/><stop offset="100%" stop-color="#1a8cff"/></linearGradient></defs></svg>`;
     const EARLY_BADGE_SVG = `<svg class="og-badge-svg" viewBox="0 0 26 26" fill="none"><path d="M13 3L15.5 9.5L22.5 10L17.5 14.5L19.5 21.5L13 18L6.5 21.5L8.5 14.5L3.5 10L10.5 9.5Z" fill="url(#star-fill)" stroke="url(#star-stroke)" stroke-width="0.8"/><defs><linearGradient id="star-fill" x1="13" y1="3" x2="13" y2="22"><stop offset="0%" stop-color="#fffba0"/><stop offset="100%" stop-color="#f0a500"/></linearGradient><linearGradient id="star-stroke" x1="3" y1="3" x2="23" y2="22"><stop offset="0%" stop-color="#fff5c0"/><stop offset="100%" stop-color="#c87000"/></linearGradient></defs></svg>`;
@@ -624,7 +586,9 @@
                     custom_font: u.custom_font || "DM Mono",
                     typewriter_line1: u.typewriter_line1 || false,
                     typewriter_line2: u.typewriter_line2 || false,
-                    typewriter_line3: u.typewriter_line3 || false
+                    typewriter_line3: u.typewriter_line3 || false,
+                    transparent_bg: u.transparent_bg || false,
+                    disable_shadow: u.disable_shadow || false
                 };
                 likeId = "forgave.lol/" + slug;
                 return;
@@ -635,19 +599,44 @@
         C = null;
     }
 
-    // ========== CARD STYLES ==========
+    // ========== CARD STYLES (with new options) ==========
     function applyCardStyles() {
         if (!C) return;
         const mainCard = document.getElementById("content");
         const secondCard = document.getElementById("second-card");
         const radius = C.border_radius;
-        const opacity = C.card_opacity;
+        let opacity = C.card_opacity;
+        if (C.transparent_bg) opacity = 0;
         const bgColor = `rgba(10,10,12,${opacity})`;
         mainCard.style.borderRadius = `${radius}px`;
         mainCard.style.background = bgColor;
+        if (C.transparent_bg) {
+            mainCard.style.backdropFilter = "none";
+            mainCard.style.webkitBackdropFilter = "none";
+        } else {
+            mainCard.style.backdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
+            mainCard.style.webkitBackdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
+        }
+        if (C.disable_shadow) {
+            mainCard.style.boxShadow = "none";
+        } else {
+            mainCard.style.boxShadow = "0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 1px rgba(0,0,0,0.5), 0 28px 72px rgba(0,0,0,0.75), 0 8px 22px rgba(0,0,0,0.4)";
+        }
         if (secondCard) {
             secondCard.style.borderRadius = `${radius}px`;
             secondCard.style.background = bgColor;
+            if (C.transparent_bg) {
+                secondCard.style.backdropFilter = "none";
+                secondCard.style.webkitBackdropFilter = "none";
+            } else {
+                secondCard.style.backdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
+                secondCard.style.webkitBackdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
+            }
+            if (C.disable_shadow) {
+                secondCard.style.boxShadow = "none";
+            } else {
+                secondCard.style.boxShadow = "0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 1px rgba(0,0,0,0.5), 0 12px 32px rgba(0,0,0,0.5)";
+            }
         }
         let style = document.getElementById("dynamic-card-styles");
         if (style) style.remove();
@@ -730,15 +719,12 @@
     }
     function setCursorEffect(effect) { cursorEffect = effect; }
 
-    // ========== LOOPING TYPEWRITER (with cursor) ==========
+    // ========== LOOPING TYPEWRITER ==========
     function startLoopingTypewriter(element, text, delayBeforeStart = 0) {
         if (!element || !text) return;
-        let timeoutId = null;
-        let intervalId = null;
         let isDeleting = false;
         let currentText = "";
         let pos = 0;
-        // remove any existing content
         element.innerHTML = "";
         function update() {
             element.innerHTML = currentText + '<span class="typewriter-cursor" style="opacity:1; display:inline-block; width:0.5em; overflow:visible;">|</span>';
@@ -751,7 +737,6 @@
                     update();
                     setTimeout(typeStep, 70 + Math.random() * 40);
                 } else {
-                    // finished typing, wait then start deleting
                     isDeleting = true;
                     setTimeout(typeStep, 2000);
                 }
@@ -762,15 +747,12 @@
                     update();
                     setTimeout(typeStep, 50);
                 } else {
-                    // finished deleting, restart loop
                     isDeleting = false;
                     setTimeout(typeStep, 500);
                 }
             }
         }
-        setTimeout(() => {
-            typeStep();
-        }, delayBeforeStart);
+        setTimeout(() => { typeStep(); }, delayBeforeStart);
     }
 
     // ========== RENDER CARD ==========
@@ -832,13 +814,11 @@
         const line3El = document.getElementById("line3");
         const lineTexts = [C.lines[0] || "", C.lines[1] || "", C.lines[2] || ""];
         
-        // Clear any existing typewriter intervals
         if (window._typewriterTimeouts) {
             window._typewriterTimeouts.forEach(t => clearTimeout(t));
             window._typewriterTimeouts = [];
         } else window._typewriterTimeouts = [];
         
-        // Start loop only if enabled and text not empty
         if (C.typewriter_line1 && lineTexts[0]) {
             line1El.innerHTML = "";
             const t = setTimeout(() => startLoopingTypewriter(line1El, lineTexts[0], 0), 820);
@@ -1011,7 +991,9 @@
                 lines: ["", "", ""], discord: "", links: [], bg_video_urls: [], bg_video_opacity: 0.45,
                 bg_words: ["</>", "///"], last_change: now, aliases: [], equipped_badges: [], is_admin: false,
                 card_style: "default", border_radius: 18, card_opacity: 0.58, parallax_enabled: true,
-                cursor_effect: "ghost", custom_cursor: "", custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false
+                cursor_effect: "ghost", custom_cursor: "", custom_font: "DM Mono",
+                typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
+                transparent_bg: false, disable_shadow: false
             });
             if (result && result[0]) {
                 await notifyDiscord(username, nextUid);
@@ -1120,6 +1102,8 @@
                 document.getElementById("d-typewriter1").checked = u.typewriter_line1 || false;
                 document.getElementById("d-typewriter2").checked = u.typewriter_line2 || false;
                 document.getElementById("d-typewriter3").checked = u.typewriter_line3 || false;
+                document.getElementById("d-transparent-bg").checked = u.transparent_bg || false;
+                document.getElementById("d-disable-shadow").checked = u.disable_shadow || false;
                 if (u.custom_cursor) {
                     document.getElementById("cursor-preview-container").style.display = "flex";
                     document.getElementById("cursor-preview-img").src = u.custom_cursor;
@@ -1217,7 +1201,7 @@
     radiusSlider.addEventListener("input", () => { document.getElementById("border-radius-val").textContent = radiusSlider.value + "px"; });
     opacitySlider.addEventListener("input", () => { document.getElementById("card-opacity-val").textContent = parseFloat(opacitySlider.value).toFixed(2); });
     
-    // CURSOR UPLOAD (resize to 32x32, upload to catbox)
+    // CURSOR UPLOAD
     const cursorFileInput = document.getElementById("cursor-file-input");
     const cursorUploadBtn = document.getElementById("cursor-upload-btn");
     const cursorPreviewContainer = document.getElementById("cursor-preview-container");
@@ -1238,7 +1222,6 @@
         cursorUploadStatus.textContent = "resizing and uploading...";
         cursorUploadStatus.className = "cursor-upload-status";
         try {
-            // Resize image to 32x32 using canvas
             const img = await new Promise((resolve, reject) => {
                 const image = new Image();
                 image.onload = () => resolve(image);
@@ -1251,7 +1234,6 @@
             const ctx2d = canvas.getContext("2d");
             ctx2d.drawImage(img, 0, 0, 32, 32);
             const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
-            // Upload to Catbox
             const formData = new FormData();
             formData.append("reqtype", "fileupload");
             formData.append("fileToUpload", blob, "cursor.png");
@@ -1266,7 +1248,6 @@
             cursorPreviewContainer.style.display = "flex";
             cursorUploadStatus.textContent = "uploaded! save changes to apply.";
             cursorUploadStatus.className = "cursor-upload-status success";
-            // Immediately apply preview
             document.body.style.cursor = `url('${url}'), auto`;
         } catch (e) {
             cursorUploadStatus.textContent = "upload failed: " + e.message;
@@ -1317,19 +1298,21 @@
         const typewriter_line1 = document.getElementById("d-typewriter1").checked;
         const typewriter_line2 = document.getElementById("d-typewriter2").checked;
         const typewriter_line3 = document.getElementById("d-typewriter3").checked;
+        const transparent_bg = document.getElementById("d-transparent-bg").checked;
+        const disable_shadow = document.getElementById("d-disable-shadow").checked;
         
         const payload = {
             lines, discord, links, bg_video_urls, bg_words, last_change: now,
             equipped_badges: [...dashEquipped], aliases: cleanAliases,
             card_style, border_radius, card_opacity, parallax_enabled, cursor_effect,
-            custom_cursor, custom_font, typewriter_line1, typewriter_line2, typewriter_line3
+            custom_cursor, custom_font, typewriter_line1, typewriter_line2, typewriter_line3,
+            transparent_bg, disable_shadow
         };
         try {
             await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
             updateAliasRowOnCard(cleanAliases);
             if (!silent) { status.textContent = "saved ✓"; status.style.color = "rgba(100,220,150,.5)"; setTimeout(() => { status.textContent = ""; }, 3000); if (slug === session.username) location.reload(); }
             else { if (slug === session.username) location.reload(); }
-            // After save, clear pending cursor so it doesn't get reapplied stale
             pendingCursorUrl = null;
         } catch (e) { console.error("[save]", e); if (!silent) { status.textContent = "error: " + e.message; status.style.color = "rgba(255,100,100,.6)"; setTimeout(() => { status.textContent = ""; }, 5000); } }
         if (!silent) { btn.disabled = false; btn.textContent = "save changes"; }
