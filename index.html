@@ -14,7 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&family=Fira+Code:wght@300..700&family=IBM+Plex+Mono:wght@100..700&display=swap" rel="stylesheet">
     <style>
-        /* ========== FULL STYLES (with view counter) ========== */
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono","Courier New",monospace;color:#fff}
         #bgvideo{display:none;position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
@@ -223,11 +222,6 @@
         .cursor-preview-img{width:40px;height:40px;object-fit:contain;background:rgba(255,255,255,0.05);border-radius:8px;padding:4px;border:1px solid rgba(255,255,255,0.1)}
         .cursor-reset-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:.6rem;cursor:pointer}
         .cursor-reset-btn:hover{background:rgba(255,255,255,.12)}
-        .file-upload-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 12px;font-family:"DM Mono",monospace;font-size:.68rem;cursor:pointer;width:100%;text-align:center;transition:background .15s}
-        .file-upload-btn:hover{background:rgba(255,255,255,.12)}
-        .cursor-upload-status{font-size:.58rem;color:rgba(255,255,255,.18);margin-top:4px}
-        .cursor-upload-status.success{color:rgba(100,220,150,.6)}
-        .cursor-upload-status.error{color:rgba(255,100,100,.6)}
         .reset-btn-sm{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:.58rem;cursor:pointer;margin-left:8px;transition:all .15s}
         .reset-btn-sm:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
         @media (max-width:600px){#dash-modal .modal{width:calc(100vw - 24px)}.dash-body{flex-direction:column}.dash-sidebar{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);flex-direction:row;padding:10px 12px;overflow-x:auto;gap:4px}.dash-nav-btn{white-space:nowrap;flex-shrink:0}.dash-panels{padding:16px}}
@@ -376,12 +370,10 @@
                     <div class="dash-panel-title">cursor trail</div>
                     <div class="field"><label>effect</label><select id="d-cursor-effect"><option value="ghost">Ghost (default arrows)</option><option value="sparkle">Sparkle (stars)</option><option value="trail">Trail Dots</option><option value="simple">Simple Dot</option><option value="none">None</option></select></div>
                     <div class="field">
-                        <label>custom cursor image (upload square PNG)</label>
-                        <input type="file" id="cursor-file-input" accept="image/png,image/jpeg,image/gif" style="display:none;">
-                        <button class="file-upload-btn" id="cursor-upload-btn">choose image (auto‑resize to 32×32)</button>
+                        <label>custom cursor image URL (catbox link)</label>
+                        <input type="text" id="d-custom-cursor-url" placeholder="https://files.catbox.moe/yourcursor.png">
                         <div class="cursor-preview" id="cursor-preview-container" style="display:none;"><span style="font-size:.58rem;">preview:</span><img id="cursor-preview-img" class="cursor-preview-img" alt="cursor preview"><button id="cursor-reset-btn" class="cursor-reset-btn">reset</button></div>
-                        <div id="cursor-upload-status" class="cursor-upload-status"></div>
-                        <div class="field-hint">image will be resized to 32×32 and uploaded to catbox.moe</div>
+                        <div class="field-hint">enter a direct link to an image (preferably 32x32). overrides default cursor on all elements.</div>
                     </div>
                 </div>
                 <div class="dash-panel" id="panel-admin">
@@ -645,7 +637,7 @@
         }
     }
 
-    // ========== CARD STYLES (transparent bg fix) ==========
+    // ========== CARD STYLES ==========
     function applyCardStyles() {
         if (!C) return;
         const mainCard = document.getElementById("content");
@@ -663,7 +655,6 @@
                 secondCard.style.backdropFilter = "none";
                 secondCard.style.webkitBackdropFilter = "none";
             }
-            // hide glossy pseudo-element
             mainCard.style.setProperty("--gloss-display", "none");
         } else if (C.card_bg_color && C.card_bg_color !== "#0a0a0c") {
             bgColor = C.card_bg_color;
@@ -1191,13 +1182,12 @@
                 document.getElementById("d-disable-shadow").checked = u.disable_shadow || false;
                 document.getElementById("d-card-bg-color").value = u.card_bg_color || "#0a0a0c";
                 document.getElementById("d-border-color").value = u.border_color || "#ffffff";
+                document.getElementById("d-custom-cursor-url").value = u.custom_cursor || "";
                 if (u.custom_cursor) {
                     document.getElementById("cursor-preview-container").style.display = "flex";
                     document.getElementById("cursor-preview-img").src = u.custom_cursor;
-                    pendingCursorUrl = u.custom_cursor;
                 } else {
                     document.getElementById("cursor-preview-container").style.display = "none";
-                    pendingCursorUrl = null;
                 }
                 document.getElementById("border-radius-val").textContent = (u.border_radius !== undefined ? u.border_radius : 18) + "px";
                 document.getElementById("card-opacity-val").textContent = (u.card_opacity !== undefined ? u.card_opacity : 0.58).toFixed(2);
@@ -1294,68 +1284,25 @@
     document.getElementById("reset-bg-color").onclick = () => { document.getElementById("d-card-bg-color").value = "#0a0a0c"; };
     document.getElementById("reset-border-color").onclick = () => { document.getElementById("d-border-color").value = "#ffffff"; };
     
-    // CURSOR UPLOAD
-    const cursorFileInput = document.getElementById("cursor-file-input");
-    const cursorUploadBtn = document.getElementById("cursor-upload-btn");
+    // CURSOR URL handling
+    const cursorUrlInput = document.getElementById("d-custom-cursor-url");
     const cursorPreviewContainer = document.getElementById("cursor-preview-container");
     const cursorPreviewImg = document.getElementById("cursor-preview-img");
     const cursorResetBtn = document.getElementById("cursor-reset-btn");
-    const cursorUploadStatus = document.getElementById("cursor-upload-status");
-    let pendingCursorUrl = null;
-
-    cursorUploadBtn.onclick = () => cursorFileInput.click();
-    cursorFileInput.onchange = async () => {
-        const file = cursorFileInput.files[0];
-        if (!file) return;
-        if (!file.type.startsWith("image/")) {
-            cursorUploadStatus.textContent = "please select an image";
-            cursorUploadStatus.className = "cursor-upload-status error";
-            return;
-        }
-        cursorUploadStatus.textContent = "resizing and uploading...";
-        cursorUploadStatus.className = "cursor-upload-status";
-        try {
-            const img = await new Promise((resolve, reject) => {
-                const image = new Image();
-                image.onload = () => resolve(image);
-                image.onerror = reject;
-                image.src = URL.createObjectURL(file);
-            });
-            const canvas = document.createElement("canvas");
-            canvas.width = 32;
-            canvas.height = 32;
-            const ctx2d = canvas.getContext("2d");
-            ctx2d.drawImage(img, 0, 0, 32, 32);
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
-            const formData = new FormData();
-            formData.append("reqtype", "fileupload");
-            formData.append("fileToUpload", blob, "cursor.png");
-            const uploadRes = await fetch("https://catbox.moe/user/api.php", {
-                method: "POST",
-                mode: "cors",
-                body: formData
-            });
-            const url = await uploadRes.text();
-            if (!uploadRes.ok || !url.startsWith("http")) throw new Error("upload failed");
-            pendingCursorUrl = url;
+    function updateCursorPreview() {
+        let url = cursorUrlInput.value.trim();
+        if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
             cursorPreviewImg.src = url;
             cursorPreviewContainer.style.display = "flex";
-            cursorUploadStatus.textContent = "uploaded! save changes to apply.";
-            cursorUploadStatus.className = "cursor-upload-status success";
-            // immediate preview on body
-            applyCustomCursor(url);
-        } catch (e) {
-            cursorUploadStatus.textContent = "upload failed: " + e.message;
-            cursorUploadStatus.className = "cursor-upload-status error";
+        } else {
+            cursorPreviewContainer.style.display = "none";
         }
-        cursorFileInput.value = "";
-    };
+    }
+    cursorUrlInput.addEventListener("input", updateCursorPreview);
     cursorResetBtn.onclick = () => {
-        pendingCursorUrl = null;
+        cursorUrlInput.value = "";
         cursorPreviewContainer.style.display = "none";
         cursorPreviewImg.src = "";
-        cursorUploadStatus.textContent = "reset to default cursor. save changes.";
-        cursorUploadStatus.className = "cursor-upload-status";
         applyCustomCursor("");
     };
     
@@ -1380,7 +1327,7 @@
         const card_opacity = parseFloat(opacitySlider.value);
         const parallax_enabled = document.getElementById("d-parallax").checked;
         const cursor_effect = document.getElementById("d-cursor-effect").value;
-        const custom_cursor = pendingCursorUrl !== null ? pendingCursorUrl : (C ? C.custom_cursor : "");
+        const custom_cursor = cursorUrlInput.value.trim() || "";
         const custom_font = document.getElementById("d-card-font").value;
         const typewriter_line1 = document.getElementById("d-typewriter1").checked;
         const typewriter_line2 = document.getElementById("d-typewriter2").checked;
@@ -1400,9 +1347,9 @@
         try {
             await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
             updateAliasRowOnCard(cleanAliases);
+            applyCustomCursor(custom_cursor);
             if (!silent) { status.textContent = "saved ✓"; status.style.color = "rgba(100,220,150,.5)"; setTimeout(() => { status.textContent = ""; }, 3000); if (slug === session.username) location.reload(); }
             else { if (slug === session.username) location.reload(); }
-            pendingCursorUrl = null;
         } catch (e) { console.error("[save]", e); if (!silent) { status.textContent = "error: " + e.message; status.style.color = "rgba(255,100,100,.6)"; setTimeout(() => { status.textContent = ""; }, 5000); } }
         if (!silent) { btn.disabled = false; btn.textContent = "save changes"; }
     }
