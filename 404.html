@@ -12,6 +12,7 @@
     <meta name="twitter:image" content="https://files.catbox.moe/fjrfis.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Fira+Code:wght@300..700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono","Courier New",monospace;color:#fff}
@@ -218,6 +219,9 @@
         .cursor-preview-img{width:40px;height:40px;object-fit:contain;background:rgba(255,255,255,0.05);border-radius:8px;padding:4px;border:1px solid rgba(255,255,255,0.1)}
         .cursor-reset-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:.6rem;cursor:pointer}
         .cursor-reset-btn:hover{background:rgba(255,255,255,.12)}
+        .file-upload-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 12px;font-family:"DM Mono",monospace;font-size:.68rem;cursor:pointer;width:100%;text-align:center;transition:background .15s}
+        .file-upload-btn:hover{background:rgba(255,255,255,.12)}
+        .cursor-upload-status{font-size:.58rem;color:rgba(255,255,255,.18);margin-top:4px}
         @media (max-width:600px){#dash-modal .modal{width:calc(100vw - 24px)}.dash-body{flex-direction:column}.dash-sidebar{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);flex-direction:row;padding:10px 12px;overflow-x:auto;gap:4px}.dash-nav-btn{white-space:nowrap;flex-shrink:0}.dash-panels{padding:16px}}
     </style>
 </head>
@@ -295,7 +299,7 @@
     </div>
 </div>
 
-<!-- Dashboard Modal (colors and embed tabs removed) -->
+<!-- Dashboard Modal -->
 <div class="modal-bg" id="dash-modal">
     <div class="modal">
         <div class="dash-header">
@@ -316,10 +320,42 @@
             <div class="dash-panels">
                 <div class="dash-panel active" id="panel-bio">
                     <div class="dash-panel-title">bio lines</div>
-                    <div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"></div>
-                    <div class="field"><label>line 2</label><input type="text" id="d-line2" maxlength="60"></div>
-                    <div class="field"><label>line 3</label><input type="text" id="d-line3" maxlength="60"></div>
+                    <div class="field">
+                        <label>line 1</label>
+                        <input type="text" id="d-line1" maxlength="60">
+                        <div style="display:flex; align-items:center; gap:8px; margin-top:5px;">
+                            <input type="checkbox" id="d-typewriter1" style="width:auto; margin:0;">
+                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>line 2</label>
+                        <input type="text" id="d-line2" maxlength="60">
+                        <div style="display:flex; align-items:center; gap:8px; margin-top:5px;">
+                            <input type="checkbox" id="d-typewriter2" style="width:auto; margin:0;">
+                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>line 3</label>
+                        <input type="text" id="d-line3" maxlength="60">
+                        <div style="display:flex; align-items:center; gap:8px; margin-top:5px;">
+                            <input type="checkbox" id="d-typewriter3" style="width:auto; margin:0;">
+                            <label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line</label>
+                        </div>
+                    </div>
                     <div class="field"><label>discord tag</label><input type="text" id="d-discord" maxlength="80"></div>
+                    <div class="field">
+                        <label>card font</label>
+                        <select id="d-card-font">
+                            <option value="DM Mono">Default (DM Mono)</option>
+                            <option value="JetBrains Mono">JetBrains Mono</option>
+                            <option value="Fira Code">Fira Code</option>
+                            <option value="IBM Plex Mono">IBM Plex Mono</option>
+                            <option value="Courier New">Courier New</option>
+                        </select>
+                        <div class="field-hint">changes the font of your card text</div>
+                    </div>
                 </div>
                 <div class="dash-panel" id="panel-socials">
                     <div class="dash-panel-title">links</div>
@@ -359,14 +395,16 @@
                     <div class="dash-panel-title">cursor trail</div>
                     <div class="field"><label>effect</label><select id="d-cursor-effect"><option value="ghost">Ghost (default arrows)</option><option value="sparkle">Sparkle (stars)</option><option value="trail">Trail Dots</option><option value="simple">Simple Dot</option><option value="none">None</option></select></div>
                     <div class="field">
-                        <label>custom cursor image URL (square PNG)</label>
-                        <input type="text" id="d-custom-cursor" placeholder="https://files.catbox.moe/yourcursor.png">
+                        <label>custom cursor image (upload square PNG)</label>
+                        <input type="file" id="cursor-file-input" accept="image/png,image/jpeg,image/gif" style="display:none;">
+                        <button class="file-upload-btn" id="cursor-upload-btn">choose image (auto‑resize to 32×32)</button>
                         <div class="cursor-preview" id="cursor-preview-container" style="display:none;">
                             <span style="font-size:.58rem;">preview:</span>
                             <img id="cursor-preview-img" class="cursor-preview-img" alt="cursor preview">
                             <button id="cursor-reset-btn" class="cursor-reset-btn">reset</button>
                         </div>
-                        <div class="field-hint">upload your image to <a href="https://catbox.moe/" target="_blank">catbox.moe</a> and paste the direct URL</div>
+                        <div id="cursor-upload-status" class="cursor-upload-status"></div>
+                        <div class="field-hint">image will be resized to 32×32 and uploaded to catbox.moe</div>
                     </div>
                 </div>
                 <div class="dash-panel" id="panel-admin">
@@ -475,7 +513,7 @@
         bgVideo: { urls: ["https://files.catbox.moe/q77n42.mp4"], opacity: 0.45 },
         bgWords: ["forgave", "frgv", "</>", "///"],
         wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [],
-        custom_cursor: ""
+        custom_cursor: "", custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false
     };
     const STATIC_USERS = {
         "prada": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "prada", uid: "1", badges: [], lines: ["@juliasfanboy / on discord", "rich", "take risks"], discord: "", links: [{ label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok" }], bgVideo: { urls: ["https://files.catbox.moe/aned1c.mp4"], opacity: 0.45 }, bgWords: ["prada", "</>"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [] },
@@ -580,7 +618,11 @@
                     card_opacity: u.card_opacity !== undefined ? u.card_opacity : 0.58,
                     parallax_enabled: u.parallax_enabled !== undefined ? u.parallax_enabled : true,
                     cursor_effect: u.cursor_effect || "ghost",
-                    custom_cursor: u.custom_cursor || ""
+                    custom_cursor: u.custom_cursor || "",
+                    custom_font: u.custom_font || "DM Mono",
+                    typewriter_line1: u.typewriter_line1 || false,
+                    typewriter_line2: u.typewriter_line2 || false,
+                    typewriter_line3: u.typewriter_line3 || false
                 };
                 likeId = "forgave.lol/" + slug;
                 return;
@@ -686,6 +728,21 @@
     }
     function setCursorEffect(effect) { cursorEffect = effect; }
 
+    // ========== TYPEWRITER EFFECT ==========
+    function applyTypewriter(element, text, callback) {
+        if (!element) return;
+        element.textContent = "";
+        let i = 0;
+        function type() {
+            if (i < text.length) {
+                element.textContent += text.charAt(i);
+                i++;
+                setTimeout(type, 40 + Math.random() * 30);
+            } else if (callback) callback();
+        }
+        type();
+    }
+
     // ========== RENDER CARD ==========
     function renderCard() {
         if (!C) {
@@ -695,6 +752,25 @@
             return;
         }
         document.getElementById("last-change-date").textContent = C.lastChange;
+        
+        // Apply custom font
+        const cardContent = document.getElementById("content");
+        const secondCard = document.getElementById("second-card");
+        if (C.custom_font && C.custom_font !== "DM Mono") {
+            const fontFamily = C.custom_font;
+            cardContent.style.fontFamily = `${fontFamily}, monospace`;
+            if (secondCard) secondCard.style.fontFamily = `${fontFamily}, monospace`;
+            document.querySelectorAll(".meta-line, .alias-row, .username, .site-name, #like-btn").forEach(el => {
+                el.style.fontFamily = `${fontFamily}, monospace`;
+            });
+        } else {
+            cardContent.style.fontFamily = "";
+            if (secondCard) secondCard.style.fontFamily = "";
+            document.querySelectorAll(".meta-line, .alias-row, .username, .site-name, #like-btn").forEach(el => {
+                el.style.fontFamily = "";
+            });
+        }
+
         const usernameRow = document.getElementById("username-row");
         usernameRow.innerHTML = "";
         const unSpan = document.createElement("span");
@@ -720,7 +796,31 @@
         const aliasRow = document.getElementById("alias-row");
         const aliases = Array.isArray(C.aliases) ? C.aliases.filter(a => a && a.trim().length > 0) : [];
         if (aliases.length > 0) { aliasRow.style.display = "block"; aliasRow.innerHTML = "also known as: " + aliases.map((a, i) => `<a href="https://forgave.lol/${a}" target="_blank">${a}</a>${i < aliases.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`).join(""); } else { aliasRow.style.display = "none"; aliasRow.innerHTML = ""; }
-        ["line1", "line2", "line3"].forEach((id, i) => { const el = document.getElementById(id); if (el) el.textContent = C.lines[i] || ""; });
+        
+        const line1El = document.getElementById("line1");
+        const line2El = document.getElementById("line2");
+        const line3El = document.getElementById("line3");
+        const lineTexts = [C.lines[0] || "", C.lines[1] || "", C.lines[2] || ""];
+        
+        if (C.typewriter_line1 && lineTexts[0]) {
+            line1El.textContent = "";
+            setTimeout(() => applyTypewriter(line1El, lineTexts[0]), 200);
+        } else {
+            line1El.textContent = lineTexts[0];
+        }
+        if (C.typewriter_line2 && lineTexts[1]) {
+            line2El.textContent = "";
+            setTimeout(() => applyTypewriter(line2El, lineTexts[1]), 500);
+        } else {
+            line2El.textContent = lineTexts[1];
+        }
+        if (C.typewriter_line3 && lineTexts[2]) {
+            line3El.textContent = "";
+            setTimeout(() => applyTypewriter(line3El, lineTexts[2]), 800);
+        } else {
+            line3El.textContent = lineTexts[2];
+        }
+
         const discordLine = document.getElementById("discord-line");
         if (C.discord) { discordLine.style.display = ""; document.getElementById("discord-val").textContent = C.discord; } else { discordLine.style.display = "none"; }
         const linksContainer = document.getElementById("links-container");
@@ -871,7 +971,7 @@
                 lines: ["", "", ""], discord: "", links: [], bg_video_urls: [], bg_video_opacity: 0.45,
                 bg_words: ["</>", "///"], last_change: now, aliases: [], equipped_badges: [], is_admin: false,
                 card_style: "default", border_radius: 18, card_opacity: 0.58, parallax_enabled: true,
-                cursor_effect: "ghost", custom_cursor: ""
+                cursor_effect: "ghost", custom_cursor: "", custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false
             });
             if (result && result[0]) {
                 await notifyDiscord(username, nextUid);
@@ -976,7 +1076,10 @@
                 document.getElementById("d-card-opacity").value = u.card_opacity !== undefined ? u.card_opacity : 0.58;
                 document.getElementById("d-parallax").checked = u.parallax_enabled !== undefined ? u.parallax_enabled : true;
                 document.getElementById("d-cursor-effect").value = u.cursor_effect || "ghost";
-                document.getElementById("d-custom-cursor").value = u.custom_cursor || "";
+                document.getElementById("d-card-font").value = u.custom_font || "DM Mono";
+                document.getElementById("d-typewriter1").checked = u.typewriter_line1 || false;
+                document.getElementById("d-typewriter2").checked = u.typewriter_line2 || false;
+                document.getElementById("d-typewriter3").checked = u.typewriter_line3 || false;
                 if (u.custom_cursor) {
                     document.getElementById("cursor-preview-container").style.display = "flex";
                     document.getElementById("cursor-preview-img").src = u.custom_cursor;
@@ -1073,21 +1176,73 @@
     const radiusSlider = document.getElementById("d-border-radius"), opacitySlider = document.getElementById("d-card-opacity");
     radiusSlider.addEventListener("input", () => { document.getElementById("border-radius-val").textContent = radiusSlider.value + "px"; });
     opacitySlider.addEventListener("input", () => { document.getElementById("card-opacity-val").textContent = parseFloat(opacitySlider.value).toFixed(2); });
-    const customCursorInput = document.getElementById("d-custom-cursor");
-    customCursorInput.addEventListener("input", () => {
-        const url = customCursorInput.value.trim();
-        if (url && url.startsWith("http")) {
-            document.getElementById("cursor-preview-container").style.display = "flex";
-            document.getElementById("cursor-preview-img").src = url;
-        } else {
-            document.getElementById("cursor-preview-container").style.display = "none";
+    
+    // CURSOR UPLOAD (resize to 32x32, upload to catbox)
+    const cursorFileInput = document.getElementById("cursor-file-input");
+    const cursorUploadBtn = document.getElementById("cursor-upload-btn");
+    const cursorPreviewContainer = document.getElementById("cursor-preview-container");
+    const cursorPreviewImg = document.getElementById("cursor-preview-img");
+    const cursorResetBtn = document.getElementById("cursor-reset-btn");
+    const cursorUploadStatus = document.getElementById("cursor-upload-status");
+    let pendingCursorUrl = null;
+
+    cursorUploadBtn.onclick = () => cursorFileInput.click();
+    cursorFileInput.onchange = async () => {
+        const file = cursorFileInput.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            cursorUploadStatus.textContent = "please select an image";
+            cursorUploadStatus.className = "cursor-upload-status error";
+            return;
         }
-    });
-    document.getElementById("cursor-reset-btn").onclick = () => {
-        customCursorInput.value = "";
-        document.getElementById("cursor-preview-container").style.display = "none";
-        document.getElementById("cursor-preview-img").src = "";
+        cursorUploadStatus.textContent = "resizing and uploading...";
+        cursorUploadStatus.className = "cursor-upload-status";
+        try {
+            // Resize image to 32x32 using canvas
+            const img = await new Promise((resolve, reject) => {
+                const image = new Image();
+                image.onload = () => resolve(image);
+                image.onerror = reject;
+                image.src = URL.createObjectURL(file);
+            });
+            const canvas = document.createElement("canvas");
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx2d = canvas.getContext("2d");
+            ctx2d.drawImage(img, 0, 0, 32, 32);
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+            // Upload to Catbox
+            const formData = new FormData();
+            formData.append("reqtype", "fileupload");
+            formData.append("fileToUpload", blob, "cursor.png");
+            const uploadRes = await fetch("https://catbox.moe/user/api.php", {
+                method: "POST",
+                body: formData
+            });
+            const url = await uploadRes.text();
+            if (!uploadRes.ok || !url.startsWith("http")) throw new Error("upload failed");
+            pendingCursorUrl = url;
+            cursorPreviewImg.src = url;
+            cursorPreviewContainer.style.display = "flex";
+            cursorUploadStatus.textContent = "uploaded! save changes to apply.";
+            cursorUploadStatus.className = "cursor-upload-status success";
+            // Optionally apply immediately for preview
+            document.body.style.cursor = `url('${url}'), auto`;
+        } catch (e) {
+            cursorUploadStatus.textContent = "upload failed: " + e.message;
+            cursorUploadStatus.className = "cursor-upload-status error";
+        }
+        cursorFileInput.value = "";
     };
+    cursorResetBtn.onclick = () => {
+        pendingCursorUrl = "";
+        cursorPreviewContainer.style.display = "none";
+        cursorPreviewImg.src = "";
+        cursorUploadStatus.textContent = "reset to default cursor. save changes.";
+        cursorUploadStatus.className = "cursor-upload-status";
+        document.body.style.cursor = "";
+    };
+    
     function applyCustomCursor(url) {
         if (url && url.trim() && url.startsWith("http")) {
             document.body.style.cursor = `url('${url}'), auto`;
@@ -1095,6 +1250,7 @@
             document.body.style.cursor = "";
         }
     }
+    
     async function saveDashboard(silent = false) {
         if (!session) return;
         const adminPanel = document.getElementById("panel-admin");
@@ -1116,12 +1272,17 @@
         const card_opacity = parseFloat(opacitySlider.value);
         const parallax_enabled = document.getElementById("d-parallax").checked;
         const cursor_effect = document.getElementById("d-cursor-effect").value;
-        const custom_cursor = document.getElementById("d-custom-cursor").value.trim();
+        const custom_cursor = pendingCursorUrl !== null ? pendingCursorUrl : (document.getElementById("d-custom-cursor") ? document.getElementById("d-custom-cursor").value.trim() : "");
+        const custom_font = document.getElementById("d-card-font").value;
+        const typewriter_line1 = document.getElementById("d-typewriter1").checked;
+        const typewriter_line2 = document.getElementById("d-typewriter2").checked;
+        const typewriter_line3 = document.getElementById("d-typewriter3").checked;
+        
         const payload = {
             lines, discord, links, bg_video_urls, bg_words, last_change: now,
             equipped_badges: [...dashEquipped], aliases: cleanAliases,
             card_style, border_radius, card_opacity, parallax_enabled, cursor_effect,
-            custom_cursor
+            custom_cursor, custom_font, typewriter_line1, typewriter_line2, typewriter_line3
         };
         try {
             await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
