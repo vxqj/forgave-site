@@ -14,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&family=Fira+Code:wght@300..700&family=IBM+Plex+Mono:wght@100..700&display=swap" rel="stylesheet">
     <style>
+        /* ========== FULL STYLES (with view counter) ========== */
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono","Courier New",monospace;color:#fff}
         #bgvideo{display:none;position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
@@ -51,7 +52,10 @@
         .meta-line:nth-of-type(3){animation-delay:.86s}
         .meta-line:nth-of-type(4){animation-delay:.93s}
         .card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(255,255,255,.05);opacity:0;animation:fadeUp .4s ease forwards;animation-delay:1.0s;margin-top:4px}
+        .footer-left{display:flex;align-items:center;gap:12px}
         .icon-links{display:flex;gap:4px;align-items:center}
+        .view-count{display:flex;align-items:center;gap:4px;font-size:.65rem;color:rgba(255,255,255,.35)}
+        .view-count svg{width:14px;height:14px;fill:currentColor}
         .icon-link{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:rgba(255,255,255,.35);transition:color .18s,background .18s;text-decoration:none}
         .icon-link:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.07)}
         .icon-link svg{width:17px;height:17px;fill:currentColor;display:block}
@@ -259,7 +263,13 @@
             <div class="meta-line" id="discord-line" style="display:none">discord — <span id="discord-val"></span></div>
         </div>
         <div class="card-footer">
-            <div class="icon-links"><div id="links-container" style="display:contents;"></div></div>
+            <div class="footer-left">
+                <div class="icon-links"><div id="links-container" style="display:contents;"></div></div>
+                <div class="view-count" id="view-count">
+                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    <span id="view-num">...</span>
+                </div>
+            </div>
             <button id="like-btn" title="like">
                 <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3v11z"/></svg>
                 <span id="like-num">...</span>
@@ -592,7 +602,8 @@
                     transparent_bg: u.transparent_bg || false,
                     disable_shadow: u.disable_shadow || false,
                     card_bg_color: u.card_bg_color || "",
-                    border_color: u.border_color || ""
+                    border_color: u.border_color || "",
+                    views: u.views || 0
                 };
                 likeId = "forgave.lol/" + slug;
                 return;
@@ -603,7 +614,25 @@
         C = null;
     }
 
-    // ========== CARD STYLES (with new color options) ==========
+    // ========== VIEWS COUNTER ==========
+    const viewCountedKey = `viewed_${slug}_${Date.now()}`;
+    async function incrementViews() {
+        if (!slug || slug === "" || slug === "n") return; // skip main page
+        const viewedBefore = localStorage.getItem(`frgv_viewed_${slug}`);
+        if (viewedBefore) return;
+        localStorage.setItem(`frgv_viewed_${slug}`, "1");
+        try {
+            await supa.patch("users", `username=eq.${encodeURIComponent(slug)}`, { views: (C?.views || 0) + 1 });
+        } catch (e) { console.warn("view increment failed", e); }
+    }
+
+    function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+        if (num >= 1000) return (num / 1000).toFixed(1) + "k";
+        return num.toString();
+    }
+
+    // ========== CARD STYLES ==========
     function applyCardStyles() {
         if (!C) return;
         const mainCard = document.getElementById("content");
@@ -612,12 +641,10 @@
         let opacity = C.card_opacity;
         if (C.transparent_bg) opacity = 0;
         
-        // Background color logic
         let bgColor;
         if (C.transparent_bg) {
             bgColor = "transparent";
         } else if (C.card_bg_color && C.card_bg_color !== "#0a0a0c") {
-            // Custom color – remove backdrop filter for solid color
             bgColor = C.card_bg_color;
             mainCard.style.backdropFilter = "none";
             mainCard.style.webkitBackdropFilter = "none";
@@ -626,7 +653,6 @@
                 secondCard.style.webkitBackdropFilter = "none";
             }
         } else {
-            // Default dark background with blur
             bgColor = `rgba(10,10,12,${opacity})`;
             if (!C.transparent_bg) {
                 mainCard.style.backdropFilter = "blur(36px) saturate(160%) brightness(1.04)";
@@ -644,7 +670,6 @@
             secondCard.style.borderRadius = `${radius}px`;
         }
         
-        // Border color
         const borderColor = C.border_color && C.border_color !== "#ffffff" ? C.border_color : "rgba(255,255,255,0.07)";
         const borderTopColor = C.border_color && C.border_color !== "#ffffff" ? C.border_color : "rgba(255,255,255,0.15)";
         mainCard.style.border = `1px solid ${borderColor}`;
@@ -654,7 +679,6 @@
             secondCard.style.borderTopColor = borderTopColor;
         }
         
-        // Shadow
         if (C.disable_shadow) {
             mainCard.style.boxShadow = "none";
             if (secondCard) secondCard.style.boxShadow = "none";
@@ -797,13 +821,13 @@
             const fontFamily = C.custom_font;
             cardContent.style.fontFamily = `${fontFamily}, monospace`;
             if (secondCard) secondCard.style.fontFamily = `${fontFamily}, monospace`;
-            document.querySelectorAll(".meta-line, .alias-row, .username, .site-name, #like-btn").forEach(el => {
+            document.querySelectorAll(".meta-line, .alias-row, .username, .site-name, #like-btn, .view-count").forEach(el => {
                 el.style.fontFamily = `${fontFamily}, monospace`;
             });
         } else {
             cardContent.style.fontFamily = "";
             if (secondCard) secondCard.style.fontFamily = "";
-            document.querySelectorAll(".meta-line, .alias-row, .username, .site-name, #like-btn").forEach(el => {
+            document.querySelectorAll(".meta-line, .alias-row, .username, .site-name, #like-btn, .view-count").forEach(el => {
                 el.style.fontFamily = "";
             });
         }
@@ -871,6 +895,10 @@
         const linksContainer = document.getElementById("links-container");
         linksContainer.innerHTML = "";
         (C.links || []).forEach(lk => { const a = document.createElement("a"); a.className = "icon-link"; a.href = lk.url; a.target = "_blank"; a.rel = "noopener"; a.title = lk.label; a.innerHTML = ICONS[lk.icon] || lk.label; linksContainer.appendChild(a); });
+        
+        // View count
+        document.getElementById("view-num").textContent = formatNumber(C.views || 0);
+        
         const nameEl = document.getElementById("site-name");
         const typeText = C.siteName;
         let ti = 0, deleting = false;
@@ -950,6 +978,7 @@
         initParallax();
         setCursorEffect(C.cursor_effect);
         applyCustomCursor(C.custom_cursor);
+        incrementViews();
     }
 
     // ========== AUTH UI ==========
@@ -1018,7 +1047,7 @@
                 card_style: "default", border_radius: 18, card_opacity: 0.58, parallax_enabled: true,
                 cursor_effect: "ghost", custom_cursor: "", custom_font: "DM Mono",
                 typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
-                transparent_bg: false, disable_shadow: false, card_bg_color: "", border_color: ""
+                transparent_bg: false, disable_shadow: false, card_bg_color: "", border_color: "", views: 0
             });
             if (result && result[0]) {
                 await notifyDiscord(username, nextUid);
@@ -1228,7 +1257,7 @@
     radiusSlider.addEventListener("input", () => { document.getElementById("border-radius-val").textContent = radiusSlider.value + "px"; });
     opacitySlider.addEventListener("input", () => { document.getElementById("card-opacity-val").textContent = parseFloat(opacitySlider.value).toFixed(2); });
     
-    // CURSOR UPLOAD (fixed CORS)
+    // CURSOR UPLOAD
     const cursorFileInput = document.getElementById("cursor-file-input");
     const cursorUploadBtn = document.getElementById("cursor-upload-btn");
     const cursorPreviewContainer = document.getElementById("cursor-preview-container");
@@ -1276,7 +1305,6 @@
             cursorPreviewContainer.style.display = "flex";
             cursorUploadStatus.textContent = "uploaded! save changes to apply.";
             cursorUploadStatus.className = "cursor-upload-status success";
-            // Preview immediately
             document.body.style.cursor = `url('${url}'), auto`;
         } catch (e) {
             cursorUploadStatus.textContent = "upload failed: " + e.message;
