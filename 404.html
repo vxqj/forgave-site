@@ -218,10 +218,6 @@
         .cursor-preview-img{width:40px;height:40px;object-fit:contain;background:rgba(255,255,255,0.05);border-radius:8px;padding:4px;border:1px solid rgba(255,255,255,0.1)}
         .cursor-reset-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:.6rem;cursor:pointer}
         .cursor-reset-btn:hover{background:rgba(255,255,255,.12)}
-        .embed-preview{margin-top:12px;padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px}
-        .embed-preview-title{font-size:.75rem;color:rgba(255,255,255,0.7);margin-bottom:4px}
-        .embed-preview-desc{font-size:.65rem;color:rgba(255,255,255,0.4)}
-        .embed-preview-image{margin-top:8px;max-width:100%;max-height:100px;border-radius:8px}
         @media (max-width:600px){#dash-modal .modal{width:calc(100vw - 24px)}.dash-body{flex-direction:column}.dash-sidebar{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);flex-direction:row;padding:10px 12px;overflow-x:auto;gap:4px}.dash-nav-btn{white-space:nowrap;flex-shrink:0}.dash-panels{padding:16px}}
     </style>
 </head>
@@ -299,7 +295,7 @@
     </div>
 </div>
 
-<!-- Dashboard Modal -->
+<!-- Dashboard Modal (colors and embed tabs removed) -->
 <div class="modal-bg" id="dash-modal">
     <div class="modal">
         <div class="dash-header">
@@ -316,7 +312,6 @@
                 <button class="dash-nav-btn" data-panel="alias"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>alias</button>
                 <button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
                 <button class="dash-nav-btn" data-panel="cursor"><svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>cursor</button>
-                <button class="dash-nav-btn" data-panel="embed"><svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zM5 7h14v2H5V7zm0 4h14v2H5v-2zm0 4h8v2H5v-2z"/></svg>embed</button>
             </nav>
             <div class="dash-panels">
                 <div class="dash-panel active" id="panel-bio">
@@ -372,29 +367,6 @@
                             <button id="cursor-reset-btn" class="cursor-reset-btn">reset</button>
                         </div>
                         <div class="field-hint">upload your image to <a href="https://catbox.moe/" target="_blank">catbox.moe</a> and paste the direct URL</div>
-                    </div>
-                </div>
-                <div class="dash-panel" id="panel-embed">
-                    <div class="dash-panel-title">discord embed customization</div>
-                    <div class="field">
-                        <label>embed title</label>
-                        <input type="text" id="d-embed-title" placeholder="forgave.lol/username" maxlength="100">
-                        <div class="field-hint">shown as the large bold text in Discord</div>
-                    </div>
-                    <div class="field">
-                        <label>embed description</label>
-                        <textarea id="d-embed-desc" rows="2" placeholder="check out my profile..." maxlength="200"></textarea>
-                        <div class="field-hint">shown below the title</div>
-                    </div>
-                    <div class="field">
-                        <label>embed image URL</label>
-                        <input type="text" id="d-embed-image" placeholder="https://files.catbox.moe/....png">
-                        <div class="field-hint">square image recommended (upload to catbox.moe)</div>
-                    </div>
-                    <div class="embed-preview" id="embed-preview">
-                        <div class="embed-preview-title">preview</div>
-                        <div class="embed-preview-desc" id="embed-preview-desc"></div>
-                        <img id="embed-preview-img" class="embed-preview-image" style="display:none;">
                     </div>
                 </div>
                 <div class="dash-panel" id="panel-admin">
@@ -503,7 +475,7 @@
         bgVideo: { urls: ["https://files.catbox.moe/q77n42.mp4"], opacity: 0.45 },
         bgWords: ["forgave", "frgv", "</>", "///"],
         wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [],
-        embed_title: "", embed_description: "", embed_image: "", custom_cursor: ""
+        custom_cursor: ""
     };
     const STATIC_USERS = {
         "prada": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "prada", uid: "1", badges: [], lines: ["@juliasfanboy / on discord", "rich", "take risks"], discord: "", links: [{ label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok" }], bgVideo: { urls: ["https://files.catbox.moe/aned1c.mp4"], opacity: 0.45 }, bgWords: ["prada", "</>"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: [] },
@@ -608,10 +580,7 @@
                     card_opacity: u.card_opacity !== undefined ? u.card_opacity : 0.58,
                     parallax_enabled: u.parallax_enabled !== undefined ? u.parallax_enabled : true,
                     cursor_effect: u.cursor_effect || "ghost",
-                    custom_cursor: u.custom_cursor || "",
-                    embed_title: u.embed_title || "",
-                    embed_description: u.embed_description || "",
-                    embed_image: u.embed_image || ""
+                    custom_cursor: u.custom_cursor || ""
                 };
                 likeId = "forgave.lol/" + slug;
                 return;
@@ -902,7 +871,7 @@
                 lines: ["", "", ""], discord: "", links: [], bg_video_urls: [], bg_video_opacity: 0.45,
                 bg_words: ["</>", "///"], last_change: now, aliases: [], equipped_badges: [], is_admin: false,
                 card_style: "default", border_radius: 18, card_opacity: 0.58, parallax_enabled: true,
-                cursor_effect: "ghost", custom_cursor: "", embed_title: "", embed_description: "", embed_image: ""
+                cursor_effect: "ghost", custom_cursor: ""
             });
             if (result && result[0]) {
                 await notifyDiscord(username, nextUid);
@@ -1008,10 +977,6 @@
                 document.getElementById("d-parallax").checked = u.parallax_enabled !== undefined ? u.parallax_enabled : true;
                 document.getElementById("d-cursor-effect").value = u.cursor_effect || "ghost";
                 document.getElementById("d-custom-cursor").value = u.custom_cursor || "";
-                document.getElementById("d-embed-title").value = u.embed_title || "";
-                document.getElementById("d-embed-desc").value = u.embed_description || "";
-                document.getElementById("d-embed-image").value = u.embed_image || "";
-                updateEmbedPreview(u.embed_title, u.embed_description, u.embed_image);
                 if (u.custom_cursor) {
                     document.getElementById("cursor-preview-container").style.display = "flex";
                     document.getElementById("cursor-preview-img").src = u.custom_cursor;
@@ -1123,26 +1088,6 @@
         document.getElementById("cursor-preview-container").style.display = "none";
         document.getElementById("cursor-preview-img").src = "";
     };
-    const embedTitleInput = document.getElementById("d-embed-title");
-    const embedDescInput = document.getElementById("d-embed-desc");
-    const embedImageInput = document.getElementById("d-embed-image");
-    function refreshEmbedPreview() { updateEmbedPreview(embedTitleInput.value, embedDescInput.value, embedImageInput.value); }
-    embedTitleInput.addEventListener("input", refreshEmbedPreview);
-    embedDescInput.addEventListener("input", refreshEmbedPreview);
-    embedImageInput.addEventListener("input", refreshEmbedPreview);
-    function updateEmbedPreview(title, desc, img) {
-        const previewDesc = document.getElementById("embed-preview-desc");
-        const previewImg = document.getElementById("embed-preview-img");
-        if (previewDesc) previewDesc.textContent = desc || "(no description)";
-        if (previewImg) {
-            if (img && img.trim()) {
-                previewImg.src = img;
-                previewImg.style.display = "block";
-            } else {
-                previewImg.style.display = "none";
-            }
-        }
-    }
     function applyCustomCursor(url) {
         if (url && url.trim() && url.startsWith("http")) {
             document.body.style.cursor = `url('${url}'), auto`;
@@ -1172,14 +1117,11 @@
         const parallax_enabled = document.getElementById("d-parallax").checked;
         const cursor_effect = document.getElementById("d-cursor-effect").value;
         const custom_cursor = document.getElementById("d-custom-cursor").value.trim();
-        const embed_title = document.getElementById("d-embed-title").value.trim();
-        const embed_description = document.getElementById("d-embed-desc").value.trim();
-        const embed_image = document.getElementById("d-embed-image").value.trim();
         const payload = {
             lines, discord, links, bg_video_urls, bg_words, last_change: now,
             equipped_badges: [...dashEquipped], aliases: cleanAliases,
             card_style, border_radius, card_opacity, parallax_enabled, cursor_effect,
-            custom_cursor, embed_title, embed_description, embed_image
+            custom_cursor
         };
         try {
             await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
@@ -1287,7 +1229,6 @@
         try { await supa.patch("users", `username=eq.${encodeURIComponent(adminTarget.username)}`, { equipped_badges: [...adminTargetEquipped] }); status.textContent = "badges saved ✓"; status.className = "admin-status ok"; } catch (e) { status.textContent = "error: " + e.message; status.className = "admin-status err"; }
         btn.disabled = false;
     };
-    // ========== FIXED DISCORD WEBHOOK NOTIFICATION ==========
     async function notifyDiscord(username, uid) {
         try {
             const webhookUrl = "https://discord.com/api/webhooks/1515599322534908027/GqyFJK_Er3c36tVTjf7HEXdyq5vPU0tvVfassmY-TlHKbF5kCxMWmBqoHNfSo7-LYorj";
