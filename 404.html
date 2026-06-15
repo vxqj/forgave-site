@@ -224,6 +224,8 @@
         .cursor-reset-btn:hover{background:rgba(255,255,255,.12)}
         .reset-btn-sm{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:.58rem;cursor:pointer;margin-left:8px;transition:all .15s}
         .reset-btn-sm:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
+        .test-cursor-btn{background:rgba(255,180,80,.15);border:1px solid rgba(255,180,80,.3);border-radius:6px;padding:5px 12px;font-size:.6rem;cursor:pointer;margin-left:8px;transition:all .15s;color:rgba(255,200,100,.9)}
+        .test-cursor-btn:hover{background:rgba(255,180,80,.3)}
         @media (max-width:600px){#dash-modal .modal{width:calc(100vw - 24px)}.dash-body{flex-direction:column}.dash-sidebar{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);flex-direction:row;padding:10px 12px;overflow-x:auto;gap:4px}.dash-nav-btn{white-space:nowrap;flex-shrink:0}.dash-panels{padding:16px}}
     </style>
 </head>
@@ -371,9 +373,12 @@
                     <div class="field"><label>effect</label><select id="d-cursor-effect"><option value="ghost">Ghost (default arrows)</option><option value="sparkle">Sparkle (stars)</option><option value="trail">Trail Dots</option><option value="simple">Simple Dot</option><option value="none">None</option></select></div>
                     <div class="field">
                         <label>custom cursor image URL (catbox link)</label>
-                        <input type="text" id="d-custom-cursor-url" placeholder="https://files.catbox.moe/yourcursor.png">
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <input type="text" id="d-custom-cursor-url" placeholder="https://files.catbox.moe/yourcursor.png" style="flex:1">
+                            <button type="button" id="test-cursor-btn" class="test-cursor-btn">test</button>
+                        </div>
                         <div class="cursor-preview" id="cursor-preview-container" style="display:none;"><span style="font-size:.58rem;">preview:</span><img id="cursor-preview-img" class="cursor-preview-img" alt="cursor preview"><button id="cursor-reset-btn" class="cursor-reset-btn">reset</button></div>
-                        <div class="field-hint">enter a direct link to an image (preferably 32x32). overrides default cursor on all elements.</div>
+                        <div class="field-hint">enter a direct link to an image (PNG, GIF, CUR). Overrides cursor everywhere.</div>
                     </div>
                 </div>
                 <div class="dash-panel" id="panel-admin">
@@ -625,14 +630,36 @@
         return num.toString();
     }
 
-    // ========== GLOBAL CURSOR OVERRIDE ==========
+    // ========== GLOBAL CURSOR OVERRIDE (with preload) ==========
     function applyCustomCursor(url) {
         let styleTag = document.getElementById("force-cursor-style");
         if (styleTag) styleTag.remove();
-        if (url && url.trim() && url.startsWith("http")) {
+        if (url && url.trim() && (url.startsWith("http://") || url.startsWith("https://"))) {
+            // Preload image to ensure browser can apply it as cursor
+            const img = new Image();
+            img.onload = () => {
+                // After preload, inject style
+                styleTag = document.createElement("style");
+                styleTag.id = "force-cursor-style";
+                // Use hotspot (0,0) and fallback to auto
+                styleTag.textContent = `* { cursor: url('${url}') 0 0, auto !important; } html, body { cursor: url('${url}') 0 0, auto !important; }`;
+                document.head.appendChild(styleTag);
+                console.log("Custom cursor applied:", url);
+            };
+            img.onerror = () => {
+                console.warn("Failed to load custom cursor image:", url);
+                // Fallback: remove any cursor override
+                styleTag = document.createElement("style");
+                styleTag.id = "force-cursor-style";
+                styleTag.textContent = `* { cursor: auto !important; }`;
+                document.head.appendChild(styleTag);
+            };
+            img.src = url;
+        } else {
+            // Reset to default
             styleTag = document.createElement("style");
             styleTag.id = "force-cursor-style";
-            styleTag.textContent = `* { cursor: url('${url}'), auto !important; }`;
+            styleTag.textContent = `* { cursor: auto !important; }`;
             document.head.appendChild(styleTag);
         }
     }
@@ -755,7 +782,7 @@
         cardStack.addEventListener("mouseleave", handleMouseLeave);
     }
 
-    // ========== CURSOR EFFECTS ==========
+    // ========== CURSOR EFFECTS (trail) ==========
     let cursorEffect = "ghost";
     let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
     function initCursorEffect() {
@@ -1289,6 +1316,7 @@
     const cursorPreviewContainer = document.getElementById("cursor-preview-container");
     const cursorPreviewImg = document.getElementById("cursor-preview-img");
     const cursorResetBtn = document.getElementById("cursor-reset-btn");
+    const testCursorBtn = document.getElementById("test-cursor-btn");
     function updateCursorPreview() {
         let url = cursorUrlInput.value.trim();
         if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
@@ -1304,6 +1332,11 @@
         cursorPreviewContainer.style.display = "none";
         cursorPreviewImg.src = "";
         applyCustomCursor("");
+    };
+    testCursorBtn.onclick = () => {
+        let url = cursorUrlInput.value.trim();
+        if (url) applyCustomCursor(url);
+        else applyCustomCursor("");
     };
     
     async function saveDashboard(silent = false) {
@@ -1347,6 +1380,7 @@
         try {
             await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
             updateAliasRowOnCard(cleanAliases);
+            // Apply cursor after save
             applyCustomCursor(custom_cursor);
             if (!silent) { status.textContent = "saved ✓"; status.style.color = "rgba(100,220,150,.5)"; setTimeout(() => { status.textContent = ""; }, 3000); if (slug === session.username) location.reload(); }
             else { if (slug === session.username) location.reload(); }
