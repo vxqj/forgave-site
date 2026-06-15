@@ -222,6 +222,8 @@
         .file-upload-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 12px;font-family:"DM Mono",monospace;font-size:.68rem;cursor:pointer;width:100%;text-align:center;transition:background .15s}
         .file-upload-btn:hover{background:rgba(255,255,255,.12)}
         .cursor-upload-status{font-size:.58rem;color:rgba(255,255,255,.18);margin-top:4px}
+        .cursor-upload-status.success{color:rgba(100,220,150,.6)}
+        .cursor-upload-status.error{color:rgba(255,100,100,.6)}
         @media (max-width:600px){#dash-modal .modal{width:calc(100vw - 24px)}.dash-body{flex-direction:column}.dash-sidebar{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);flex-direction:row;padding:10px 12px;overflow-x:auto;gap:4px}.dash-nav-btn{white-space:nowrap;flex-shrink:0}.dash-panels{padding:16px}}
     </style>
 </head>
@@ -728,7 +730,7 @@
     }
     function setCursorEffect(effect) { cursorEffect = effect; }
 
-    // ========== TYPEWRITER EFFECT ==========
+    // ========== TYPEWRITER EFFECT (adjusted delays after fade-in) ==========
     function applyTypewriter(element, text, callback) {
         if (!element) return;
         element.textContent = "";
@@ -802,21 +804,22 @@
         const line3El = document.getElementById("line3");
         const lineTexts = [C.lines[0] || "", C.lines[1] || "", C.lines[2] || ""];
         
+        // Fade-in delays: 0.72s, 0.79s, 0.86s. Start typing after fade-in (add 0.1s buffer)
         if (C.typewriter_line1 && lineTexts[0]) {
             line1El.textContent = "";
-            setTimeout(() => applyTypewriter(line1El, lineTexts[0]), 200);
+            setTimeout(() => applyTypewriter(line1El, lineTexts[0]), 820);
         } else {
             line1El.textContent = lineTexts[0];
         }
         if (C.typewriter_line2 && lineTexts[1]) {
             line2El.textContent = "";
-            setTimeout(() => applyTypewriter(line2El, lineTexts[1]), 500);
+            setTimeout(() => applyTypewriter(line2El, lineTexts[1]), 900);
         } else {
             line2El.textContent = lineTexts[1];
         }
         if (C.typewriter_line3 && lineTexts[2]) {
             line3El.textContent = "";
-            setTimeout(() => applyTypewriter(line3El, lineTexts[2]), 800);
+            setTimeout(() => applyTypewriter(line3El, lineTexts[2]), 980);
         } else {
             line3El.textContent = lineTexts[2];
         }
@@ -1226,7 +1229,7 @@
             cursorPreviewContainer.style.display = "flex";
             cursorUploadStatus.textContent = "uploaded! save changes to apply.";
             cursorUploadStatus.className = "cursor-upload-status success";
-            // Optionally apply immediately for preview
+            // Immediately apply preview
             document.body.style.cursor = `url('${url}'), auto`;
         } catch (e) {
             cursorUploadStatus.textContent = "upload failed: " + e.message;
@@ -1235,7 +1238,7 @@
         cursorFileInput.value = "";
     };
     cursorResetBtn.onclick = () => {
-        pendingCursorUrl = "";
+        pendingCursorUrl = null;
         cursorPreviewContainer.style.display = "none";
         cursorPreviewImg.src = "";
         cursorUploadStatus.textContent = "reset to default cursor. save changes.";
@@ -1272,7 +1275,7 @@
         const card_opacity = parseFloat(opacitySlider.value);
         const parallax_enabled = document.getElementById("d-parallax").checked;
         const cursor_effect = document.getElementById("d-cursor-effect").value;
-        const custom_cursor = pendingCursorUrl !== null ? pendingCursorUrl : (document.getElementById("d-custom-cursor") ? document.getElementById("d-custom-cursor").value.trim() : "");
+        const custom_cursor = pendingCursorUrl !== null ? pendingCursorUrl : (C ? C.custom_cursor : "");
         const custom_font = document.getElementById("d-card-font").value;
         const typewriter_line1 = document.getElementById("d-typewriter1").checked;
         const typewriter_line2 = document.getElementById("d-typewriter2").checked;
