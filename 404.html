@@ -662,6 +662,13 @@
     <div id="overlay"><span id="overlay-text">click to enter</span></div>
     <audio id="audio" loop></audio>
 
+    <!-- Music widget -->
+    <div id="music-widget">
+        <span>🎵</span>
+        <span class="track-name" id="music-track-name">off</span>
+        <button id="music-toggle-btn">⏸</button>
+    </div>
+
     <button id="auth-btn" title="sign up"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></button>
 
     <div id="user-pill">
@@ -1485,7 +1492,49 @@
 
         // ========== MUSIC PLAYER ==========
         const audio = document.getElementById("audio");
-        
+        const musicToggleBtn = document.getElementById("music-toggle-btn");
+        const musicTrackName = document.getElementById("music-track-name");
+        let musicPlaying = false;
+
+        function initMusic() {
+            if (C && C.music && C.music.url) {
+                audio.src = C.music.url;
+                audio.volume = C.music.volume || 0.4;
+                const trackName = C.music.url.split('/').pop() || 'track';
+                musicTrackName.textContent = trackName.length > 20 ? trackName.slice(0, 20) + '…' : trackName;
+                if (C.music.autoplay) {
+                    audio.play().catch(() => {});
+                    musicPlaying = true;
+                    musicToggleBtn.textContent = '⏸';
+                }
+            } else {
+                musicTrackName.textContent = 'off';
+                musicToggleBtn.textContent = '▶';
+            }
+        }
+
+        musicToggleBtn.onclick = () => {
+            if (!audio.src) {
+                if (C && C.music && C.music.url) {
+                    audio.src = C.music.url;
+                    audio.volume = C.music.volume || 0.4;
+                } else {
+                    return;
+                }
+            }
+            if (audio.paused) {
+                audio.play().catch(() => {});
+                musicPlaying = true;
+                musicToggleBtn.textContent = '⏸';
+                musicTrackName.textContent = 'playing';
+            } else {
+                audio.pause();
+                musicPlaying = false;
+                musicToggleBtn.textContent = '▶';
+                musicTrackName.textContent = 'paused';
+            }
+        };
+
         // ========== LEADERBOARD ==========
         const leaderboardBtn = document.getElementById("leaderboard-btn");
         const leaderboardModal = document.getElementById("leaderboard-modal");
