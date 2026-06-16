@@ -506,7 +506,7 @@
             if (rows && rows[0]) {
                 const u = rows[0];
                 const equippedBadges = u.equipped_badges || [];
-                const cardBadges = equippedBadges.filter(bid => getBadgeInfo(bid)).map(bid => { const info = getBadgeInfo(bid); return { tip: info.name, img: info.img }; });
+                const cardBadges = equippedBadges.filter(bid => BADGE_CONFIG[bid]).map(bid => ({ tip: BADGE_CONFIG[bid].name, img: BADGE_CONFIG[bid].img }));
                 let aliases = Array.isArray(u.aliases) ? u.aliases.filter(a => a && a.trim()) : [];
                 C = {
                     siteName: "forgave.lol", lastChange: u.last_change || u.created_at?.slice(0,10) || "", username: u.username, uid: String(u.uid),
@@ -797,7 +797,7 @@
                     const filter = dynamicUsernames.map(u => `username.eq.${u}`).join(",");
                     const rows = await supa.get("users", `or=(${filter})&select=username,uid,equipped_badges`);
                     for (let row of rows) {
-                        const badgeImgs = (row.equipped_badges || []).filter(bid => getBadgeInfo(bid)).map(bid => getBadgeInfo(bid).img);
+                        const badgeImgs = (row.equipped_badges || []).filter(bid => BADGE_CONFIG[bid]).map(bid => BADGE_CONFIG[bid].img);
                         userDetails[row.username] = { uid: row.uid, badges: badgeImgs };
                     }
                 }
@@ -977,7 +977,8 @@
                 const res = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`, { headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY } });
                 const data = await res.json();
                 const newCount = Math.max(0, (data[0]?.count || 0) + delta);
-                await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}`, { method: "PATCH", headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ count: newCount }) }); likeNum.textContent = newCount;
+                await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}`, { method: "PATCH", headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ count: newCount }) });
+                likeNum.textContent = newCount;
             } catch (e) { }
         }
         likeBtn.onclick = () => { if (!hasLiked) { hasLiked = true; localStorage.setItem(likeKey, "1"); likeBtn.classList.add("liked"); updateLike(1); } else { hasLiked = false; localStorage.removeItem(likeKey); likeBtn.classList.remove("liked"); updateLike(-1); } };
@@ -1137,7 +1138,6 @@
             btn.classList.add("active");
             document.getElementById("panel-admin").classList.add("active");
             document.getElementById("d-save").style.display = "none";
-            renderCustomBadgeList();
         };
         sidebar.appendChild(btn);
         document.querySelectorAll(".dash-nav-btn:not(#admin-nav-btn)").forEach(b => {
@@ -1222,13 +1222,6 @@
             { id: "server_booster", name: "Server Booster", desc: "Server booster.", img: BADGE_CONFIG.server_booster.img, unlocked: dashEquipped.includes("server_booster") },
             { id: "develop", name: "Develop", desc: "Developer.", img: BADGE_CONFIG.develop.img, unlocked: dashEquipped.includes("develop") }
         ];
-        const knownIds = allBadges.map(b => b.id);
-        dashEquipped.forEach(id => {
-            if (knownIds.includes(id)) return;
-            const info = getBadgeInfo(id);
-            if (!info) return;
-            allBadges.push({ id, name: info.name, desc: info.custom ? "Custom badge." : "Special badge.", img: info.img, unlocked: true });
-        });
         allBadges.forEach(b => {
             const isEq = dashEquipped.includes(b.id);
             const card = document.createElement("div");
@@ -1289,11 +1282,7 @@
     function addDashLinkRow(label, url, icon, idx) {
         const list = document.getElementById("d-links-list"), row = document.createElement("div");
         row.className = "dash-link-row"; row.dataset.idx = idx ?? list.children.length;
-        const iconOptions = ["tiktok", "discord", "twitter", "youtube", "instagram", "roblox"];
-        row.innerHTML = `<div class="dl-icon-preview">${ICONS[icon] || ICONS.tiktok}</div><select class="dl-icon">${iconOptions.map(ic => `<option value="${ic}" ${ic === icon ? "selected" : ""}>${ic}</option>`).join("")}</select><input class="dl-url" type="text" placeholder="https://..." value="${url}"><button class="dash-link-remove" title="remove">×</button>`;
-        const preview = row.querySelector(".dl-icon-preview");
-        const select = row.querySelector(".dl-icon");
-        select.addEventListener("change", () => { preview.innerHTML = ICONS[select.value] || ""; });
+        row.innerHTML = `<select class="dl-icon">${["tiktok", "discord", "twitter", "youtube", "instagram", "roblox"].map(ic => `<option value="${ic}" ${ic === icon ? "selected" : ""}>${ic}</option>`).join("")}</select><input class="dl-url" type="text" placeholder="https://..." value="${url}"><button class="dash-link-remove">×</button>`;
         row.querySelector(".dash-link-remove").onclick = () => row.remove();
         list.appendChild(row);
     }
@@ -1436,7 +1425,7 @@
     function clearAdminStatuses() { ["admin-uid-status", "admin-likes-status", "admin-badges-status", "admin-pw-status"].forEach(id => { const el = document.getElementById(id); if (el) { el.textContent = ""; el.className = "admin-status"; } }); }
     function renderAdminBadges() {
         const grid = document.getElementById("admin-badge-grid"); grid.innerHTML = "";
-        getAllBadgeDefs().forEach(b => {
+        ALL_BADGE_DEFS.forEach(b => {
             const on = adminTargetEquipped.includes(b.id);
             const btn = document.createElement("button");
             btn.className = `admin-badge-toggle ${on ? "on" : ""}`;
@@ -1504,9 +1493,7 @@
     // ========== BOOT ==========
     initCursorEffect();
     updateAuthUI();
-    loadCustomBadges().then(() => {
-        resolveRoute().then(() => renderCard());
-    });
+    resolveRoute().then(() => renderCard());
 </script>
 </body>
 </html>
