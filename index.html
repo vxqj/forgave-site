@@ -39,7 +39,8 @@
         .username .tip,.badge .tip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%) translateY(4px);background:rgba(6,6,8,.98);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.8);font-size:.58rem;font-family:"DM Mono",monospace;letter-spacing:1.6px;text-transform:uppercase;padding:3px 8px;border-radius:5px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:20}
         .username:hover .tip,.badge:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}
         .badge{position:relative;display:flex;align-items:center;justify-content:center;width:18px;height:18px;flex-shrink:0;cursor:default}
-        .badge img{width:100%;height:100%;object-fit:contain;display:block}
+        .badge img{width:100%;height:100%;object-fit:contain;display:block;border-radius:2px}
+        .badge .fallback{font-size:12px;line-height:1}
         .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07) 30%,rgba(255,255,255,.07) 70%,transparent);margin-bottom:15px;opacity:0;animation:fadeUp .4s ease forwards;animation-delay:.6s}
         .meta-section{margin-bottom:15px}
         .meta-label{font-size:.6rem;color:rgba(255,255,255,.2);letter-spacing:1.4px;text-transform:uppercase;margin-bottom:9px;font-style:italic;opacity:0;animation:fadeUp .4s ease forwards;animation-delay:.65s}
@@ -361,7 +362,7 @@
     <button class="dash-nav-btn" data-panel="alias"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>alias</button>
     <button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
     <button class="dash-nav-btn" data-panel="cursor"><svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>cursor</button>
-    <!-- Admin button will be injected here by JavaScript if user is admin -->
+    <!-- Admin button injected by JS -->
 </nav>
 <div class="dash-panels"><div class="dash-panel active" id="panel-bio"><div class="dash-panel-title">bio lines</div><div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter1" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
 <div class="field"><label>line 2</label><input type="text" id="d-line2" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter2" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
@@ -926,7 +927,7 @@
         };
     });
 
-    // ========== RENDER CARD ==========
+    // ========== RENDER CARD (with onerror and fallback) ==========
     function renderCard() {
         if (!C) {
             document.getElementById("card-stack").style.display = "none";
@@ -959,11 +960,30 @@
         unSpan.className = "username";
         unSpan.innerHTML = `${C.username}<span class="tip">UID: ${C.uid}</span>`;
         usernameRow.appendChild(unSpan);
+        
         (C.badges || []).forEach(b => {
-            const d = document.createElement("div"); d.className = "badge";
-            d.innerHTML = `<img src="${b.img}" alt="${b.tip}"><span class="tip">${b.tip}</span>`;
+            const d = document.createElement("div");
+            d.className = "badge";
+            const img = document.createElement("img");
+            img.src = b.img;
+            img.alt = b.tip;
+            img.onerror = function() {
+                console.warn("Badge image failed to load:", b.img);
+                // Show a fallback emoji
+                this.style.display = "none";
+                const fallback = document.createElement("span");
+                fallback.className = "fallback";
+                fallback.textContent = "⭐";
+                d.appendChild(fallback);
+            };
+            d.appendChild(img);
+            const tipSpan = document.createElement("span");
+            tipSpan.className = "tip";
+            tipSpan.textContent = b.tip;
+            d.appendChild(tipSpan);
             usernameRow.appendChild(d);
         });
+        
         const aliasRow = document.getElementById("alias-row");
         const aliases = Array.isArray(C.aliases) ? C.aliases.filter(a => a && a.trim().length > 0) : [];
         if (aliases.length > 0) { aliasRow.style.display = "block"; aliasRow.innerHTML = "also known as: " + aliases.map((a, i) => `<a href="https://forgave.lol/${a}" target="_blank">${a}</a>${i < aliases.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`).join(""); } else { aliasRow.style.display = "none"; aliasRow.innerHTML = ""; }
@@ -1297,55 +1317,31 @@
         grid.innerHTML = "";
         const numUid = parseInt(uid, 10);
         
-        // Build all badge entries (static + custom)
         const allBadges = [];
-        
-        // Static badges
         for (const [id, cfg] of Object.entries(BADGE_CONFIG)) {
             let unlocked = false;
-            // Achievement badges (auto-unlock based on conditions)
             if (id === "og_plus") unlocked = !isNaN(numUid) && numUid <= 25;
             else if (id === "og") unlocked = !isNaN(numUid) && numUid <= 50;
             else if (id === "early") unlocked = !isNaN(numUid) && numUid <= 100;
             else if (id === "loved") unlocked = (likeCount || 0) >= 50;
             else if (id === "popular") unlocked = (likeCount || 0) >= 100;
-            else unlocked = dashEquipped.includes(id); // admin-only badges
-            
-            allBadges.push({
-                id: id,
-                name: cfg.name,
-                img: cfg.img,
-                unlocked: unlocked,
-                custom: false,
-                adminOnly: cfg.adminOnly
-            });
+            else unlocked = dashEquipped.includes(id);
+            allBadges.push({ id, name: cfg.name, img: cfg.img, unlocked, adminOnly: cfg.adminOnly });
         }
-        
-        // Custom badges
         customBadgesCache.forEach(b => {
             const unlocked = dashEquipped.includes(b.id);
-            allBadges.push({
-                id: b.id,
-                name: b.name,
-                img: b.image_url,
-                unlocked: unlocked,
-                custom: true,
-                adminOnly: false
-            });
+            allBadges.push({ id: b.id, name: b.name, img: b.image_url, unlocked, custom: true });
         });
         
-        // Render each badge
         allBadges.forEach(b => {
             const isEq = dashEquipped.includes(b.id);
             const card = document.createElement("div");
             card.className = `badge-card ${b.unlocked ? "unlocked" : "locked"}`;
-            
             let descText = "Achievement";
             if (b.custom) descText = "Custom badge";
             else if (b.adminOnly) descText = "Admin‑assigned";
-            
             card.innerHTML = `
-                <div class="badge-icon-wrap"><img src="${b.img}" alt="${b.name}"></div>
+                <div class="badge-icon-wrap"><img src="${b.img}" alt="${b.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:20px;">⭐</span></div>
                 <div class="badge-info">
                     <div class="badge-name">${b.name}</div>
                     <div class="badge-desc">${descText}</div>
@@ -1355,19 +1351,11 @@
                     ${b.unlocked ? `<button class="badge-equip-btn ${isEq ? "equipped" : ""}" data-badge="${b.id}">${isEq ? "unequip" : "equip"}</button>` : ""}
                 </div>
             `;
-            
             if (b.unlocked) {
                 card.querySelector(".badge-equip-btn").addEventListener("click", function() {
                     const idx = dashEquipped.indexOf(b.id);
-                    if (idx !== -1) {
-                        dashEquipped.splice(idx, 1);
-                        this.textContent = "equip";
-                        this.classList.remove("equipped");
-                    } else {
-                        dashEquipped.push(b.id);
-                        this.textContent = "unequip";
-                        this.classList.add("equipped");
-                    }
+                    if (idx !== -1) { dashEquipped.splice(idx,1); this.textContent="equip"; this.classList.remove("equipped"); }
+                    else { dashEquipped.push(b.id); this.textContent="unequip"; this.classList.add("equipped"); }
                 });
             }
             grid.appendChild(card);
