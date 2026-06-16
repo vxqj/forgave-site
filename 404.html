@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&family=Fira+Code:wght@300..700&family=IBM+Plex+Mono:wght@100..700&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/png" href="https://files.catbox.moe/beu5f0.png">
     <style>
-        /* ===== ORIGINAL STYLES ===== */
+        /* ===== ORIGINAL STYLES (kept) ===== */
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono","Courier New",monospace;color:#fff}
         #bgvideo{display:none;position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
@@ -69,7 +69,7 @@
         .view-count{display:flex;align-items:center;gap:4px;font-size:.65rem;color:rgba(255,255,255,.35)}
         @media (max-width:400px){.view-count{font-size:.55rem}}
         .view-count svg{width:14px;height:14px;fill:currentColor}
-        .icon-link{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:rgba(255,255,255,.35);transition:color .18s,background .18s;text-decoration:none}
+        .icon-link{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:rgba(255,255,255,.35);transition:color .18s,background .18s;text-decoration:none;position:relative}
         @media (max-width:400px){.icon-link{width:26px;height:26px}.icon-link svg{width:14px;height:14px}}
         .icon-link:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.07)}
         .icon-link svg{width:17px;height:17px;fill:currentColor;display:block}
@@ -313,6 +313,29 @@
         .reset-btn-sm{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:.58rem;cursor:pointer;margin-left:8px;transition:all .15s}
         .reset-btn-sm:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
 
+        /* ===== NEW STATS PANEL STYLES ===== */
+        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+        @media (max-width:500px){.stats-grid{grid-template-columns:1fr}}
+        .stats-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px;text-align:center}
+        .stats-card .stat-number{font-size:1.8rem;font-weight:500;color:rgba(255,255,255,.9);letter-spacing:-.5px;line-height:1.2}
+        .stats-card .stat-label{font-size:.6rem;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.3);margin-top:4px}
+        .stats-card .stat-change{font-size:.55rem;color:rgba(100,220,150,.6);margin-top:2px}
+        .stats-divider{height:1px;background:rgba(255,255,255,.06);margin:16px 0}
+        .stats-subtitle{font-size:.6rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:12px}
+        .stats-link-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.7rem}
+        .stats-link-item .link-name{color:rgba(255,255,255,.6)}
+        .stats-link-item .link-clicks{color:rgba(255,255,255,.8);font-weight:500}
+        .stats-device-item{display:flex;align-items:center;gap:10px;padding:4px 0;font-size:.7rem}
+        .stats-device-item .device-label{width:60px;color:rgba(255,255,255,.5)}
+        .stats-device-bar{flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+        .stats-device-bar .fill{height:100%;background:rgba(255,255,255,.4);border-radius:4px;transition:width .3s}
+        .stats-device-item .device-percent{width:40px;text-align:right;color:rgba(255,255,255,.4);font-size:.6rem}
+        .stats-daily-chart{display:flex;align-items:flex-end;gap:4px;height:80px;padding:8px 0}
+        .stats-daily-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+        .stats-daily-bar .bar{width:100%;background:rgba(255,255,255,.2);border-radius:2px;min-height:2px;transition:height .3s}
+        .stats-daily-bar .bar-label{font-size:.45rem;color:rgba(255,255,255,.2);transform:rotate(-45deg);white-space:nowrap}
+        .stats-daily-bar .bar-value{font-size:.45rem;color:rgba(255,255,255,.2)}
+
         /* ===== SIGNUP PAGE ===== */
         #signup-page{all:initial;display:none;position:fixed;inset:0;z-index:10;flex-direction:column;align-items:center;justify-content:center;background:#0a0a0a;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#fff;overflow-y:auto;padding:20px}
         #signup-page .page-section{width:100%;max-width:1024px;margin:0 auto;position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
@@ -368,7 +391,7 @@
         #signup-page .field-hint.error{color:rgba(255,100,100,0.7)}
         #signup-page .field-hint.success{color:rgba(100,220,150,0.7)}
 
-        /* ===== FONT SELECTOR WITH DATALIST ===== */
+        /* ===== FONT SELECTOR ===== */
         .font-input-wrap{position:relative;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
         .font-input-wrap input{flex:1;min-width:120px}
         .font-input-wrap .font-preview{font-size:.6rem;color:rgba(255,255,255,.25);letter-spacing:.5px;padding:4px 8px;background:rgba(255,255,255,.03);border-radius:4px;border:1px solid rgba(255,255,255,.05);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
@@ -380,7 +403,7 @@
         .font-suggestions .suggestion:last-child{border-bottom:none}
         .font-suggestions .suggestion .samp{float:right;opacity:.3;font-size:.55rem}
 
-        /* extra mobile fixes for dashboard fields */
+        /* extra mobile fixes */
         @media (max-width:500px){
             .field input,.field textarea,.field select{font-size:.65rem;padding:8px 10px}
             .field label{font-size:.55rem}
@@ -417,7 +440,7 @@
         <button id="user-pill-logout" title="sign out"><svg viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5a2 2 0 0 0-2 2v4h2V5h14v14H5v-4H3v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/></svg></button>
     </div>
 
-    <!-- ===== SIGNUP PAGE (2-step flow) ===== -->
+    <!-- ===== SIGNUP PAGE ===== -->
     <div id="signup-page">
         <div id="landing-page" class="page-section">
             <div class="landing-bg-glow"></div>
@@ -529,6 +552,8 @@
         <button class="dash-nav-btn" data-panel="badges"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>badges</button>
         <button class="dash-nav-btn" data-panel="alias"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>alias</button>
         <button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
+        <!-- NEW STATS BUTTON -->
+        <button class="dash-nav-btn" data-panel="stats"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>stats</button>
     </nav>
     <div class="dash-panels">
         <div class="dash-panel active" id="panel-bio"><div class="dash-panel-title">bio lines</div>
@@ -570,6 +595,28 @@
         <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-wrap:wrap;"><input type="checkbox" id="d-parallax" style="width:auto;margin:0;"> parallax effect</label></div>
         <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-wrap:wrap;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background</label><div class="field-hint">makes the card background fully transparent (ignores color picker)</div></div>
         <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-wrap:wrap;"><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow</label></div></div>
+
+        <!-- NEW STATS PANEL -->
+        <div class="dash-panel" id="panel-stats">
+            <div class="dash-panel-title">analytics</div>
+            <div id="stats-container">
+                <div class="stats-grid">
+                    <div class="stats-card"><div class="stat-number" id="stat-total-clicks">0</div><div class="stat-label">Total Link Clicks</div><div class="stat-change" id="stat-clicks-change"></div></div>
+                    <div class="stats-card"><div class="stat-number" id="stat-click-rate">0%</div><div class="stat-label">Click Rate</div><div class="stat-change">in the last 3 days</div></div>
+                    <div class="stats-card"><div class="stat-number" id="stat-profile-views">0</div><div class="stat-label">Profile Views</div><div class="stat-change" id="stat-views-change"></div></div>
+                    <div class="stats-card"><div class="stat-number" id="stat-avg-daily">0</div><div class="stat-label">Avg Daily Views</div><div class="stat-change">last 7 days</div></div>
+                </div>
+                <div class="stats-divider"></div>
+                <div class="stats-subtitle">Daily Views (last 7 days)</div>
+                <div id="stats-daily-chart" class="stats-daily-chart"></div>
+                <div class="stats-divider"></div>
+                <div class="stats-subtitle">Links</div>
+                <div id="stats-links-list"></div>
+                <div class="stats-divider"></div>
+                <div class="stats-subtitle">Visitor Devices</div>
+                <div id="stats-devices"></div>
+            </div>
+        </div>
 
         <div class="dash-panel" id="panel-admin"><div class="dash-panel-title" style="color:rgba(255,180,80,.4);">admin panel</div>
         <div class="admin-search-row"><input type="text" id="admin-search-input" placeholder="search username..."><button class="admin-search-btn" id="admin-search-btn">look up</button></div>
@@ -784,12 +831,12 @@
                     card_opacity: 0.58, parallax_enabled: true, cursor_effect: "ghost", custom_cursor: "",
                     custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
                     transparent_bg: false, disable_shadow: false, card_bg_color: "", border_color: "", views: 0,
+                    link_stats: {}, daily_views: {}, device_stats: {},
                     music_url: "", music_volume: 0.4, music_autoplay: false
                 });
                 if (result && result[0]) {
                     await notifyDiscord(username, nextUid);
                     saveSession({ username, uid: nextUid });
-                    // === REDIRECT TO USER'S PROFILE ===
                     window.location.href = '/' + username;
                 } else { err.textContent = "something went wrong"; }
             } catch(e) { console.error(e); err.textContent = e.message?.includes("duplicate") ? "username taken" : "error — check console"; }
@@ -798,26 +845,21 @@
 
         // ===== GOOGLE FONTS FETCHER =====
         let googleFontsList = [];
-
         async function fetchGoogleFonts() {
             try {
-                // Use the Google Fonts metadata endpoint (public)
                 const resp = await fetch('https://fonts.google.com/metadata/fonts', {
                     headers: { 'Accept': 'application/json' }
                 });
                 const text = await resp.text();
-                // The response starts with )]}' which needs to be stripped
                 const json = JSON.parse(text.substring(4));
                 if (json && json.familyMetadataList) {
                     googleFontsList = json.familyMetadataList.map(f => f.family);
-                    // Sort alphabetically
                     googleFontsList.sort((a, b) => a.localeCompare(b));
                 } else {
-                    throw new Error('Invalid response structure');
+                    throw new Error('Invalid response');
                 }
             } catch (e) {
-                console.warn('Failed to fetch Google Fonts, using fallback list', e);
-                // Fallback: popular Google Fonts
+                console.warn('Fallback fonts', e);
                 googleFontsList = [
                     "DM Mono", "JetBrains Mono", "Fira Code", "IBM Plex Mono", "Courier New",
                     "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins", "Raleway",
@@ -867,11 +909,9 @@
                     "Vibes", "Vina Sans", "Vollkorn SC", "Wallpoet", "Walter Turncoat", "Wire One",
                     "Yatra One", "Yellowtail", "Yusei Magic", "ZCOOL XiaoWei"
                 ];
-                // Remove duplicates
                 googleFontsList = [...new Set(googleFontsList)];
                 googleFontsList.sort((a, b) => a.localeCompare(b));
             }
-            // Populate datalist
             const datalist = document.getElementById('google-fonts');
             datalist.innerHTML = '';
             googleFontsList.forEach(font => {
@@ -879,7 +919,6 @@
                 opt.value = font;
                 datalist.appendChild(opt);
             });
-            // Also populate the font preview on input
             const fontInput = document.getElementById('d-card-font');
             const previewLabel = document.getElementById('font-preview-label');
             if (fontInput) {
@@ -888,7 +927,6 @@
                     if (val) {
                         previewLabel.textContent = val;
                         previewLabel.style.fontFamily = `"${val}", "DM Mono", monospace`;
-                        // Try loading the font via Google Fonts
                         try {
                             const link = document.getElementById('dynamic-font-link');
                             if (link) link.remove();
@@ -903,7 +941,6 @@
                         previewLabel.style.fontFamily = '"DM Mono", monospace';
                     }
                 });
-                // Trigger initial preview
                 if (fontInput.value) {
                     previewLabel.textContent = fontInput.value;
                     previewLabel.style.fontFamily = `"${fontInput.value}", "DM Mono", monospace`;
@@ -912,10 +949,73 @@
             return googleFontsList;
         }
 
+        // ===== STATS FUNCTIONS =====
+        function getTodayStr() {
+            const d = new Date();
+            return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        }
+
+        function getLastNDays(n) {
+            const days = [];
+            for (let i = n-1; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const s = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                days.push(s);
+            }
+            return days;
+        }
+
+        function getDeviceType() {
+            const ua = navigator.userAgent;
+            if (/tablet/i.test(ua)) return 'tablet';
+            if (/mobile/i.test(ua)) return 'mobile';
+            return 'desktop';
+        }
+
+        async function updateStats(username, type, key, increment = 1) {
+            try {
+                // Fetch current user
+                const rows = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
+                if (!rows || rows.length === 0) return;
+                const user = rows[0];
+                let payload = {};
+                if (type === 'link') {
+                    let linkStats = user.link_stats || {};
+                    linkStats[key] = (linkStats[key] || 0) + increment;
+                    payload.link_stats = linkStats;
+                } else if (type === 'daily_view') {
+                    let dailyViews = user.daily_views || {};
+                    const today = getTodayStr();
+                    dailyViews[today] = (dailyViews[today] || 0) + increment;
+                    payload.daily_views = dailyViews;
+                } else if (type === 'device') {
+                    let deviceStats = user.device_stats || {};
+                    deviceStats[key] = (deviceStats[key] || 0) + increment;
+                    payload.device_stats = deviceStats;
+                }
+                if (Object.keys(payload).length) {
+                    await supa.patch("users", `username=eq.${encodeURIComponent(username)}`, payload);
+                }
+            } catch(e) { console.warn('Stats update failed', e); }
+        }
+
+        // Track view and device on page load
+        async function trackViewAndDevice(username) {
+            await updateStats(username, 'daily_view', getTodayStr(), 1);
+            const device = getDeviceType();
+            await updateStats(username, 'device', device, 1);
+        }
+
+        // Track link click
+        function trackLinkClick(username, linkLabel) {
+            updateStats(username, 'link', linkLabel, 1);
+        }
+
         // ===== RESOLVE ROUTE =====
         async function resolveRoute() {
             await fetchCustomBadges();
-            await fetchGoogleFonts(); // preload fonts
+            await fetchGoogleFonts();
             if (!slug || slug === "") { showSignupPage(); return; }
             showProfilePage();
             if (STATIC_USERS[slug]) { C = JSON.parse(JSON.stringify(STATIC_USERS[slug])); likeId = "forgave.lol/" + slug; return; }
@@ -940,7 +1040,8 @@
                         custom_font: u.custom_font || "DM Mono", typewriter_line1: u.typewriter_line1 || false,
                         typewriter_line2: u.typewriter_line2 || false, typewriter_line3: u.typewriter_line3 || false,
                         transparent_bg: u.transparent_bg || false, disable_shadow: u.disable_shadow || false,
-                        card_bg_color: u.card_bg_color || "", border_color: u.border_color || "", views: u.views || 0
+                        card_bg_color: u.card_bg_color || "", border_color: u.border_color || "", views: u.views || 0,
+                        link_stats: u.link_stats || {}, daily_views: u.daily_views || {}, device_stats: u.device_stats || {}
                     };
                     likeId = "forgave.lol/" + slug;
                     return;
@@ -954,8 +1055,11 @@
             const viewedBefore = localStorage.getItem(`frgv_viewed_${slug}`);
             if (viewedBefore) return;
             localStorage.setItem(`frgv_viewed_${slug}`, "1");
-            try { await supa.patch("users", `username=eq.${encodeURIComponent(slug)}`, { views: (C?.views || 0) + 1 }); }
-            catch(e) { console.warn("view increment failed", e); }
+            try {
+                await supa.patch("users", `username=eq.${encodeURIComponent(slug)}`, { views: (C?.views || 0) + 1 });
+                // Also track daily view and device
+                await trackViewAndDevice(slug);
+            } catch(e) { console.warn("view increment failed", e); }
         }
 
         function formatNumber(num) {
@@ -1195,7 +1299,6 @@
                 cardContent.style.fontFamily=`${ff},monospace`;
                 if (secondCard) secondCard.style.fontFamily=`${ff},monospace`;
                 document.querySelectorAll(".meta-line,.alias-row,.username,.site-name,#like-btn,.view-count").forEach(el=>{ el.style.fontFamily=`${ff},monospace`; });
-                // Also load the font if not already loaded
                 try {
                     const link = document.getElementById('dynamic-font-link');
                     if (link) link.remove();
@@ -1245,6 +1348,12 @@
             linksContainer.innerHTML="";
             (C.links||[]).forEach(lk=>{
                 const a=document.createElement("a"); a.className="icon-link"; a.href=lk.url; a.target="_blank"; a.rel="noopener"; a.title=lk.label;
+                // Track click for stats
+                a.addEventListener('click', (e) => {
+                    if (slug && slug !== "" && slug !== "n") {
+                        trackLinkClick(slug, lk.icon || lk.label || 'link');
+                    }
+                });
                 if (lk.custom_icon_url && lk.custom_icon_url.trim()) {
                     const img=document.createElement("img");
                     img.src=lk.custom_icon_url.trim();
@@ -1400,13 +1509,12 @@
                 try{const allUsers=await supa.get("users","order=uid.desc&limit=1");if(allUsers&&allUsers.length>0)nextUid=allUsers[0].uid+1;}catch(e){}
                 const hash=await hashPassword(pw);
                 const now=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
-                const result=await supa.post("users",{username,password_hash:hash,uid:nextUid,lines:["","",""],discord:"",links:[],bg_video_urls:[],bg_video_opacity:0.45,bg_words:["</>","///"],last_change:now,aliases:[],equipped_badges:[],is_admin:false,card_style:"default",border_radius:18,card_opacity:0.58,parallax_enabled:true,cursor_effect:"ghost",custom_cursor:"",custom_font:"DM Mono",typewriter_line1:false,typewriter_line2:false,typewriter_line3:false,transparent_bg:false,disable_shadow:false,card_bg_color:"",border_color:"",views:0,music_url:"",music_volume:0.4,music_autoplay:false});
+                const result=await supa.post("users",{username,password_hash:hash,uid:nextUid,lines:["","",""],discord:"",links:[],bg_video_urls:[],bg_video_opacity:0.45,bg_words:["</>","///"],last_change:now,aliases:[],equipped_badges:[],is_admin:false,card_style:"default",border_radius:18,card_opacity:0.58,parallax_enabled:true,cursor_effect:"ghost",custom_cursor:"",custom_font:"DM Mono",typewriter_line1:false,typewriter_line2:false,typewriter_line3:false,transparent_bg:false,disable_shadow:false,card_bg_color:"",border_color:"",views:0,link_stats:{},daily_views:{},device_stats:{},music_url:"",music_volume:0.4,music_autoplay:false});
                 if(result&&result[0]){await notifyDiscord(username,nextUid);saveSession({username,uid:nextUid});closeModal(authModal);updateAuthUI();openDashboard();}else{err.textContent="something went wrong";}
             }catch(e){console.error(e);err.textContent=e.message?.includes("duplicate")?"username taken":"error — check console";}
             btn.disabled=false; btn.textContent="create account";
         };
 
-        // ===== SIGN-IN: REDIRECT TO USER PROFILE =====
         document.getElementById("li-submit").onclick=async()=>{
             const btn=document.getElementById("li-submit");
             const username=document.getElementById("li-username").value.trim().toLowerCase();
@@ -1423,7 +1531,6 @@
                 saveSession({username,uid:rows[0].uid});
                 closeModal(authModal);
                 updateAuthUI();
-                // === REDIRECT TO USER'S PROFILE ===
                 window.location.href = '/' + username;
             }catch(e){console.error(e);err.textContent="error — try again";}
             btn.disabled=false; btn.textContent="log in";
@@ -1464,7 +1571,13 @@
             btn.addEventListener("click",()=>{
                 document.querySelectorAll(".dash-nav-btn").forEach(b=>b.classList.remove("active"));
                 document.querySelectorAll(".dash-panel").forEach(p=>p.classList.remove("active"));
-                btn.classList.add("active"); document.getElementById("panel-"+btn.dataset.panel).classList.add("active");
+                btn.classList.add("active"); 
+                const panelId = "panel-"+btn.dataset.panel;
+                document.getElementById(panelId).classList.add("active");
+                // If stats panel, render stats
+                if (panelId === "panel-stats") {
+                    renderStats();
+                }
             });
         });
 
@@ -1499,7 +1612,6 @@
                     document.getElementById("d-border-radius").value=u.border_radius!==undefined?u.border_radius:18;
                     document.getElementById("d-card-opacity").value=u.card_opacity!==undefined?u.card_opacity:0.58;
                     document.getElementById("d-parallax").checked=u.parallax_enabled!==undefined?u.parallax_enabled:true;
-                    // Set font input
                     const fontInput=document.getElementById("d-card-font");
                     const fontVal=u.custom_font||"DM Mono";
                     fontInput.value=fontVal;
@@ -1515,6 +1627,7 @@
                     document.getElementById("border-radius-val").textContent=(u.border_radius!==undefined?u.border_radius:18)+"px";
                     document.getElementById("card-opacity-val").textContent=(u.card_opacity!==undefined?u.card_opacity:0.58).toFixed(2);
                     renderBadges(u.uid,u.equipped_badges||[],likeCount);
+                    // Stats data is in u.link_stats, u.daily_views, u.device_stats – will render when panel opened
                 }
             }catch(e){console.error("[openDashboard]",e);}
             openModal(dashModal);
@@ -1667,7 +1780,6 @@
             const border_radius=parseInt(radiusSlider.value,10);
             const card_opacity=parseFloat(opacitySlider.value);
             const parallax_enabled=document.getElementById("d-parallax").checked;
-            // Get font from input (instead of select)
             const custom_font=document.getElementById("d-card-font").value.trim()||"DM Mono";
             const typewriter_line1=document.getElementById("d-typewriter1").checked;
             const typewriter_line2=document.getElementById("d-typewriter2").checked;
@@ -1836,6 +1948,119 @@
                 const webhookUrl="https://discord.com/api/webhooks/1515599322534908027/GqyFJK_Er3c36tVTjf7HEXdyq5vPU0tvVfassmY-TlHKbF5kCxMWmBqoHNfSo7-LYorj";
                 await fetch(webhookUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({embeds:[{title:"🎉 New User Joined",color:0x5865F2,fields:[{name:"Username",value:username,inline:true},{name:"UID",value:String(uid),inline:true}],timestamp:new Date().toISOString()}]})});
             }catch(e){console.error("Webhook failed:",e);}
+        }
+
+        // ========== STATS RENDER FUNCTION ==========
+        async function renderStats() {
+            const container = document.getElementById('stats-container');
+            if (!container) return;
+            // Fetch current user data
+            if (!session) return;
+            try {
+                const rows = await supa.get("users", `username=eq.${encodeURIComponent(session.username)}`);
+                if (!rows || rows.length === 0) return;
+                const user = rows[0];
+                const linkStats = user.link_stats || {};
+                const dailyViews = user.daily_views || {};
+                const deviceStats = user.device_stats || {};
+                const totalViews = user.views || 0;
+
+                // Total link clicks
+                const totalClicks = Object.values(linkStats).reduce((a,b) => a + b, 0);
+                document.getElementById('stat-total-clicks').textContent = totalClicks;
+
+                // Click rate
+                const clickRate = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : 0;
+                document.getElementById('stat-click-rate').textContent = clickRate + '%';
+
+                // Profile views
+                document.getElementById('stat-profile-views').textContent = totalViews;
+
+                // Average daily views (last 7 days)
+                const last7 = getLastNDays(7);
+                let sum7 = 0, count7 = 0;
+                last7.forEach(d => {
+                    if (dailyViews[d]) { sum7 += dailyViews[d]; count7++; }
+                });
+                const avgDaily = count7 > 0 ? Math.round(sum7 / count7) : 0;
+                document.getElementById('stat-avg-daily').textContent = avgDaily;
+
+                // Change indicators (simple: compare last 3 days with previous 3)
+                const last3 = getLastNDays(3);
+                const prev3 = getLastNDays(6).slice(0,3);
+                let sumLast3 = 0, sumPrev3 = 0;
+                last3.forEach(d => { if (dailyViews[d]) sumLast3 += dailyViews[d]; });
+                prev3.forEach(d => { if (dailyViews[d]) sumPrev3 += dailyViews[d]; });
+                const diff = sumLast3 - sumPrev3;
+                const changeEl = document.getElementById('stat-views-change');
+                if (diff > 0) changeEl.textContent = `+${diff} views since last 3 days`;
+                else if (diff < 0) changeEl.textContent = `${diff} views since last 3 days`;
+                else changeEl.textContent = 'no change since last 3 days';
+
+                // Daily views chart (last 7 days)
+                const chartContainer = document.getElementById('stats-daily-chart');
+                chartContainer.innerHTML = '';
+                const maxVal = Math.max(1, ...last7.map(d => dailyViews[d] || 0));
+                last7.forEach(d => {
+                    const val = dailyViews[d] || 0;
+                    const bar = document.createElement('div');
+                    bar.className = 'stats-daily-bar';
+                    const height = Math.max(2, (val / maxVal) * 70);
+                    const barDiv = document.createElement('div');
+                    barDiv.className = 'bar';
+                    barDiv.style.height = height + 'px';
+                    const label = document.createElement('div');
+                    label.className = 'bar-label';
+                    const parts = d.split('-');
+                    label.textContent = parts[1] + '/' + parts[2];
+                    const valueLabel = document.createElement('div');
+                    valueLabel.className = 'bar-value';
+                    valueLabel.textContent = val;
+                    bar.appendChild(barDiv);
+                    bar.appendChild(valueLabel);
+                    bar.appendChild(label);
+                    chartContainer.appendChild(bar);
+                });
+
+                // Links list
+                const linksList = document.getElementById('stats-links-list');
+                linksList.innerHTML = '';
+                const linkNames = Object.keys(linkStats);
+                if (linkNames.length === 0) {
+                    linksList.innerHTML = '<div style="font-size:.6rem;color:rgba(255,255,255,.2);padding:8px 0;">No link clicks yet.</div>';
+                } else {
+                    linkNames.forEach(name => {
+                        const div = document.createElement('div');
+                        div.className = 'stats-link-item';
+                        div.innerHTML = `<span class="link-name">🔗 ${name}</span><span class="link-clicks">${linkStats[name]} clicks</span>`;
+                        linksList.appendChild(div);
+                    });
+                }
+
+                // Device stats
+                const devicesContainer = document.getElementById('stats-devices');
+                devicesContainer.innerHTML = '';
+                const deviceMap = { desktop: '🖥️ Desktop', mobile: '📱 Mobile', tablet: '📟 Tablet' };
+                const totalDevices = Object.values(deviceStats).reduce((a,b) => a + b, 0);
+                if (totalDevices === 0) {
+                    devicesContainer.innerHTML = '<div style="font-size:.6rem;color:rgba(255,255,255,.2);padding:8px 0;">No device data yet.</div>';
+                } else {
+                    ['desktop','mobile','tablet'].forEach(key => {
+                        const count = deviceStats[key] || 0;
+                        const pct = ((count / totalDevices) * 100).toFixed(0);
+                        const div = document.createElement('div');
+                        div.className = 'stats-device-item';
+                        div.innerHTML = `
+                            <span class="device-label">${deviceMap[key] || key}</span>
+                            <div class="stats-device-bar"><div class="fill" style="width:${pct}%;"></div></div>
+                            <span class="device-percent">${pct}%</span>
+                        `;
+                        devicesContainer.appendChild(div);
+                    });
+                }
+            } catch(e) {
+                console.error('Stats render error', e);
+            }
         }
 
         // ========== NEW SIGNUP NAVIGATION ==========
