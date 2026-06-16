@@ -234,6 +234,11 @@
         .reset-btn-sm:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
         .test-cursor-btn{background:rgba(255,180,80,.15);border:1px solid rgba(255,180,80,.3);border-radius:6px;padding:5px 12px;font-size:.6rem;cursor:pointer;margin-left:8px;transition:all .15s;color:rgba(255,200,100,.9)}
         .test-cursor-btn:hover{background:rgba(255,180,80,.3)}
+        .music-upload-status{font-size:.58rem;color:rgba(255,255,255,.18);margin-top:4px}
+        .music-upload-status.success{color:rgba(100,220,150,.6)}
+        .music-upload-status.error{color:rgba(255,100,100,.6)}
+        .file-upload-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 12px;font-family:"DM Mono",monospace;font-size:.68rem;cursor:pointer;width:100%;text-align:center;transition:background .15s}
+        .file-upload-btn:hover{background:rgba(255,255,255,.12)}
         .leaderboard-list{max-height:50vh;overflow-y:auto;padding:16px 20px 20px}
         .leaderboard-list::-webkit-scrollbar{width:6px}
         .leaderboard-list::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:4px}
@@ -261,6 +266,10 @@
         .leaderboard-tabs{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.07);padding:0 20px}
         .leaderboard-tab{background:none;border:none;cursor:pointer;font-family:"DM Mono",monospace;font-size:.65rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.3);padding:10px 16px;transition:color .15s,border-color .15s;border-bottom:2px solid transparent;margin-bottom:-1px}
         .leaderboard-tab.active{color:rgba(255,255,255,.8);border-bottom-color:rgba(255,255,255,.5)}
+        #music-widget{position:fixed;bottom:24px;left:24px;z-index:50;background:rgba(0,0,0,0.5);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.65);padding:8px 14px;border-radius:12px;display:flex;align-items:center;gap:8px;font-size:.65rem;pointer-events:auto}
+        #music-widget button{background:none;border:none;color:rgba(255,255,255,0.65);cursor:pointer;font-size:.9rem;padding:0 2px;transition:color .2s}
+        #music-widget button:hover{color:white}
+        #music-widget .track-name{max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,.35)}
         @media (max-width:600px){#dash-modal .modal{width:calc(100vw - 24px)}.dash-body{flex-direction:column}.dash-sidebar{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);flex-direction:row;padding:10px 12px;overflow-x:auto;gap:4px}.dash-nav-btn{white-space:nowrap;flex-shrink:0}.dash-panels{padding:16px}}
     </style>
 </head>
@@ -271,6 +280,13 @@
 <canvas id="trail"></canvas>
 <div id="overlay"><span id="overlay-text">click to enter</span></div>
 <audio id="audio" loop></audio>
+
+<!-- Music widget -->
+<div id="music-widget">
+    <span>🎵</span>
+    <span class="track-name" id="music-track-name">off</span>
+    <button id="music-toggle-btn">⏸</button>
+</div>
 
 <button id="auth-btn" title="sign up"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></button>
 
@@ -312,32 +328,9 @@
     <div id="second-card"></div>
 </div>
 
-<!-- Leaderboard button (custom podium SVG) -->
-<button id="leaderboard-btn" title="leaderboard">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="16" width="5" height="6" rx="1" fill="currentColor" opacity="0.6"/>
-        <rect x="9.5" y="12" width="5" height="10" rx="1" fill="currentColor" opacity="0.8"/>
-        <rect x="17" y="8" width="5" height="14" rx="1" fill="currentColor"/>
-        <circle cx="22" cy="6" r="2" fill="currentColor" opacity="0.9"/>
-        <circle cx="12" cy="10" r="2" fill="currentColor" opacity="0.9"/>
-        <circle cx="4.5" cy="14" r="2" fill="currentColor" opacity="0.9"/>
-    </svg>
-</button>
-<div class="modal-bg" id="leaderboard-modal">
-    <div class="modal">
-        <div class="leaderboard-header">
-            <h3>LEADERBOARD</h3>
-            <button class="modal-close" id="leaderboard-close">✕</button>
-        </div>
-        <div class="leaderboard-tabs">
-            <button class="leaderboard-tab active" data-tab="likes">❤️ LIKES</button>
-            <button class="leaderboard-tab" data-tab="views">👁️ VIEWS</button>
-        </div>
-        <div class="leaderboard-list" id="leaderboard-list">
-            <div class="leaderboard-empty">loading...</div>
-        </div>
-    </div>
-</div>
+<!-- Leaderboard button -->
+<button id="leaderboard-btn" title="leaderboard"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="16" width="5" height="6" rx="1" fill="currentColor" opacity="0.6"/><rect x="9.5" y="12" width="5" height="10" rx="1" fill="currentColor" opacity="0.8"/><rect x="17" y="8" width="5" height="14" rx="1" fill="currentColor"/><circle cx="22" cy="6" r="2" fill="currentColor" opacity="0.9"/><circle cx="12" cy="10" r="2" fill="currentColor" opacity="0.9"/><circle cx="4.5" cy="14" r="2" fill="currentColor" opacity="0.9"/></svg></button>
+<div class="modal-bg" id="leaderboard-modal"><div class="modal"><div class="leaderboard-header"><h3>LEADERBOARD</h3><button class="modal-close" id="leaderboard-close">✕</button></div><div class="leaderboard-tabs"><button class="leaderboard-tab active" data-tab="likes">❤️ LIKES</button><button class="leaderboard-tab" data-tab="views">👁️ VIEWS</button></div><div class="leaderboard-list" id="leaderboard-list"><div class="leaderboard-empty">loading...</div></div></div></div>
 
 <div id="minimalistic-name"></div>
 <div id="not-found"><div class="nf-title">page not found</div><div class="nf-sub">forgave.lol/<span id="nf-slug"></span></div></div>
@@ -362,47 +355,53 @@
     <button class="dash-nav-btn" data-panel="alias"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>alias</button>
     <button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
     <button class="dash-nav-btn" data-panel="cursor"><svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>cursor</button>
-    <!-- Admin button injected by JS -->
+    <button class="dash-nav-btn" data-panel="music"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>music</button>
 </nav>
-<div class="dash-panels"><div class="dash-panel active" id="panel-bio"><div class="dash-panel-title">bio lines</div><div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter1" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
-<div class="field"><label>line 2</label><input type="text" id="d-line2" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter2" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
-<div class="field"><label>line 3</label><input type="text" id="d-line3" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter3" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
-<div class="field"><label>discord tag</label><input type="text" id="d-discord" maxlength="80"></div><div class="field"><label>card font</label><select id="d-card-font"><option value="DM Mono">Default (DM Mono)</option><option value="JetBrains Mono">JetBrains Mono</option><option value="Fira Code">Fira Code</option><option value="IBM Plex Mono">IBM Plex Mono</option><option value="Courier New">Courier New</option></select><div class="field-hint">changes the font of your card text</div></div></div>
-<div class="dash-panel" id="panel-socials"><div class="dash-panel-title">links</div><div class="dash-links-list" id="d-links-list"></div><button class="dash-add-link" id="d-add-link">+ add link</button></div>
-<div class="dash-panel" id="panel-background"><div class="dash-panel-title">background</div><div class="dash-section"><div class="dash-section-label">video url</div><div class="field"><input type="text" id="d-bgvideo" placeholder="https://files.catbox.moe/....mp4"><div class="field-hint">upload at <a href="https://catbox.moe/" target="_blank">catbox.moe</a></div></div></div>
-<div class="dash-section"><div class="dash-section-label">floating words</div><div class="field"><input type="text" id="d-bgwords" placeholder="word1, word2, </>"></div></div></div>
-<div class="dash-panel" id="panel-badges"><div class="dash-panel-title">badges</div><div class="badge-grid" id="badge-grid"></div></div>
-<div class="dash-panel" id="panel-alias"><div class="dash-panel-title">aliases</div><div style="font-size:.62rem;color:rgba(255,255,255,.2);margin-bottom:16px;">link other profiles.<br><span style="color:rgba(255,255,255,.35);">also known as: name, name</span></div>
-<div class="alias-list" id="alias-list"></div><div class="alias-add-form" id="alias-add-form"><div class="field"><label>username</label><input type="text" id="alias-input-user" maxlength="24"></div><div class="field"><label>password</label><input type="password" id="alias-input-pw"></div><div class="alias-form-hint" id="alias-form-hint"></div><div class="alias-form-actions"><button class="alias-form-btn" id="alias-verify-btn">verify & add</button><button class="alias-form-btn cancel" id="alias-cancel-btn">cancel</button></div></div>
-<button class="alias-add-trigger" id="alias-add-trigger">+ add alias</button><div class="alias-limit-note">max 3 aliases</div></div>
-<div class="dash-panel" id="panel-card"><div class="dash-panel-title">card appearance</div><div class="field"><label>card style</label><select id="d-card-style"><option value="default">Default (original)</option><option value="minimalistic">Minimalistic (centered card)</option><option value="modern">Modern (extra card below)</option></select></div>
-<div class="field"><label>border radius</label><div class="slider-container"><label>▯</label><input type="range" id="d-border-radius" min="0" max="30" step="1" value="18"><span class="slider-value" id="border-radius-val">18px</span></div></div>
-<div class="field"><label>card opacity</label><div class="slider-container"><label>◐</label><input type="range" id="d-card-opacity" min="0.2" max="1.0" step="0.01" value="0.58"><span class="slider-value" id="card-opacity-val">0.58</span></div></div>
-<div class="field"><label>card background color</label><div style="display:flex; align-items:center; gap:8px;"><input type="color" id="d-card-bg-color" value="#0a0a0c"><button class="reset-btn-sm" id="reset-bg-color">reset</button></div><div class="field-hint">overrides the default dark background (opacity still applies)</div></div>
-<div class="field"><label>border color</label><div style="display:flex; align-items:center; gap:8px;"><input type="color" id="d-border-color" value="#ffffff"><button class="reset-btn-sm" id="reset-border-color">reset</button></div><div class="field-hint">changes the card's border color</div></div>
-<div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-parallax" style="width:auto;margin:0;"> parallax effect</label></div>
-<div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background (no card background, only border and text)</label><div class="field-hint">makes the card background fully transparent (ignores color picker)</div></div>
-<div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow (removes drop shadow)</label></div></div>
-<div class="dash-panel" id="panel-cursor"><div class="dash-panel-title">cursor trail</div><div class="field"><label>effect</label><select id="d-cursor-effect"><option value="ghost">Ghost (default arrows)</option><option value="sparkle">Sparkle (stars)</option><option value="trail">Trail Dots</option><option value="simple">Simple Dot</option><option value="none">None</option></select></div>
-<div class="field"><label>custom cursor image URL (catbox link)</label><div style="display:flex; gap:8px; align-items:center;"><input type="text" id="d-custom-cursor-url" placeholder="https://files.catbox.moe/yourcursor.png" style="flex:1"><button type="button" id="test-cursor-btn" class="test-cursor-btn">test</button></div>
-<div class="cursor-preview" id="cursor-preview-container" style="display:none;"><span style="font-size:.58rem;">preview:</span><img id="cursor-preview-img" class="cursor-preview-img" alt="cursor preview"><button id="cursor-reset-btn" class="cursor-reset-btn">reset</button></div>
-<div class="field-hint">enter a direct link to an image (PNG, GIF, CUR). Overrides cursor everywhere.</div></div></div>
-<div class="dash-panel" id="panel-admin"><div class="dash-panel-title" style="color:rgba(255,180,80,.4);">admin panel</div>
-<div class="admin-search-row"><input type="text" id="admin-search-input" placeholder="search username..."><button class="admin-search-btn" id="admin-search-btn">look up</button></div>
-<div class="admin-not-found" id="admin-not-found">user not found.</div>
-<div class="admin-user-card" id="admin-user-card"><div class="admin-user-header"><span class="admin-user-name" id="admin-target-name"></span><span class="admin-user-uid" id="admin-target-uid"></span></div>
-<div><div class="admin-section-title">uid</div><div class="admin-row"><input type="number" id="admin-uid-input" placeholder="new uid"><button class="admin-apply-btn" id="admin-uid-btn">apply</button></div><div class="admin-status" id="admin-uid-status"></div></div>
-<div><div class="admin-section-title">likes</div><div class="admin-row"><input type="number" id="admin-likes-input" placeholder="set exact count"><button class="admin-apply-btn" id="admin-likes-btn">set</button></div><div class="admin-status" id="admin-likes-status"></div></div>
-<div><div class="admin-section-title">badges — click to toggle, then save</div><div class="admin-badge-grid" id="admin-badge-grid"></div><button class="admin-save-badges-btn" id="admin-save-badges-btn">save badges</button><div class="admin-status" id="admin-badges-status"></div></div>
-<div><div class="admin-section-title" style="margin-top:16px;">custom badges</div>
-<div class="admin-custom-badge-form">
-    <div class="field"><label>badge name</label><input type="text" id="custom-badge-name" placeholder="e.g. Legend"></div>
-    <div class="field"><label>image URL</label><input type="text" id="custom-badge-url" placeholder="https://files.catbox.moe/..."></div>
-    <button class="admin-apply-btn" id="create-custom-badge-btn" style="background:rgba(80,200,80,.08);border-color:rgba(80,200,80,.3);color:rgba(80,200,80,.8);">create badge</button>
-    <div class="admin-status" id="custom-badge-status"></div>
-</div>
-<div class="admin-custom-badge-list" id="admin-custom-badge-list"></div>
-<div><div class="admin-section-title" style="color:rgba(255,100,100,.7);">password reset</div><div class="admin-row"><button class="admin-apply-btn" id="admin-reset-pw-btn" style="background:rgba(255,80,80,.1);border-color:rgba(255,80,80,.3);color:rgba(255,120,120,.9);">reset password</button></div><div class="admin-status" id="admin-pw-status"></div></div></div></div></div></div>
+<div class="dash-panels">
+    <div class="dash-panel active" id="panel-bio"><div class="dash-panel-title">bio lines</div><div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter1" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
+    <div class="field"><label>line 2</label><input type="text" id="d-line2" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter2" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
+    <div class="field"><label>line 3</label><input type="text" id="d-line3" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter3" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
+    <div class="field"><label>discord tag</label><input type="text" id="d-discord" maxlength="80"></div><div class="field"><label>card font</label><select id="d-card-font"><option value="DM Mono">Default (DM Mono)</option><option value="JetBrains Mono">JetBrains Mono</option><option value="Fira Code">Fira Code</option><option value="IBM Plex Mono">IBM Plex Mono</option><option value="Courier New">Courier New</option></select><div class="field-hint">changes the font of your card text</div></div></div>
+    <div class="dash-panel" id="panel-socials"><div class="dash-panel-title">links</div><div class="dash-links-list" id="d-links-list"></div><button class="dash-add-link" id="d-add-link">+ add link</button></div>
+    <div class="dash-panel" id="panel-background"><div class="dash-panel-title">background</div><div class="dash-section"><div class="dash-section-label">video url</div><div class="field"><input type="text" id="d-bgvideo" placeholder="https://files.catbox.moe/....mp4"><div class="field-hint">upload at <a href="https://catbox.moe/" target="_blank">catbox.moe</a></div></div></div>
+    <div class="dash-section"><div class="dash-section-label">floating words</div><div class="field"><input type="text" id="d-bgwords" placeholder="word1, word2, </>"></div></div></div>
+    <div class="dash-panel" id="panel-badges"><div class="dash-panel-title">badges</div><div class="badge-grid" id="badge-grid"></div></div>
+    <div class="dash-panel" id="panel-alias"><div class="dash-panel-title">aliases</div><div style="font-size:.62rem;color:rgba(255,255,255,.2);margin-bottom:16px;">link other profiles.<br><span style="color:rgba(255,255,255,.35);">also known as: name, name</span></div>
+    <div class="alias-list" id="alias-list"></div><div class="alias-add-form" id="alias-add-form"><div class="field"><label>username</label><input type="text" id="alias-input-user" maxlength="24"></div><div class="field"><label>password</label><input type="password" id="alias-input-pw"></div><div class="alias-form-hint" id="alias-form-hint"></div><div class="alias-form-actions"><button class="alias-form-btn" id="alias-verify-btn">verify & add</button><button class="alias-form-btn cancel" id="alias-cancel-btn">cancel</button></div></div>
+    <button class="alias-add-trigger" id="alias-add-trigger">+ add alias</button><div class="alias-limit-note">max 3 aliases</div></div>
+    <div class="dash-panel" id="panel-card"><div class="dash-panel-title">card appearance</div><div class="field"><label>card style</label><select id="d-card-style"><option value="default">Default (original)</option><option value="minimalistic">Minimalistic (centered card)</option><option value="modern">Modern (extra card below)</option></select></div>
+    <div class="field"><label>border radius</label><div class="slider-container"><label>▯</label><input type="range" id="d-border-radius" min="0" max="30" step="1" value="18"><span class="slider-value" id="border-radius-val">18px</span></div></div>
+    <div class="field"><label>card opacity</label><div class="slider-container"><label>◐</label><input type="range" id="d-card-opacity" min="0.2" max="1.0" step="0.01" value="0.58"><span class="slider-value" id="card-opacity-val">0.58</span></div></div>
+    <div class="field"><label>card background color</label><div style="display:flex; align-items:center; gap:8px;"><input type="color" id="d-card-bg-color" value="#0a0a0c"><button class="reset-btn-sm" id="reset-bg-color">reset</button></div><div class="field-hint">overrides the default dark background (opacity still applies)</div></div>
+    <div class="field"><label>border color</label><div style="display:flex; align-items:center; gap:8px;"><input type="color" id="d-border-color" value="#ffffff"><button class="reset-btn-sm" id="reset-border-color">reset</button></div><div class="field-hint">changes the card's border color</div></div>
+    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-parallax" style="width:auto;margin:0;"> parallax effect</label></div>
+    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background (no card background, only border and text)</label><div class="field-hint">makes the card background fully transparent (ignores color picker)</div></div>
+    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow (removes drop shadow)</label></div></div>
+    <div class="dash-panel" id="panel-cursor"><div class="dash-panel-title">cursor trail</div><div class="field"><label>effect</label><select id="d-cursor-effect"><option value="ghost">Ghost (default arrows)</option><option value="sparkle">Sparkle (stars)</option><option value="trail">Trail Dots</option><option value="simple">Simple Dot</option><option value="none">None</option></select></div>
+    <div class="field"><label>custom cursor image URL (catbox link)</label><div style="display:flex; gap:8px; align-items:center;"><input type="text" id="d-custom-cursor-url" placeholder="https://files.catbox.moe/yourcursor.png" style="flex:1"><button type="button" id="test-cursor-btn" class="test-cursor-btn">test</button></div>
+    <div class="cursor-preview" id="cursor-preview-container" style="display:none;"><span style="font-size:.58rem;">preview:</span><img id="cursor-preview-img" class="cursor-preview-img" alt="cursor preview"><button id="cursor-reset-btn" class="cursor-reset-btn">reset</button></div>
+    <div class="field-hint">enter a direct link to an image (PNG, GIF, CUR). Overrides cursor everywhere.</div></div></div>
+    <div class="dash-panel" id="panel-music"><div class="dash-panel-title">music player</div>
+    <div class="field"><label>music URL (MP3)</label><div style="display:flex; gap:8px; align-items:center;"><input type="text" id="d-music-url" placeholder="https://files.catbox.moe/song.mp3" style="flex:1"><button type="button" id="test-music-btn" class="test-cursor-btn">preview</button></div><div class="field-hint">upload your MP3 to <a href="https://catbox.moe/" target="_blank">catbox.moe</a> and paste the link</div></div>
+    <div class="field"><label>volume</label><div class="slider-container"><label>◐</label><input type="range" id="d-music-volume" min="0" max="1" step="0.01" value="0.4"><span class="slider-value" id="music-volume-val">0.40</span></div></div>
+    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-music-autoplay" style="width:auto;margin:0;"> autoplay on profile visit</label></div>
+    </div>
+    <div class="dash-panel" id="panel-admin"><div class="dash-panel-title" style="color:rgba(255,180,80,.4);">admin panel</div>
+    <div class="admin-search-row"><input type="text" id="admin-search-input" placeholder="search username..."><button class="admin-search-btn" id="admin-search-btn">look up</button></div>
+    <div class="admin-not-found" id="admin-not-found">user not found.</div>
+    <div class="admin-user-card" id="admin-user-card"><div class="admin-user-header"><span class="admin-user-name" id="admin-target-name"></span><span class="admin-user-uid" id="admin-target-uid"></span></div>
+    <div><div class="admin-section-title">uid</div><div class="admin-row"><input type="number" id="admin-uid-input" placeholder="new uid"><button class="admin-apply-btn" id="admin-uid-btn">apply</button></div><div class="admin-status" id="admin-uid-status"></div></div>
+    <div><div class="admin-section-title">likes</div><div class="admin-row"><input type="number" id="admin-likes-input" placeholder="set exact count"><button class="admin-apply-btn" id="admin-likes-btn">set</button></div><div class="admin-status" id="admin-likes-status"></div></div>
+    <div><div class="admin-section-title">badges — click to toggle, then save</div><div class="admin-badge-grid" id="admin-badge-grid"></div><button class="admin-save-badges-btn" id="admin-save-badges-btn">save badges</button><div class="admin-status" id="admin-badges-status"></div></div>
+    <div><div class="admin-section-title" style="margin-top:16px;">custom badges</div>
+    <div class="admin-custom-badge-form">
+        <div class="field"><label>badge name</label><input type="text" id="custom-badge-name" placeholder="e.g. Legend"></div>
+        <div class="field"><label>image URL</label><input type="text" id="custom-badge-url" placeholder="https://files.catbox.moe/..."></div>
+        <button class="admin-apply-btn" id="create-custom-badge-btn" style="background:rgba(80,200,80,.08);border-color:rgba(80,200,80,.3);color:rgba(80,200,80,.8);">create badge</button>
+        <div class="admin-status" id="custom-badge-status"></div>
+    </div>
+    <div class="admin-custom-badge-list" id="admin-custom-badge-list"></div>
+    <div><div class="admin-section-title" style="color:rgba(255,100,100,.7);">password reset</div><div class="admin-row"><button class="admin-apply-btn" id="admin-reset-pw-btn" style="background:rgba(255,80,80,.1);border-color:rgba(255,80,80,.3);color:rgba(255,120,120,.9);">reset password</button></div><div class="admin-status" id="admin-pw-status"></div></div></div></div></div></div>
 <div class="dash-footer"><span class="dash-save-status" id="d-save-status"></span><button class="modal-btn" id="d-save">save changes</button></div></div></div>
 
 <div class="modal-bg" id="reset-pw-modal"><div class="modal"><button class="modal-close" id="reset-pw-close">✕</button><div class="modal-title">password reset</div><div class="field"><label>new temporary password</label><input type="text" id="reset-pw-value" readonly style="background:rgba(255,255,255,.1);font-family:monospace;"></div><div class="field-hint" style="color:rgba(100,220,150,.8);">copy this password and share it with the user. they can log in and change it.</div><button class="modal-btn" id="copy-pw-btn">copy to clipboard</button></div></div>
@@ -474,13 +473,13 @@
     function saveSession(u) { session = u; localStorage.setItem("frgv_session", JSON.stringify(u)); }
     function clearSession() { session = null; localStorage.removeItem("frgv_session"); }
 
-    // ========== ADMIN CHECK (CASE INSENSITIVE) ==========
+    // ========== ADMIN CHECK ==========
     const ADMIN_USERS = ["cash", "die"];
     function isAdmin(u) { 
         return u && ADMIN_USERS.some(admin => admin.toLowerCase() === (u.username || "").toLowerCase()); 
     }
 
-    // ========== BADGE DEFINITIONS (SWAPPED OWNER / DEVELOP) ==========
+    // ========== BADGE DEFINITIONS ==========
     const BADGE_CONFIG = {
         owner: { name: "Owner", img: "https://files.catbox.moe/z01zmz.png", adminOnly: true },
         mod: { name: "Moderator", img: "https://files.catbox.moe/yd14ls.png", adminOnly: true },
@@ -539,7 +538,7 @@
         links: [],
         bgVideo: { urls: ["https://files.catbox.moe/q77n42.mp4"], opacity: 0.45 },
         bgWords: ["forgave", "frgv", "</>", "///"],
-        wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 }, aliases: ["die", "sin", "faith"],
+        wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4, autoplay: false }, aliases: ["die", "sin", "faith"],
         custom_cursor: "", custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
         transparent_bg: false, disable_shadow: false, card_bg_color: "", border_color: "", views: 0
     };
@@ -550,7 +549,6 @@
     };
     const STATIC_UID_START = 4;
 
-    // ========== ICONS ==========
     const ICONS = {
         tiktok: `<svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.78a4.85 4.85 0 0 1-1.01-.09z"/></svg>`,
         discord: `<svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>`,
@@ -589,7 +587,7 @@
                     siteName: "forgave.lol", lastChange: u.last_change || u.created_at?.slice(0,10) || "", username: u.username, uid: String(u.uid),
                     badges: cardBadges, lines: u.lines || ["","",""], discord: u.discord || "", links: u.links || [],
                     bgVideo: { urls: u.bg_video_urls || [], opacity: u.bg_video_opacity || 0.45 }, bgWords: u.bg_words || ["</>","///"],
-                    wordCount: 26, wordSpeed: [1.0,2.5], wordSize: [9,28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: "", volume: 0.4 },
+                    wordCount: 26, wordSpeed: [1.0,2.5], wordSize: [9,28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", music: { url: u.music_url || "", volume: u.music_volume || 0.4, autoplay: u.music_autoplay || false },
                     aliases: aliases, card_style: u.card_style || "default", border_radius: u.border_radius ?? 18, card_opacity: u.card_opacity ?? 0.58,
                     parallax_enabled: u.parallax_enabled ?? true, cursor_effect: u.cursor_effect || "ghost", custom_cursor: u.custom_cursor || "",
                     custom_font: u.custom_font || "DM Mono", typewriter_line1: u.typewriter_line1 || false, typewriter_line2: u.typewriter_line2 || false,
@@ -836,6 +834,51 @@
         setTimeout(() => { typeStep(); }, delayBeforeStart);
     }
 
+    // ========== MUSIC PLAYER ==========
+    const audio = document.getElementById("audio");
+    const musicToggleBtn = document.getElementById("music-toggle-btn");
+    const musicTrackName = document.getElementById("music-track-name");
+    let musicPlaying = false;
+
+    function initMusic() {
+        if (C && C.music && C.music.url) {
+            audio.src = C.music.url;
+            audio.volume = C.music.volume || 0.4;
+            const trackName = C.music.url.split('/').pop() || 'track';
+            musicTrackName.textContent = trackName.length > 20 ? trackName.slice(0, 20) + '…' : trackName;
+            if (C.music.autoplay) {
+                audio.play().catch(() => {});
+                musicPlaying = true;
+                musicToggleBtn.textContent = '⏸';
+            }
+        } else {
+            musicTrackName.textContent = 'off';
+            musicToggleBtn.textContent = '▶';
+        }
+    }
+
+    musicToggleBtn.onclick = () => {
+        if (!audio.src) {
+            if (C && C.music && C.music.url) {
+                audio.src = C.music.url;
+                audio.volume = C.music.volume || 0.4;
+            } else {
+                return;
+            }
+        }
+        if (audio.paused) {
+            audio.play().catch(() => {});
+            musicPlaying = true;
+            musicToggleBtn.textContent = '⏸';
+            musicTrackName.textContent = 'playing';
+        } else {
+            audio.pause();
+            musicPlaying = false;
+            musicToggleBtn.textContent = '▶';
+            musicTrackName.textContent = 'paused';
+        }
+    };
+
     // ========== LEADERBOARD ==========
     const leaderboardBtn = document.getElementById("leaderboard-btn");
     const leaderboardModal = document.getElementById("leaderboard-modal");
@@ -927,7 +970,7 @@
         };
     });
 
-    // ========== RENDER CARD (with onerror and fallback) ==========
+    // ========== RENDER CARD ==========
     function renderCard() {
         if (!C) {
             document.getElementById("card-stack").style.display = "none";
@@ -960,7 +1003,6 @@
         unSpan.className = "username";
         unSpan.innerHTML = `${C.username}<span class="tip">UID: ${C.uid}</span>`;
         usernameRow.appendChild(unSpan);
-        
         (C.badges || []).forEach(b => {
             const d = document.createElement("div");
             d.className = "badge";
@@ -969,7 +1011,6 @@
             img.alt = b.tip;
             img.onerror = function() {
                 console.warn("Badge image failed to load:", b.img);
-                // Show a fallback emoji
                 this.style.display = "none";
                 const fallback = document.createElement("span");
                 fallback.className = "fallback";
@@ -983,7 +1024,6 @@
             d.appendChild(tipSpan);
             usernameRow.appendChild(d);
         });
-        
         const aliasRow = document.getElementById("alias-row");
         const aliases = Array.isArray(C.aliases) ? C.aliases.filter(a => a && a.trim().length > 0) : [];
         if (aliases.length > 0) { aliasRow.style.display = "block"; aliasRow.innerHTML = "also known as: " + aliases.map((a, i) => `<a href="https://forgave.lol/${a}" target="_blank">${a}</a>${i < aliases.length - 1 ? '<span class="alias-sep">,</span> ' : ''}`).join(""); } else { aliasRow.style.display = "none"; aliasRow.innerHTML = ""; }
@@ -1041,9 +1081,23 @@
         const wordCtx = wordCanvas.getContext("2d");
         const hasVideo = C.bgVideo.urls && C.bgVideo.urls.length > 0;
         if (hasVideo) { bgvideo.src = C.bgVideo.urls[Math.floor(Math.random() * C.bgVideo.urls.length)]; bgvideo.style.display = "block"; bgvideo.style.opacity = C.bgVideo.opacity; wordCanvas.style.display = "none"; }
-        const audio = document.getElementById("audio");
         const overlay = document.getElementById("overlay");
-        overlay.onclick = () => { overlay.classList.add("hide"); setTimeout(() => overlay.remove(), 700); if (hasVideo) bgvideo.play().catch(() => { }); if (C.music?.url) { audio.src = C.music.url; audio.volume = C.music.volume; audio.play().catch(() => { }); } };
+        overlay.onclick = () => { 
+            overlay.classList.add("hide"); 
+            setTimeout(() => overlay.remove(), 700); 
+            if (hasVideo) bgvideo.play().catch(() => {}); 
+            if (C.music?.url) {
+                audio.src = C.music.url;
+                audio.volume = C.music.volume || 0.4;
+                if (C.music.autoplay) {
+                    audio.play().catch(() => {});
+                    musicPlaying = true;
+                    musicToggleBtn.textContent = '⏸';
+                    const trackName = C.music.url.split('/').pop() || 'track';
+                    musicTrackName.textContent = trackName.length > 20 ? trackName.slice(0, 20) + '…' : trackName;
+                }
+            }
+        };
         function resizeWords() { wordCanvas.width = window.innerWidth; wordCanvas.height = window.innerHeight; }
         resizeWords(); window.addEventListener("resize", () => { resizeWords(); initWords(); });
         const words = [];
@@ -1107,6 +1161,7 @@
         initParallax();
         setCursorEffect(C.cursor_effect);
         applyCustomCursor(C.custom_cursor);
+        initMusic();
         incrementViews();
     }
 
@@ -1176,7 +1231,8 @@
                 card_style: "default", border_radius: 18, card_opacity: 0.58, parallax_enabled: true,
                 cursor_effect: "ghost", custom_cursor: "", custom_font: "DM Mono",
                 typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
-                transparent_bg: false, disable_shadow: false, card_bg_color: "", border_color: "", views: 0
+                transparent_bg: false, disable_shadow: false, card_bg_color: "", border_color: "", views: 0,
+                music_url: "", music_volume: 0.4, music_autoplay: false
             });
             if (result && result[0]) {
                 await notifyDiscord(username, nextUid);
@@ -1221,11 +1277,10 @@
     document.getElementById("user-pill-settings").onclick = openDashboard;
     document.getElementById("user-pill-logout").onclick = () => { clearSession(); updateAuthUI(); };
 
-    // ========== INJECT ADMIN TAB (FIXED) ==========
+    // ========== INJECT ADMIN TAB ==========
     function injectAdminTab() {
         if (!isAdmin(session)) return;
         const sidebar = document.querySelector(".dash-sidebar");
-        // Remove any existing admin button to avoid duplicates
         const existing = document.getElementById("admin-nav-btn");
         if (existing) existing.remove();
         
@@ -1243,7 +1298,6 @@
         };
         sidebar.appendChild(btn);
         
-        // Re-attach listeners for other buttons to show save button
         document.querySelectorAll(".dash-nav-btn:not(#admin-nav-btn)").forEach(b => {
             b.addEventListener("click", () => { document.getElementById("d-save").style.display = ""; });
         });
@@ -1277,6 +1331,10 @@
                 document.getElementById("d-discord").value = u.discord || "";
                 document.getElementById("d-bgvideo").value = u.bg_video_urls?.[0] || "";
                 document.getElementById("d-bgwords").value = (u.bg_words || []).join(", ");
+                document.getElementById("d-music-url").value = u.music_url || "";
+                document.getElementById("d-music-volume").value = u.music_volume || 0.4;
+                document.getElementById("music-volume-val").textContent = (u.music_volume || 0.4).toFixed(2);
+                document.getElementById("d-music-autoplay").checked = u.music_autoplay || false;
                 renderDashLinks(u.links || []);
                 const likeRes = await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/" + session.username)}&select=count`, { headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY } });
                 const likeData = await likeRes.json();
@@ -1417,6 +1475,23 @@
     radiusSlider.addEventListener("input", () => { document.getElementById("border-radius-val").textContent = radiusSlider.value + "px"; });
     opacitySlider.addEventListener("input", () => { document.getElementById("card-opacity-val").textContent = parseFloat(opacitySlider.value).toFixed(2); });
     
+    // Music volume slider
+    document.getElementById("d-music-volume").addEventListener("input", function() {
+        document.getElementById("music-volume-val").textContent = parseFloat(this.value).toFixed(2);
+    });
+    document.getElementById("test-music-btn").onclick = function() {
+        const url = document.getElementById("d-music-url").value.trim();
+        if (url) {
+            audio.src = url;
+            audio.volume = parseFloat(document.getElementById("d-music-volume").value) || 0.4;
+            audio.play().catch(() => {});
+            musicPlaying = true;
+            musicToggleBtn.textContent = '⏸';
+            const trackName = url.split('/').pop() || 'track';
+            musicTrackName.textContent = trackName.length > 20 ? trackName.slice(0, 20) + '…' : trackName;
+        }
+    };
+    
     document.getElementById("reset-bg-color").onclick = () => { document.getElementById("d-card-bg-color").value = "#0a0a0c"; };
     document.getElementById("reset-border-color").onclick = () => { document.getElementById("d-border-color").value = "#ffffff"; };
     
@@ -1457,6 +1532,9 @@
         const discord = document.getElementById("d-discord").value.trim();
         const bgVideoRaw = document.getElementById("d-bgvideo").value.trim();
         const bgWordsRaw = document.getElementById("d-bgwords").value.trim();
+        const musicUrl = document.getElementById("d-music-url").value.trim();
+        const musicVolume = parseFloat(document.getElementById("d-music-volume").value) || 0.4;
+        const musicAutoplay = document.getElementById("d-music-autoplay").checked;
         const bg_video_urls = bgVideoRaw ? [bgVideoRaw] : [];
         const bg_words = bgWordsRaw.split(",").map(w => w.trim()).filter(Boolean);
         const linkRows = document.querySelectorAll(".dash-link-row"), links = [];
@@ -1483,12 +1561,24 @@
             equipped_badges: [...dashEquipped], aliases: cleanAliases,
             card_style, border_radius, card_opacity, parallax_enabled, cursor_effect,
             custom_cursor, custom_font, typewriter_line1, typewriter_line2, typewriter_line3,
-            transparent_bg, disable_shadow, card_bg_color, border_color
+            transparent_bg, disable_shadow, card_bg_color, border_color,
+            music_url: musicUrl, music_volume: musicVolume, music_autoplay: musicAutoplay
         };
         try {
             await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
             updateAliasRowOnCard(cleanAliases);
             applyCustomCursor(custom_cursor);
+            if (musicUrl) {
+                audio.src = musicUrl;
+                audio.volume = musicVolume;
+                if (musicAutoplay) {
+                    audio.play().catch(() => {});
+                    musicPlaying = true;
+                    musicToggleBtn.textContent = '⏸';
+                    const trackName = musicUrl.split('/').pop() || 'track';
+                    musicTrackName.textContent = trackName.length > 20 ? trackName.slice(0, 20) + '…' : trackName;
+                }
+            }
             if (!silent) { status.textContent = "saved ✓"; status.style.color = "rgba(100,220,150,.5)"; setTimeout(() => { status.textContent = ""; }, 3000); if (slug === session.username) location.reload(); }
             else { if (slug === session.username) location.reload(); }
         } catch (e) { console.error("[save]", e); if (!silent) { status.textContent = "error: " + e.message; status.style.color = "rgba(255,100,100,.6)"; setTimeout(() => { status.textContent = ""; }, 5000); } }
