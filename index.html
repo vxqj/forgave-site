@@ -1,49 +1,562 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>forgave.lol</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>forgave.lol – Signup Test</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{background:#0a0a0a;font-family:"Inter",sans-serif;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-        .container{max-width:1024px;width:100%;text-align:center}
-        .glow{position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(255,255,255,0.04)0%,transparent 70%);pointer-events:none;z-index:0}
-        .header{display:flex;justify-content:space-between;padding:20px 0 60px;position:relative;z-index:1}
-        .logo{font-size:1.2rem;font-weight:600;font-family:"DM Mono",monospace}
-        .signin{background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);padding:8px 20px;border-radius:40px;cursor:pointer}
-        .hero{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center}
-        .hero h1{font-size:clamp(2.8rem,8vw,4.8rem);font-weight:700;letter-spacing:-2px;line-height:1.1;margin-bottom:8px}
-        .sub{font-size:1.1rem;color:rgba(255,255,255,0.5);margin-bottom:20px}
-        .desc{font-size:1.05rem;color:rgba(255,255,255,0.4);max-width:560px;line-height:1.7;margin-bottom:40px}
-        .cta{display:flex;align-items:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:60px;padding:4px 4px 4px 18px;max-width:500px;width:100%;margin:0 auto}
-        .cta:focus-within{border-color:rgba(255,255,255,0.3)}
-        .prefix{font-size:.95rem;color:rgba(255,255,255,0.35);font-family:"DM Mono",monospace;white-space:nowrap}
-        .cta input{flex:1;background:transparent;border:none;padding:14px 12px;font-size:.95rem;color:#fff;outline:none;font-family:"DM Mono",monospace}
-        .cta input::placeholder{color:rgba(255,255,255,0.2)}
-        .claim{background:#fff;border:none;color:#0a0a0a;padding:10px 28px;border-radius:60px;font-weight:600;font-size:.95rem;cursor:pointer;transition:all .2s;white-space:nowrap}
-        .claim:hover{background:rgba(255,255,255,0.85);transform:scale(.98)}
-        .badge{margin-top:24px;font-size:.8rem;color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.05);padding:4px 16px;border-radius:40px;border:1px solid rgba(255,255,255,0.06)}
-        @media(max-width:600px){.cta{flex-wrap:wrap;background:transparent;border:none;padding:0;gap:10px;border-radius:0}.cta input{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:60px;padding:14px 18px;width:100%}.claim{width:100%;justify-content:center;padding:14px}.prefix{display:none}}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0a0a0a;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .page {
+            width: 100%;
+            max-width: 1024px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .bg-glow {
+            position: absolute;
+            top: -30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0 60px 0;
+            position: relative;
+            z-index: 1;
+        }
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #fff;
+            font-family: "DM Mono", monospace;
+        }
+        .signin-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.7);
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .signin-btn:hover {
+            border-color: rgba(255,255,255,0.4);
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+        .hero {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding-bottom: 40px;
+        }
+        .hero h1 {
+            font-size: clamp(2.8rem, 8vw, 4.8rem);
+            font-weight: 700;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin: 0 0 8px 0;
+            max-width: 800px;
+            color: #fff;
+        }
+        .hero-sub {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 0.5px;
+            margin: 0 0 20px 0;
+        }
+        .hero-desc {
+            font-size: 1.05rem;
+            color: rgba(255,255,255,0.4);
+            max-width: 560px;
+            line-height: 1.7;
+            margin: 0 0 40px 0;
+            font-weight: 400;
+        }
+        .cta-wrap {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 60px;
+            padding: 4px 4px 4px 18px;
+            max-width: 500px;
+            width: 100%;
+            transition: border-color 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .cta-wrap:focus-within {
+            border-color: rgba(255,255,255,0.3);
+        }
+        .cta-prefix {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.35);
+            white-space: nowrap;
+            font-weight: 400;
+            font-family: "DM Mono", monospace;
+        }
+        .cta-wrap input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 14px 12px;
+            font-size: 0.95rem;
+            color: #fff;
+            outline: none;
+            min-width: 0;
+            font-family: "DM Mono", monospace;
+        }
+        .cta-wrap input::placeholder {
+            color: rgba(255,255,255,0.2);
+        }
+        .claim-btn {
+            background: #fff;
+            border: none;
+            color: #0a0a0a;
+            padding: 10px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .claim-btn:hover {
+            background: rgba(255,255,255,0.85);
+            transform: scale(0.98);
+        }
+        .free-badge {
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.05);
+            padding: 4px 16px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.06);
+            letter-spacing: 0.3px;
+        }
+
+        /* ---------- Signup Form ---------- */
+        .form-page {
+            display: none;
+            position: relative;
+            z-index: 1;
+            max-width: 440px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        .form-page.active {
+            display: block;
+        }
+        .form-back {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0 0 20px 0;
+            font-family: inherit;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .form-back:hover {
+            color: #fff;
+        }
+        .form-title {
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin: 0 0 6px 0;
+            color: #fff;
+        }
+        .form-sub {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.95rem;
+            margin: 0 0 32px 0;
+        }
+        .field-group {
+            margin-bottom: 20px;
+        }
+        .field-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 6px;
+        }
+        .input-prefix-wrap {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 0 0 0 14px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .input-prefix-wrap:focus-within {
+            border-color: rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.06);
+        }
+        .input-prefix {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.25);
+            white-space: nowrap;
+            font-family: "DM Mono", monospace;
+            pointer-events: none;
+        }
+        .input-prefix-wrap input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 14px 12px;
+            font-size: 0.95rem;
+            color: #fff;
+            outline: none;
+            min-width: 0;
+            font-family: "DM Mono", monospace;
+        }
+        .input-prefix-wrap input::placeholder {
+            color: rgba(255,255,255,0.15);
+        }
+        .field-group input:not(.input-prefix-wrap input) {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            color: #fff;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            font-family: "DM Mono", monospace;
+        }
+        .field-group input:focus {
+            border-color: rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.06);
+        }
+        .field-group input::placeholder {
+            color: rgba(255,255,255,0.15);
+        }
+        .checkbox-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0 12px 0;
+        }
+        .checkbox-wrap input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #fff;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .checkbox-wrap label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.35);
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: 400;
+            cursor: pointer;
+            margin: 0;
+        }
+        .submit-btn {
+            width: 100%;
+            background: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0a0a0a;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 4px;
+            font-family: inherit;
+        }
+        .submit-btn:hover {
+            background: rgba(255,255,255,0.85);
+        }
+        .form-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.25);
+        }
+        .form-footer a {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            border-bottom: 1px dotted rgba(255,255,255,0.1);
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        .form-footer a:hover {
+            color: #fff;
+        }
+        .hint {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            letter-spacing: 0.3px;
+            min-height: 1.2em;
+        }
+        .hint.error {
+            color: rgba(255,100,100,0.7);
+        }
+        .hint.success {
+            color: rgba(100,220,150,0.7);
+        }
+
+        @media (max-width: 600px) {
+            .cta-wrap {
+                flex-wrap: wrap;
+                background: transparent;
+                border: none;
+                padding: 0;
+                gap: 10px;
+                border-radius: 0;
+            }
+            .cta-wrap input {
+                background: rgba(255,255,255,0.04);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 60px;
+                padding: 14px 18px;
+                width: 100%;
+            }
+            .claim-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 14px;
+            }
+            .cta-prefix {
+                display: none;
+            }
+            .header {
+                padding-bottom: 30px;
+            }
+        }
     </style>
 </head>
 <body>
-<div style="position:relative;width:100%;max-width:1024px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;justify-content:center">
-    <div class="glow"></div>
-    <header class="header">
-        <span class="logo">forgave.lol</span>
-        <button class="signin" onclick="alert('Sign In modal would open')">Sign In</button>
-    </header>
-    <main class="hero">
-        <h1>One link for everything you are</h1>
-        <p class="sub">Your Link, Your Style</p>
-        <p class="desc">Build a stunning bio page with custom themes, music, particle effects, and social links — all in one place.</p>
-        <div class="cta">
-            <span class="prefix">forgave.lol/</span>
-            <input type="text" placeholder="yourname" maxlength="24">
-            <button class="claim" onclick="alert('Username: '+this.previousElementSibling.value)">Claim</button>
-        </div>
-        <span class="badge">Free forever — No credit card required</span>
-    </main>
+
+<div class="page">
+
+    <!-- Glow -->
+    <div class="bg-glow"></div>
+
+    <!-- ===== LANDING PAGE ===== -->
+    <div id="landing">
+        <header class="header">
+            <span class="logo">forgave.lol</span>
+            <button class="signin-btn" id="signinBtn">Sign In</button>
+        </header>
+        <main class="hero">
+            <h1>One link for everything you are</h1>
+            <p class="hero-sub">Your Link, Your Style</p>
+            <p class="hero-desc">
+                Build a stunning bio page with custom themes, music, particle effects,
+                and social links — all in one place.
+            </p>
+            <div class="cta-wrap">
+                <span class="cta-prefix">forgave.lol/</span>
+                <input type="text" id="landingUsername" placeholder="yourname" maxlength="24" autocomplete="off" spellcheck="false" />
+                <button class="claim-btn" id="claimBtn">Claim</button>
+            </div>
+            <span class="free-badge">Free forever — No credit card required</span>
+        </main>
+    </div>
+
+    <!-- ===== SIGNUP FORM ===== -->
+    <div class="form-page" id="signupForm">
+        <button class="form-back" id="backBtn">← Back</button>
+        <h2 class="form-title">Claim your link</h2>
+        <p class="form-sub">Create your free account and get your personalized bio page.</p>
+
+        <form id="signupFormElement" onsubmit="event.preventDefault(); handleSignup();">
+            <div class="field-group">
+                <label>Username (your site URL)</label>
+                <div class="input-prefix-wrap">
+                    <span class="input-prefix">forgave.lol/</span>
+                    <input type="text" id="suUsername" placeholder="yourname" maxlength="24" autocomplete="off" spellcheck="false" required>
+                </div>
+                <div class="hint" id="usernameHint"></div>
+            </div>
+            <div class="field-group">
+                <label>Password</label>
+                <input type="password" id="suPassword" placeholder="At least 6 characters" required>
+            </div>
+            <div class="field-group">
+                <label>Confirm Password</label>
+                <input type="password" id="suConfirm" placeholder="Confirm your password" required>
+                <div class="hint error" id="formError"></div>
+            </div>
+            <div class="checkbox-wrap">
+                <input type="checkbox" id="termsCheck" required />
+                <label for="termsCheck">I agree to the Terms of Use</label>
+            </div>
+            <button type="submit" class="submit-btn" id="submitBtn">Create Account →</button>
+        </form>
+        <p class="form-footer">Already have an account? <a href="#" id="switchToLogin">Sign in</a></p>
+    </div>
+
 </div>
+
+<script>
+    // ---------- Navigation ----------
+    const landing = document.getElementById('landing');
+    const signupForm = document.getElementById('signupForm');
+    const landingUsername = document.getElementById('landingUsername');
+    const suUsername = document.getElementById('suUsername');
+    const usernameHint = document.getElementById('usernameHint');
+    const formError = document.getElementById('formError');
+
+    // Claim button – pre‑fill username & show form
+    document.getElementById('claimBtn').addEventListener('click', function() {
+        const name = landingUsername.value.trim().toLowerCase();
+        if (!name || name.length < 3) {
+            landingUsername.style.borderColor = 'rgba(255,100,100,0.5)';
+            setTimeout(() => landingUsername.style.borderColor = '', 1500);
+            return;
+        }
+        suUsername.value = name;
+        landing.style.display = 'none';
+        signupForm.classList.add('active');
+        // trigger availability check
+        const event = new Event('input', { bubbles: true });
+        suUsername.dispatchEvent(event);
+    });
+
+    // Back button
+    document.getElementById('backBtn').addEventListener('click', function() {
+        landing.style.display = '';
+        signupForm.classList.remove('active');
+        formError.textContent = '';
+        usernameHint.textContent = '';
+        usernameHint.className = 'hint';
+    });
+
+    // Sign In button (mock)
+    document.getElementById('signinBtn').addEventListener('click', function() {
+        alert('Sign In modal would open (mock)');
+    });
+    document.getElementById('switchToLogin').addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Sign In modal would open (mock)');
+    });
+
+    // ---------- Username availability check ----------
+    let checkTimer = null;
+    suUsername.addEventListener('input', function() {
+        let val = this.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+        this.value = val;
+        const hint = usernameHint;
+        if (!val || val.length < 2) {
+            hint.textContent = '';
+            hint.className = 'hint';
+            return;
+        }
+        // Simulate check – "available" or "taken" for demonstration
+        hint.textContent = 'checking...';
+        hint.className = 'hint';
+        clearTimeout(checkTimer);
+        checkTimer = setTimeout(() => {
+            // Mock: if username is 'test' or 'admin', say taken
+            if (['test', 'admin', 'root'].includes(val)) {
+                hint.textContent = 'taken';
+                hint.className = 'hint error';
+            } else {
+                hint.textContent = 'available ✓';
+                hint.className = 'hint success';
+            }
+        }, 400);
+    });
+
+    // ---------- Signup handler (mock) ----------
+    function handleSignup() {
+        const btn = document.getElementById('submitBtn');
+        const username = suUsername.value.trim().toLowerCase();
+        const pw = document.getElementById('suPassword').value;
+        const confirm = document.getElementById('suConfirm').value;
+        const terms = document.getElementById('termsCheck');
+        formError.textContent = '';
+
+        if (!username || username.length < 1) {
+            formError.textContent = 'username too short';
+            return;
+        }
+        if (pw.length < 6) {
+            formError.textContent = 'password must be 6+ chars';
+            return;
+        }
+        if (pw !== confirm) {
+            formError.textContent = 'passwords don\'t match';
+            return;
+        }
+        if (!terms.checked) {
+            formError.textContent = 'you must agree to the Terms';
+            return;
+        }
+        // Mock success
+        btn.disabled = true;
+        btn.textContent = 'creating...';
+        setTimeout(() => {
+            alert('✅ Account created for @' + username + '! (mock)');
+            btn.disabled = false;
+            btn.textContent = 'Create Account →';
+            // Optionally reset form
+            landing.style.display = '';
+            signupForm.classList.remove('active');
+            document.getElementById('suPassword').value = '';
+            document.getElementById('suConfirm').value = '';
+            terms.checked = false;
+            formError.textContent = '';
+            usernameHint.textContent = '';
+            usernameHint.className = 'hint';
+        }, 1000);
+    }
+</script>
+
 </body>
 </html>
