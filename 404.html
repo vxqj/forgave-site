@@ -1051,7 +1051,8 @@
             signupPage.style.display = 'none';
             cardStackElem.style.display = '';
             overlayElem.style.display = 'flex';
-            authBtnEl.style.display = 'none'; // hide signup button on profiles
+            if (session) authBtnEl.style.display = 'none';
+            else authBtnEl.style.display = 'flex';
             userPillElem.style.display = '';
             musicWidgetElem.style.display = '';
             document.getElementById('leaderboard-btn').style.display = '';
