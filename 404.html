@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&family=Fira+Code:wght@300..700&family=IBM+Plex+Mono:wght@100..700&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/png" href="https://files.catbox.moe/beu5f0.png">
     <style>
-        /* ===== ORIGINAL STYLES (kept) ===== */
+        /* ===== ORIGINAL STYLES (kept – same as previous) ===== */
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono","Courier New",monospace;color:#fff}
         #bgvideo{display:none;position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
@@ -995,9 +995,13 @@
                     payload.device_stats = deviceStats;
                 }
                 if (Object.keys(payload).length) {
-                    await supa.patch("users", `username=eq.${encodeURIComponent(username)}`, payload);
+                    const result = await supa.patch("users", `username=eq.${encodeURIComponent(username)}`, payload);
+                    console.log(`[Stats] ${type} updated for ${username}:`, payload);
                 }
-            } catch(e) { console.warn('Stats update failed', e); }
+            } catch(e) {
+                console.warn('[Stats] Update failed:', e);
+                console.warn('Make sure the columns link_stats, daily_views, device_stats exist in your users table.');
+            }
         }
 
         // Track view and device on page load
@@ -1009,6 +1013,7 @@
 
         // Track link click
         function trackLinkClick(username, linkLabel) {
+            console.log(`[Stats] Tracking link click for username: ${username}, link: ${linkLabel}`);
             updateStats(username, 'link', linkLabel, 1);
         }
 
@@ -1627,7 +1632,6 @@
                     document.getElementById("border-radius-val").textContent=(u.border_radius!==undefined?u.border_radius:18)+"px";
                     document.getElementById("card-opacity-val").textContent=(u.card_opacity!==undefined?u.card_opacity:0.58).toFixed(2);
                     renderBadges(u.uid,u.equipped_badges||[],likeCount);
-                    // Stats data is in u.link_stats, u.daily_views, u.device_stats – will render when panel opened
                 }
             }catch(e){console.error("[openDashboard]",e);}
             openModal(dashModal);
@@ -1954,7 +1958,6 @@
         async function renderStats() {
             const container = document.getElementById('stats-container');
             if (!container) return;
-            // Fetch current user data
             if (!session) return;
             try {
                 const rows = await supa.get("users", `username=eq.${encodeURIComponent(session.username)}`);
@@ -1965,18 +1968,14 @@
                 const deviceStats = user.device_stats || {};
                 const totalViews = user.views || 0;
 
-                // Total link clicks
                 const totalClicks = Object.values(linkStats).reduce((a,b) => a + b, 0);
                 document.getElementById('stat-total-clicks').textContent = totalClicks;
 
-                // Click rate
                 const clickRate = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : 0;
                 document.getElementById('stat-click-rate').textContent = clickRate + '%';
 
-                // Profile views
                 document.getElementById('stat-profile-views').textContent = totalViews;
 
-                // Average daily views (last 7 days)
                 const last7 = getLastNDays(7);
                 let sum7 = 0, count7 = 0;
                 last7.forEach(d => {
@@ -1985,7 +1984,6 @@
                 const avgDaily = count7 > 0 ? Math.round(sum7 / count7) : 0;
                 document.getElementById('stat-avg-daily').textContent = avgDaily;
 
-                // Change indicators (simple: compare last 3 days with previous 3)
                 const last3 = getLastNDays(3);
                 const prev3 = getLastNDays(6).slice(0,3);
                 let sumLast3 = 0, sumPrev3 = 0;
@@ -1997,7 +1995,6 @@
                 else if (diff < 0) changeEl.textContent = `${diff} views since last 3 days`;
                 else changeEl.textContent = 'no change since last 3 days';
 
-                // Daily views chart (last 7 days)
                 const chartContainer = document.getElementById('stats-daily-chart');
                 chartContainer.innerHTML = '';
                 const maxVal = Math.max(1, ...last7.map(d => dailyViews[d] || 0));
@@ -2022,7 +2019,6 @@
                     chartContainer.appendChild(bar);
                 });
 
-                // Links list
                 const linksList = document.getElementById('stats-links-list');
                 linksList.innerHTML = '';
                 const linkNames = Object.keys(linkStats);
@@ -2037,7 +2033,6 @@
                     });
                 }
 
-                // Device stats
                 const devicesContainer = document.getElementById('stats-devices');
                 devicesContainer.innerHTML = '';
                 const deviceMap = { desktop: '🖥️ Desktop', mobile: '📱 Mobile', tablet: '📟 Tablet' };
