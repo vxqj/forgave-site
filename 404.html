@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
     <title>forgave.lol</title>
     <meta property="og:title" content="forgave.lol" />
     <meta property="og:description" content="forgave.lol //" />
@@ -26,44 +26,59 @@
         #auth-btn svg{width:17px;height:17px;fill:currentColor;display:block;margin:auto}
         #card-stack{position:fixed;top:40px;left:44px;z-index:10;width:300px;transform-style:preserve-3d;transition:transform 0.1s ease-out}
         @media (max-width:500px){#card-stack{top:auto;bottom:28px;left:50%;transform:translateX(-50%);width:calc(100vw - 32px);max-width:360px}body.minimalistic-mode #card-stack{transform:translate(-50%,-50%)!important;top:50%!important;left:50%!important;bottom:auto!important}}
+        @media (max-width:400px){#card-stack{width:calc(100vw - 20px);bottom:16px;max-width:340px}#content{padding:16px 16px 14px;border-radius:14px}}
         body.minimalistic-mode #card-stack{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);bottom:auto;right:auto;margin:0}
         #content{position:relative;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:22px 24px 20px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 28px 72px rgba(0,0,0,0.75),0 8px 22px rgba(0,0,0,0.4);transition:all 0.2s}
+        @media (max-width:400px){#content{padding:14px 14px 12px}}
         #content::after{content:"";position:absolute;inset:0;border-radius:18px;background:radial-gradient(ellipse at 30% 0%,rgba(255,255,255,0.03) 0%,transparent 60%);pointer-events:none}
         #second-card{display:none;margin-top:20px;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:16px 22px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 12px 32px rgba(0,0,0,0.5)}
+        @media (max-width:400px){#second-card{padding:12px 14px;margin-top:12px}}
         #second-card .meta-line{font-size:.7rem;color:rgba(255,255,255,.48);margin:0;opacity:1;animation:none}
         .card-header{margin-bottom:17px;opacity:0;animation:fadeUp .45s ease forwards;animation-delay:.5s}
+        @media (max-width:400px){.card-header{margin-bottom:12px}}
         .site-name{font-size:1.05rem;font-weight:500;letter-spacing:-0.2px;color:rgba(255,255,255,0.92);line-height:1;min-height:1.05rem;margin-bottom:7px}
+        @media (max-width:400px){.site-name{font-size:.95rem}}
         .site-name::after{content:"|";animation:blink .65s step-end infinite;margin-left:1px;opacity:.4}
         @keyframes blink{0%,100%{opacity:.4}50%{opacity:0}}
         .username-row{display:flex;align-items:center;gap:5px;line-height:1;flex-wrap:wrap}
         .username{font-size:.85rem;color:rgba(255,255,255,.28);letter-spacing:.9px;position:relative;cursor:default;display:flex;align-items:center}
+        @media (max-width:400px){.username{font-size:.75rem}}
         .username:hover{color:rgba(255,255,255,.55)}
         .username .tip,.badge .tip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%) translateY(4px);background:rgba(6,6,8,.98);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.8);font-size:.58rem;font-family:"DM Mono",monospace;letter-spacing:1.6px;text-transform:uppercase;padding:3px 8px;border-radius:5px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:20}
         .username:hover .tip,.badge:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}
         .badge{position:relative;display:flex;align-items:center;justify-content:center;width:18px;height:18px;flex-shrink:0;cursor:default}
+        @media (max-width:400px){.badge{width:15px;height:15px}}
         .badge img{width:100%;height:100%;object-fit:contain;display:block;border-radius:2px}
         .badge .fallback{font-size:12px;line-height:1}
         .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07) 30%,rgba(255,255,255,.07) 70%,transparent);margin-bottom:15px;opacity:0;animation:fadeUp .4s ease forwards;animation-delay:.6s}
+        @media (max-width:400px){.divider{margin-bottom:10px}}
         .meta-section{margin-bottom:15px}
+        @media (max-width:400px){.meta-section{margin-bottom:10px}}
         .meta-label{font-size:.6rem;color:rgba(255,255,255,.2);letter-spacing:1.4px;text-transform:uppercase;margin-bottom:9px;font-style:italic;opacity:0;animation:fadeUp .4s ease forwards;animation-delay:.65s}
         .meta-line{font-size:.72rem;color:rgba(255,255,255,.48);margin-bottom:3px;line-height:1.65;opacity:0;animation:fadeUp .4s ease forwards}
+        @media (max-width:400px){.meta-line{font-size:.65rem}}
         .meta-line:nth-of-type(1){animation-delay:.72s}
         .meta-line:nth-of-type(2){animation-delay:.79s}
         .meta-line:nth-of-type(3){animation-delay:.86s}
         .meta-line:nth-of-type(4){animation-delay:.93s}
         .card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(255,255,255,.05);opacity:0;animation:fadeUp .4s ease forwards;animation-delay:1.0s;margin-top:4px}
+        @media (max-width:400px){.card-footer{padding-top:10px;flex-wrap:wrap;gap:6px}}
         .footer-left{display:flex;align-items:center;gap:12px}
+        @media (max-width:400px){.footer-left{gap:8px;flex-wrap:wrap}}
         .icon-links{display:flex;gap:4px;align-items:center}
         .view-count{display:flex;align-items:center;gap:4px;font-size:.65rem;color:rgba(255,255,255,.35)}
+        @media (max-width:400px){.view-count{font-size:.55rem}}
         .view-count svg{width:14px;height:14px;fill:currentColor}
         .icon-link{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:rgba(255,255,255,.35);transition:color .18s,background .18s;text-decoration:none}
+        @media (max-width:400px){.icon-link{width:26px;height:26px}.icon-link svg{width:14px;height:14px}}
         .icon-link:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.07)}
         .icon-link svg{width:17px;height:17px;fill:currentColor;display:block}
-        /* Custom image icon inside link button */
         .icon-link img.custom-icon{width:17px;height:17px;object-fit:contain;display:block;border-radius:2px;opacity:.6;transition:opacity .18s}
+        @media (max-width:400px){.icon-link img.custom-icon{width:14px;height:14px}}
         .icon-link:hover img.custom-icon{opacity:1}
         @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
         #like-btn{display:flex;align-items:center;gap:5px;background:none;border:none;padding:4px 8px 4px 6px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.22);font-family:"DM Mono",monospace;font-size:.68rem;transition:color .18s,background .18s;user-select:none;letter-spacing:.3px}
+        @media (max-width:400px){#like-btn{font-size:.6rem;padding:3px 6px 3px 4px}}
         #like-btn:hover{color:rgba(255,255,255,.6);background:rgba(255,255,255,.06)}
         #like-btn.liked{color:rgba(255,255,255,.85)}
         #like-btn svg{width:15px;height:15px;fill:currentColor;display:block;flex-shrink:0}
@@ -79,6 +94,7 @@
         .modal-bg{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease}
         .modal-bg.open{opacity:1;pointer-events:all}
         .modal{background:rgba(10,10,13,0.97);border:1px solid rgba(255,255,255,0.09);border-top-color:rgba(255,255,255,0.17);border-radius:20px;padding:30px 30px 26px;width:340px;max-width:calc(100vw - 32px);box-shadow:0 0 0 1px rgba(0,0,0,0.6),0 32px 80px rgba(0,0,0,0.8);transform:translateY(10px) scale(0.97);transition:transform .25s cubic-bezier(0.22,1,0.36,1);position:relative}
+        @media (max-width:400px){.modal{padding:22px 18px 20px;width:100%;max-width:calc(100vw - 16px);border-radius:16px}}
         .modal-bg.open .modal{transform:translateY(0) scale(1)}
         .modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(255,255,255,.25);font-family:"DM Mono",monospace;font-size:.9rem;cursor:pointer;line-height:1;transition:color .15s}
         .modal-close:hover{color:rgba(255,255,255,.7)}
@@ -102,21 +118,28 @@
         .modal-switch span:hover{color:rgba(255,255,255,.75)}
         #user-pill{position:fixed;top:20px;right:22px;z-index:50;display:none;align-items:center;gap:8px;opacity:0;animation:fadeUp .4s ease forwards;animation-delay:1.2s}
         #user-pill.visible{display:flex}
+        @media (max-width:500px){#user-pill{top:12px;right:12px;gap:5px}#user-pill-name{font-size:.5rem;max-width:80px;overflow:hidden;text-overflow:ellipsis}}
         #user-pill-name{font-size:.62rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.35);cursor:default}
         #user-pill-settings{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,.35);width:34px;height:34px;border-radius:9px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);transition:color .2s,background .2s,border-color .2s}
+        @media (max-width:500px){#user-pill-settings{width:30px;height:30px}#user-pill-settings svg{width:14px;height:14px}#user-pill-logout{width:30px;height:30px}#user-pill-logout svg{width:14px;height:14px}}
         #user-pill-settings:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)}
         #user-pill-settings svg{width:16px;height:16px;fill:currentColor;display:block}
         #user-pill-logout{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,.35);width:34px;height:34px;border-radius:9px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);transition:color .2s,background .2s,border-color .2s}
         #user-pill-logout:hover{color:rgba(255,100,100,.7);background:rgba(255,50,50,.07);border-color:rgba(255,80,80,.2)}
         #user-pill-logout svg{width:16px;height:16px;fill:currentColor;display:block}
         #dash-modal .modal{width:680px;max-width:calc(100vw - 24px);padding:0;overflow:hidden;border-radius:20px;display:flex;flex-direction:column;max-height:calc(100vh - 48px)}
+        @media (max-width:768px){#dash-modal .modal{width:100%;max-width:calc(100vw - 12px);max-height:calc(100vh - 16px);border-radius:14px}}
         .dash-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 16px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
+        @media (max-width:600px){.dash-header{padding:14px 14px 12px;flex-wrap:wrap;gap:6px}.dash-header-title{font-size:.6rem}.dash-header-user{font-size:.55rem}}
         .dash-header-title{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:400}
         .dash-header-user{font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.18)}
         .dash-header .modal-close{position:static;margin-left:14px}
         .dash-body{display:flex;flex:1;overflow:hidden;min-height:0}
+        @media (max-width:600px){.dash-body{flex-direction:column;overflow-y:auto}}
         .dash-sidebar{width:140px;flex-shrink:0;border-right:1px solid rgba(255,255,255,.06);padding:14px 10px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+        @media (max-width:600px){.dash-sidebar{width:100%;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);padding:10px 12px;gap:4px;overflow-x:auto}.dash-sidebar .dash-nav-btn{padding:6px 10px;font-size:.55rem;flex:0 0 auto;width:auto}}
         .dash-nav-btn{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;border-radius:9px;padding:9px 11px;cursor:pointer;font-family:"DM Mono",monospace;font-size:.64rem;letter-spacing:1.1px;text-transform:uppercase;color:rgba(255,255,255,.28);transition:color .15s,background .15s;text-align:left}
+        @media (max-width:600px){.dash-nav-btn{font-size:.52rem;padding:5px 8px;gap:5px}.dash-nav-btn svg{width:12px;height:12px}}
         .dash-nav-btn svg{width:14px;height:14px;fill:currentColor;flex-shrink:0;opacity:.7}
         .dash-nav-btn:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.05)}
         .dash-nav-btn.active{color:rgba(255,255,255,.88);background:rgba(255,255,255,.08)}
@@ -125,6 +148,8 @@
         .dash-nav-btn.admin-nav:hover{color:rgba(255,190,90,.75);background:rgba(255,160,50,.06)}
         .dash-nav-btn.admin-nav.active{color:rgba(255,200,100,.9);background:rgba(255,160,50,.1)}
         .dash-panels{flex:1;overflow-y:auto;padding:20px 22px 22px}
+        @media (max-width:600px){.dash-panels{padding:14px 14px 16px;overflow-y:visible;max-height:60vh}}
+        @media (max-width:400px){.dash-panels{padding:10px 12px 14px}}
         .dash-panel{display:none}
         .dash-panel.active{display:block}
         .dash-panel-title{font-size:.62rem;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:18px;font-style:italic}
@@ -132,27 +157,36 @@
         .dash-section-label{font-size:.56rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.16);margin-bottom:9px;font-style:italic}
         .dash-links-list{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
         .dash-link-row{display:flex;flex-direction:column;gap:5px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 12px}
-        .dash-link-row-top{display:flex;gap:6px;align-items:center}
-        .dash-link-row-top input{flex:1}
+        @media (max-width:400px){.dash-link-row{padding:8px 10px}}
+        .dash-link-row-top{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+        .dash-link-row-top input{flex:1;min-width:80px}
         .dash-link-row-top select{width:100px;flex-shrink:0}
-        .dash-link-icon-row{display:flex;gap:6px;align-items:center}
-        .dash-link-icon-row input{flex:1;font-size:.65rem}
+        @media (max-width:400px){.dash-link-row-top select{width:80px;font-size:.6rem;padding:6px 8px}}
+        .dash-link-icon-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+        .dash-link-icon-row input{flex:1;font-size:.65rem;min-width:80px}
+        @media (max-width:400px){.dash-link-icon-row input{font-size:.55rem;padding:6px 8px}}
         .dash-link-icon-preview{width:22px;height:22px;object-fit:contain;border-radius:3px;display:none;flex-shrink:0;opacity:.7}
         .dash-link-remove{background:none;border:none;color:rgba(255,100,100,.4);font-size:1rem;cursor:pointer;line-height:1;padding:0 4px;transition:color .15s;flex-shrink:0}
         .dash-link-remove:hover{color:rgba(255,100,100,.8)}
         .dash-add-link{background:none;border:1px dashed rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.25);font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:1px;padding:7px;width:100%;cursor:pointer;transition:all .15s}
         .dash-add-link:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.5)}
         .dash-footer{padding:14px 22px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px}
+        @media (max-width:600px){.dash-footer{padding:12px 14px;flex-wrap:wrap}}
         .dash-save-status{font-size:.6rem;letter-spacing:1px;color:rgba(100,220,150,.5);min-height:1em;flex:1}
+        @media (max-width:400px){.dash-save-status{font-size:.5rem}}
         .dash-footer .modal-btn{width:auto;margin:0;padding:9px 22px;flex-shrink:0}
+        @media (max-width:400px){.dash-footer .modal-btn{padding:7px 14px;font-size:.6rem}}
         .badge-grid{display:grid;grid-template-columns:1fr;gap:12px}
         .badge-card{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:14px 16px;transition:border-color .2s}
+        @media (max-width:400px){.badge-card{padding:10px 12px;gap:10px;flex-wrap:wrap}}
         .badge-card.unlocked{border-color:rgba(255,210,100,.15);background:rgba(255,200,80,.03)}
         .badge-card.locked{opacity:.55}
         .badge-icon-wrap{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)}
+        @media (max-width:400px){.badge-icon-wrap{width:34px;height:34px}}
         .badge-icon-wrap img{max-width:90%;max-height:90%;object-fit:contain}
         .badge-info{flex:1;min-width:0}
         .badge-name{font-size:.72rem;letter-spacing:.5px;color:rgba(255,255,255,.75);margin-bottom:3px}
+        @media (max-width:400px){.badge-name{font-size:.65rem}}
         .badge-card.unlocked .badge-name{color:rgba(255,220,120,.9)}
         .badge-desc{font-size:.6rem;color:rgba(255,255,255,.2);letter-spacing:.5px;line-height:1.6}
         .badge-status{font-size:.56rem;letter-spacing:1.3px;text-transform:uppercase;padding:3px 8px;border-radius:5px;flex-shrink:0}
@@ -164,11 +198,13 @@
         .badge-equip-btn.equipped:hover{background:rgba(255,80,80,.1);color:rgba(255,120,120,.85);border-color:rgba(255,80,80,.25)}
         .badge-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
         .alias-row{font-size:.62rem;color:rgba(255,255,255,.22);letter-spacing:.4px;margin-top:5px;line-height:1}
+        @media (max-width:400px){.alias-row{font-size:.55rem}}
         .alias-row a{color:rgba(255,255,255,.38);text-decoration:none;transition:color .15s}
         .alias-row a:hover{color:rgba(255,255,255,.7)}
         .alias-row .alias-sep{margin:0 3px;opacity:.4}
         .alias-list{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
         .alias-entry{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+        @media (max-width:400px){.alias-entry{padding:8px 10px;flex-wrap:wrap}}
         .alias-entry-info{flex:1;min-width:0}
         .alias-entry-name{font-size:.72rem;color:rgba(255,255,255,.7);letter-spacing:.3px;margin-bottom:2px}
         .alias-entry-url{font-size:.58rem;color:rgba(255,255,255,.2);letter-spacing:.5px}
@@ -177,8 +213,9 @@
         .alias-add-form{background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.09);border-radius:11px;padding:13px;display:none;flex-direction:column;gap:8px}
         .alias-add-form.open{display:flex}
         .alias-add-form .field{margin-bottom:0}
-        .alias-form-actions{display:flex;gap:7px;margin-top:2px}
+        .alias-form-actions{display:flex;gap:7px;margin-top:2px;flex-wrap:wrap}
         .alias-form-btn{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px;color:rgba(255,255,255,.6);font-family:"DM Mono",monospace;font-size:.64rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .15s,color .15s}
+        @media (max-width:400px){.alias-form-btn{font-size:.55rem;padding:6px}}
         .alias-form-btn:hover{background:rgba(255,255,255,.11);color:#fff}
         .alias-form-btn.cancel{flex:0 0 auto;padding:8px 14px}
         .alias-form-hint{font-size:.58rem;letter-spacing:.8px;min-height:1em}
@@ -187,24 +224,26 @@
         .alias-add-trigger{background:none;border:1px dashed rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.25);font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:1px;padding:7px;width:100%;cursor:pointer;transition:all .15s}
         .alias-add-trigger:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.5)}
         .alias-limit-note{font-size:.58rem;color:rgba(255,255,255,.15);letter-spacing:.8px;text-align:center;margin-top:8px;font-style:italic}
-        .admin-search-row{display:flex;gap:8px;margin-bottom:18px}
-        .admin-search-row input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 12px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.72rem;outline:none;transition:border-color .15s}
+        .admin-search-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+        .admin-search-row input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 12px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.72rem;outline:none;transition:border-color .15s;min-width:120px}
         .admin-search-row input:focus{border-color:rgba(255,255,255,.22)}
         .admin-search-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 16px;color:rgba(255,255,255,.6);font-family:"DM Mono",monospace;font-size:.65rem;letter-spacing:1px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
         .admin-search-btn:hover{background:rgba(255,255,255,.11);color:#fff}
         .admin-user-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:16px;display:none;flex-direction:column;gap:14px}
+        @media (max-width:400px){.admin-user-card{padding:12px;gap:10px}}
         .admin-user-card.visible{display:flex}
-        .admin-user-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+        .admin-user-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:6px}
         .admin-user-name{font-size:.82rem;color:rgba(255,255,255,.8);letter-spacing:.3px}
         .admin-user-uid{font-size:.6rem;color:rgba(255,255,255,.25);letter-spacing:1px}
         .admin-section-title{font-size:.56rem;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,180,80,.4);margin-bottom:8px;font-style:italic}
-        .admin-row{display:flex;gap:8px;align-items:center}
-        .admin-row input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:8px 11px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.7rem;outline:none;transition:border-color .15s}
+        .admin-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+        .admin-row input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:8px 11px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.7rem;outline:none;transition:border-color .15s;min-width:80px}
         .admin-row input:focus{border-color:rgba(255,255,255,.2)}
         .admin-apply-btn{background:rgba(255,180,80,.08);border:1px solid rgba(255,180,80,.2);border-radius:8px;padding:8px 14px;color:rgba(255,200,100,.7);font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
         .admin-apply-btn:hover{background:rgba(255,180,80,.15);color:rgba(255,210,120,.95)}
         .admin-apply-btn:disabled{opacity:.4;cursor:not-allowed}
         .admin-badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+        @media (max-width:400px){.admin-badge-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}}
         .admin-badge-toggle{display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 8px;cursor:pointer;transition:border-color .15s,background .15s;font-family:"DM Mono",monospace;font-size:.58rem;letter-spacing:.8px;color:rgba(255,255,255,.35)}
         .admin-badge-toggle.on{border-color:rgba(255,200,80,.3);background:rgba(255,200,80,.06);color:rgba(255,220,120,.85)}
         .admin-badge-toggle img{width:24px;height:24px;object-fit:contain}
@@ -222,20 +261,22 @@
         .admin-custom-badge-form .field{margin-bottom:0}
         .admin-custom-badge-form .admin-row{gap:6px}
         .admin-custom-badge-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+        @media (max-width:500px){.admin-custom-badge-list{grid-template-columns:1fr}}
         .admin-custom-badge-item{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.03);border-radius:8px;padding:6px 10px;font-size:.6rem}
         .admin-custom-badge-item img{width:20px;height:20px;object-fit:contain}
         .admin-custom-badge-item .badge-name{color:rgba(255,255,255,.7);flex:1}
         .admin-custom-badge-item .badge-delete{background:none;border:none;color:rgba(255,100,100,.5);cursor:pointer;font-size:.8rem}
         .admin-custom-badge-item .badge-delete:hover{color:rgba(255,100,100,.9)}
-        .slider-container{display:flex;align-items:center;gap:12px;margin-top:6px}
+        .slider-container{display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap}
         .slider-container label{flex:0 0 50px;font-size:.58rem;letter-spacing:1px;color:rgba(255,255,255,.3)}
-        input[type="range"]{flex:1;height:3px;-webkit-appearance:none;background:rgba(255,255,255,.1);border-radius:3px;outline:none}
+        input[type="range"]{flex:1;height:3px;-webkit-appearance:none;background:rgba(255,255,255,.1);border-radius:3px;outline:none;min-width:60px}
         input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.6);cursor:pointer}
         input[type="range"]::-webkit-slider-thumb:hover{background:#fff}
         .slider-value{width:32px;font-size:.58rem;text-align:right;color:rgba(255,255,255,.4)}
         select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 12px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.72rem;outline:none;cursor:pointer}
         select option{background:#0a0a0c}
         .leaderboard-list{max-height:50vh;overflow-y:auto;padding:16px 20px 20px}
+        @media (max-width:500px){.leaderboard-list{padding:12px 14px 16px;max-height:55vh}}
         .leaderboard-list::-webkit-scrollbar{width:6px}
         .leaderboard-list::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:4px}
         .leaderboard-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:4px}
@@ -243,6 +284,7 @@
         .leaderboard-tab-content{transition:opacity 0.2s ease,transform 0.2s ease;opacity:1;transform:translateX(0)}
         .leaderboard-tab-content.fade-out{opacity:0;transform:translateX(-5px);pointer-events:none}
         .leaderboard-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.7rem;gap:8px;flex-wrap:wrap}
+        @media (max-width:500px){.leaderboard-item{flex-direction:column;align-items:flex-start;gap:4px;font-size:.65rem;padding:6px 0}}
         .leaderboard-rank{width:32px;color:rgba(255,255,255,.3);flex-shrink:0}
         .leaderboard-user-info{flex:3;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
         .leaderboard-name{color:rgba(255,255,255,.7);text-decoration:none}
@@ -253,14 +295,18 @@
         .leaderboard-badge img{width:100%;height:100%;object-fit:contain}
         .leaderboard-uid{font-size:.55rem;color:rgba(255,255,255,.25);margin-left:6px;letter-spacing:.5px}
         .leaderboard-value{font-weight:500;color:rgba(255,200,100,.8);flex-shrink:0;min-width:40px;text-align:right}
-        @media (max-width:500px){.leaderboard-item{flex-direction:column;align-items:flex-start;gap:4px}}
         #leaderboard-btn{position:fixed;bottom:24px;right:24px;z-index:60;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.65);width:44px;height:44px;border-radius:12px;cursor:pointer;backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;transition:all .2s}
+        @media (max-width:500px){#leaderboard-btn{bottom:16px;right:16px;width:38px;height:38px;border-radius:10px}#leaderboard-btn svg{width:16px;height:16px}}
         #leaderboard-btn:hover{color:white;background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2)}
         #leaderboard-modal .modal{width:460px;max-width:calc(100vw - 32px);padding:0}
+        @media (max-width:500px){#leaderboard-modal .modal{max-width:calc(100vw - 16px);border-radius:14px}}
         .leaderboard-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+        @media (max-width:500px){.leaderboard-header{padding:14px 16px 10px}.leaderboard-header h3{font-size:.6rem}}
         .leaderboard-header h3{font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);font-weight:400}
-        .leaderboard-tabs{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.07);padding:0 20px}
-        .leaderboard-tab{background:none;border:none;cursor:pointer;font-family:"DM Mono",monospace;font-size:.65rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.3);padding:10px 16px;transition:color .15s,border-color .15s;border-bottom:2px solid transparent;margin-bottom:-1px}
+        .leaderboard-tabs{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.07);padding:0 20px;overflow-x:auto}
+        @media (max-width:500px){.leaderboard-tabs{padding:0 12px}}
+        .leaderboard-tab{background:none;border:none;cursor:pointer;font-family:"DM Mono",monospace;font-size:.65rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.3);padding:10px 16px;transition:color .15s,border-color .15s;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+        @media (max-width:500px){.leaderboard-tab{font-size:.55rem;padding:8px 10px}}
         .leaderboard-tab.active{color:rgba(255,255,255,.8);border-bottom-color:rgba(255,255,255,.5)}
         .test-cursor-btn{background:rgba(255,180,80,.15);border:1px solid rgba(255,180,80,.3);border-radius:6px;padding:5px 12px;font-size:.6rem;cursor:pointer;margin-left:8px;transition:all .15s;color:rgba(255,200,100,.9)}
         .test-cursor-btn:hover{background:rgba(255,180,80,.3)}
@@ -272,14 +318,19 @@
         #signup-page .page-section{width:100%;max-width:1024px;margin:0 auto;position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
         #signup-page #landing-page .landing-bg-glow{position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(255,255,255,0.04) 0%,transparent 70%);pointer-events:none;z-index:0}
         #signup-page .landing-header{display:flex;justify-content:space-between;align-items:center;padding:20px 0 60px 0;position:relative;z-index:1}
+        @media (max-width:600px){#signup-page .landing-header{padding:12px 0 30px 0}}
         #signup-page .landing-logo{font-size:1.2rem;font-weight:600;letter-spacing:-0.5px;color:#fff;font-family:"DM Mono",monospace}
         #signup-page .landing-btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);padding:8px 20px;border-radius:40px;font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:inherit}
         #signup-page .landing-btn-outline:hover{border-color:rgba(255,255,255,0.4);color:#fff;background:rgba(255,255,255,0.05)}
         #signup-page .landing-hero{position:relative;z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding-bottom:40px}
-        #signup-page .landing-hero h1{font-size:clamp(2.8rem,8vw,4.8rem);font-weight:700;letter-spacing:-2px;line-height:1.1;margin:0 0 8px 0;max-width:800px;color:#fff}
+        @media (max-width:600px){#signup-page .landing-hero{padding-bottom:20px}}
+        #signup-page .landing-hero h1{font-size:clamp(2.2rem,8vw,4.8rem);font-weight:700;letter-spacing:-2px;line-height:1.1;margin:0 0 8px 0;max-width:800px;color:#fff}
         #signup-page .landing-sub{font-size:1.1rem;font-weight:400;color:rgba(255,255,255,0.5);letter-spacing:0.5px;margin:0 0 20px 0}
+        @media (max-width:600px){#signup-page .landing-sub{font-size:.9rem}}
         #signup-page .landing-desc{font-size:1.05rem;color:rgba(255,255,255,0.4);max-width:560px;line-height:1.7;margin:0 0 40px 0;font-weight:400}
+        @media (max-width:600px){#signup-page .landing-desc{font-size:.9rem;max-width:100%;padding:0 12px}}
         #signup-page .landing-cta{display:flex;align-items:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:0;padding:4px 4px 4px 18px;max-width:500px;width:100%;transition:border-color 0.2s;backdrop-filter:blur(4px)}
+        @media (max-width:600px){#signup-page .landing-cta{flex-wrap:wrap;background:transparent;border:none;padding:0;gap:10px;border-radius:0}#signup-page .landing-cta input{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:0;padding:14px 18px;width:100%}#signup-page .landing-btn-primary{width:100%;justify-content:center;padding:14px;border-radius:0}#signup-page .cta-prefix{display:none}}
         #signup-page .landing-cta:focus-within{border-color:rgba(255,255,255,0.3)}
         #signup-page .cta-prefix{font-size:0.95rem;color:rgba(255,255,255,0.35);white-space:nowrap;font-weight:400;font-family:"DM Mono",monospace}
         #signup-page .landing-cta input{flex:1;background:transparent;border:none;padding:14px 12px;font-size:0.95rem;color:#fff;outline:none;min-width:0;font-family:"DM Mono",monospace;border-radius:0}
@@ -289,6 +340,7 @@
         #signup-page .landing-badge{margin-top:24px;font-size:0.8rem;color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.05);padding:4px 16px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);letter-spacing:0.3px}
         #signup-page #signup-form-page .form-bg-glow{position:absolute;top:-20%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(255,255,255,0.03) 0%,transparent 70%);pointer-events:none;z-index:0}
         #signup-page .form-container{position:relative;z-index:1;max-width:440px;width:100%;margin:0 auto;padding:20px 0}
+        @media (max-width:600px){#signup-page .form-container{padding:10px 0}#signup-page .form-title{font-size:1.6rem}#signup-page .form-subtitle{font-size:.85rem}}
         #signup-page .form-back-btn{background:none;border:none;color:rgba(255,255,255,0.4);font-size:0.9rem;cursor:pointer;padding:0 0 20px 0;font-family:inherit;transition:color 0.2s;display:flex;align-items:center;gap:6px}
         #signup-page .form-back-btn:hover{color:#fff}
         #signup-page .form-title{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;letter-spacing:-1px;margin:0 0 6px 0;color:#fff}
@@ -303,7 +355,7 @@
         #signup-page .form-group input:not(.input-prefix-wrap input){width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:0;padding:14px 16px;font-size:0.95rem;color:#fff;outline:none;transition:border-color 0.2s,background 0.2s;font-family:"DM Mono",monospace}
         #signup-page .form-group input:focus{border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.06)}
         #signup-page .form-group input::placeholder{color:rgba(255,255,255,0.15)}
-        #signup-page .checkbox-group{display:flex;align-items:center;gap:10px;margin:8px 0 12px 0}
+        #signup-page .checkbox-group{display:flex;align-items:center;gap:10px;margin:8px 0 12px 0;flex-wrap:wrap}
         #signup-page .checkbox-group input[type="checkbox"]{width:18px;height:18px;accent-color:#fff;cursor:pointer;flex-shrink:0}
         #signup-page .checkbox-group label{font-size:0.8rem;color:rgba(255,255,255,0.35);text-transform:none;letter-spacing:0;font-weight:400;cursor:pointer;margin:0}
         #signup-page .form-submit-btn{width:100%;background:#fff;border:none;border-radius:0;padding:16px;font-size:1rem;font-weight:600;color:#0a0a0a;cursor:pointer;transition:all 0.2s;margin-top:4px;font-family:inherit}
@@ -315,12 +367,38 @@
         #signup-page .field-hint{font-size:0.7rem;margin-top:5px;letter-spacing:0.3px;min-height:1.2em}
         #signup-page .field-hint.error{color:rgba(255,100,100,0.7)}
         #signup-page .field-hint.success{color:rgba(100,220,150,0.7)}
-        @media (max-width:600px){
-            #signup-page .landing-cta{flex-wrap:wrap;background:transparent;border:none;padding:0;gap:10px;border-radius:0}
-            #signup-page .landing-cta input{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:0;padding:14px 18px;width:100%}
-            #signup-page .landing-btn-primary{width:100%;justify-content:center;padding:14px;border-radius:0}
-            #signup-page .cta-prefix{display:none}
-            #signup-page .landing-header{padding-bottom:30px}
+
+        /* ===== FONT SELECTOR WITH DATALIST ===== */
+        .font-input-wrap{position:relative;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+        .font-input-wrap input{flex:1;min-width:120px}
+        .font-input-wrap .font-preview{font-size:.6rem;color:rgba(255,255,255,.25);letter-spacing:.5px;padding:4px 8px;background:rgba(255,255,255,.03);border-radius:4px;border:1px solid rgba(255,255,255,.05);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+        @media (max-width:400px){.font-input-wrap .font-preview{max-width:80px;font-size:.5rem;padding:3px 6px}}
+        .font-suggestions{position:absolute;top:100%;left:0;right:0;background:rgba(10,10,13,.98);border:1px solid rgba(255,255,255,.1);border-radius:8px;max-height:200px;overflow-y:auto;display:none;z-index:300;margin-top:2px}
+        .font-suggestions.show{display:block}
+        .font-suggestions .suggestion{padding:6px 12px;cursor:pointer;font-size:.7rem;color:rgba(255,255,255,.6);transition:background .1s;border-bottom:1px solid rgba(255,255,255,.03)}
+        .font-suggestions .suggestion:hover{background:rgba(255,255,255,.06);color:#fff}
+        .font-suggestions .suggestion:last-child{border-bottom:none}
+        .font-suggestions .suggestion .samp{float:right;opacity:.3;font-size:.55rem}
+
+        /* extra mobile fixes for dashboard fields */
+        @media (max-width:500px){
+            .field input,.field textarea,.field select{font-size:.65rem;padding:8px 10px}
+            .field label{font-size:.55rem}
+            .dash-panel-title{font-size:.55rem;margin-bottom:12px}
+            .dash-section{margin-bottom:14px}
+            .dash-section-label{font-size:.5rem}
+            #auth-modal .modal{width:100%;max-width:calc(100vw - 16px);padding:20px 16px 18px}
+            #auth-modal .modal-title{font-size:.65rem;margin-bottom:16px}
+            #auth-modal .modal-tab{font-size:.58rem;padding:0 0 8px 0;margin-right:14px}
+            .modal-btn{font-size:.62rem;padding:10px}
+            #dash-modal .modal{max-height:calc(100vh - 12px)}
+        }
+        @media (max-width:400px){
+            .field input,.field textarea,.field select{font-size:.58rem;padding:6px 8px;border-radius:6px}
+            .field label{font-size:.5rem}
+            .dash-panels{padding:8px 10px 12px}
+            .modal-btn{font-size:.55rem;padding:8px}
+            #dash-modal .modal .dash-header .modal-close{font-size:.7rem}
         }
     </style>
 </head>
@@ -454,11 +532,18 @@
     </nav>
     <div class="dash-panels">
         <div class="dash-panel active" id="panel-bio"><div class="dash-panel-title">bio lines</div>
-        <div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;"><input type="checkbox" id="d-typewriter1" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect (looping)</label></div></div>
-        <div class="field"><label>line 2</label><input type="text" id="d-line2" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;"><input type="checkbox" id="d-typewriter2" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect (looping)</label></div></div>
-        <div class="field"><label>line 3</label><input type="text" id="d-line3" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;"><input type="checkbox" id="d-typewriter3" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect (looping)</label></div></div>
+        <div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;"><input type="checkbox" id="d-typewriter1" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect (looping)</label></div></div>
+        <div class="field"><label>line 2</label><input type="text" id="d-line2" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;"><input type="checkbox" id="d-typewriter2" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect (looping)</label></div></div>
+        <div class="field"><label>line 3</label><input type="text" id="d-line3" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;"><input type="checkbox" id="d-typewriter3" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect (looping)</label></div></div>
         <div class="field"><label>discord tag</label><input type="text" id="d-discord" maxlength="80"></div>
-        <div class="field"><label>card font</label><select id="d-card-font"><option value="DM Mono">Default (DM Mono)</option><option value="JetBrains Mono">JetBrains Mono</option><option value="Fira Code">Fira Code</option><option value="IBM Plex Mono">IBM Plex Mono</option><option value="Courier New">Courier New</option></select><div class="field-hint">changes the font of your card text</div></div></div>
+        <div class="field"><label>card font</label>
+            <div class="font-input-wrap">
+                <input type="text" id="d-card-font" list="google-fonts" placeholder="Type a font name…" autocomplete="off" spellcheck="false">
+                <datalist id="google-fonts"></datalist>
+                <span class="font-preview" id="font-preview-label">DM Mono</span>
+            </div>
+            <div class="field-hint">start typing to search all Google Fonts — preview shows selected font</div>
+        </div></div>
 
         <div class="dash-panel" id="panel-socials"><div class="dash-panel-title">links</div>
         <div style="font-size:.58rem;color:rgba(255,255,255,.2);margin-bottom:12px;letter-spacing:.5px;">You can use a custom icon image (from catbox.moe) per link — leave blank to use the built-in icon.</div>
@@ -480,11 +565,11 @@
         <div class="field"><label>card style</label><select id="d-card-style"><option value="default">Default (original)</option><option value="minimalistic">Minimalistic (centered card)</option><option value="modern">Modern (extra card below)</option></select></div>
         <div class="field"><label>border radius</label><div class="slider-container"><label>▯</label><input type="range" id="d-border-radius" min="0" max="30" step="1" value="18"><span class="slider-value" id="border-radius-val">18px</span></div></div>
         <div class="field"><label>card opacity</label><div class="slider-container"><label>◐</label><input type="range" id="d-card-opacity" min="0.2" max="1.0" step="0.01" value="0.58"><span class="slider-value" id="card-opacity-val">0.58</span></div></div>
-        <div class="field"><label>card background color</label><div style="display:flex;align-items:center;gap:8px;"><input type="color" id="d-card-bg-color" value="#0a0a0c"><button class="reset-btn-sm" id="reset-bg-color">reset</button></div><div class="field-hint">overrides the default dark background (opacity still applies)</div></div>
-        <div class="field"><label>border color</label><div style="display:flex;align-items:center;gap:8px;"><input type="color" id="d-border-color" value="#ffffff"><button class="reset-btn-sm" id="reset-border-color">reset</button></div><div class="field-hint">changes the card's border color</div></div>
-        <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-parallax" style="width:auto;margin:0;"> parallax effect</label></div>
-        <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background</label><div class="field-hint">makes the card background fully transparent (ignores color picker)</div></div>
-        <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow</label></div></div>
+        <div class="field"><label>card background color</label><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><input type="color" id="d-card-bg-color" value="#0a0a0c"><button class="reset-btn-sm" id="reset-bg-color">reset</button></div><div class="field-hint">overrides the default dark background (opacity still applies)</div></div>
+        <div class="field"><label>border color</label><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><input type="color" id="d-border-color" value="#ffffff"><button class="reset-btn-sm" id="reset-border-color">reset</button></div><div class="field-hint">changes the card's border color</div></div>
+        <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-wrap:wrap;"><input type="checkbox" id="d-parallax" style="width:auto;margin:0;"> parallax effect</label></div>
+        <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-wrap:wrap;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background</label><div class="field-hint">makes the card background fully transparent (ignores color picker)</div></div>
+        <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-wrap:wrap;"><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow</label></div></div>
 
         <div class="dash-panel" id="panel-admin"><div class="dash-panel-title" style="color:rgba(255,180,80,.4);">admin panel</div>
         <div class="admin-search-row"><input type="text" id="admin-search-input" placeholder="search username..."><button class="admin-search-btn" id="admin-search-btn">look up</button></div>
@@ -626,7 +711,6 @@
         };
         const STATIC_UID_START = 4;
 
-        // Built-in SVG icons (fallback when no custom icon set)
         const ICONS = {
             tiktok: `<svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.78a4.85 4.85 0 0 1-1.01-.09z"/></svg>`,
             discord: `<svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>`,
@@ -705,14 +789,133 @@
                 if (result && result[0]) {
                     await notifyDiscord(username, nextUid);
                     saveSession({ username, uid: nextUid });
+                    // === REDIRECT TO USER'S PROFILE ===
                     window.location.href = '/' + username;
                 } else { err.textContent = "something went wrong"; }
             } catch(e) { console.error(e); err.textContent = e.message?.includes("duplicate") ? "username taken" : "error — check console"; }
             btn.disabled = false; btn.textContent = "Create Account →";
         }
 
+        // ===== GOOGLE FONTS FETCHER =====
+        let googleFontsList = [];
+
+        async function fetchGoogleFonts() {
+            try {
+                // Use the Google Fonts metadata endpoint (public)
+                const resp = await fetch('https://fonts.google.com/metadata/fonts', {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const text = await resp.text();
+                // The response starts with )]}' which needs to be stripped
+                const json = JSON.parse(text.substring(4));
+                if (json && json.familyMetadataList) {
+                    googleFontsList = json.familyMetadataList.map(f => f.family);
+                    // Sort alphabetically
+                    googleFontsList.sort((a, b) => a.localeCompare(b));
+                } else {
+                    throw new Error('Invalid response structure');
+                }
+            } catch (e) {
+                console.warn('Failed to fetch Google Fonts, using fallback list', e);
+                // Fallback: popular Google Fonts
+                googleFontsList = [
+                    "DM Mono", "JetBrains Mono", "Fira Code", "IBM Plex Mono", "Courier New",
+                    "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins", "Raleway",
+                    "Nunito", "Quicksand", "Work Sans", "Rubik", "Maven Pro", "Asap", "Hind",
+                    "Manrope", "Figtree", "Plus Jakarta Sans", "Sora", "Outfit", "Inter Tight",
+                    "Space Grotesk", "Space Mono", "Lexend", "Epilogue", "DM Sans", "Urbanist",
+                    "Be Vietnam Pro", "Karla", "Josefin Sans", "Playfair Display", "Merriweather",
+                    "Source Serif Pro", "Cormorant", "EB Garamond", "Lora", "Taviraj", "Bodoni Moda",
+                    "Fraunces", "Abril Fatface", "Alegreya", "Cinzel", "Cormorant Garamond",
+                    "Crimson Pro", "Fjalla One", "Gloock", "Instrument Serif", "Josefin Slab",
+                    "Libre Baskerville", "Literata", "Martel", "Old Standard TT", "Petrona",
+                    "Quattrocento", "Vollkorn", "Abril Fatface", "Bodoni Moda", "Cormorant",
+                    "Fraunces", "Instrument Serif", "Literata", "Playfair Display", "Taviraj",
+                    "Alegreya Sans", "Arimo", "Barlow", "Cabin", "Dosis", "Exo", "Gothic A1",
+                    "IBM Plex Sans", "Jost", "Kanit", "Libre Franklin", "Mukta", "Noto Sans",
+                    "Oxygen", "Proza Libre", "Rajdhani", "Satisfy", "Titillium Web", "Ubuntu",
+                    "Varela Round", "Yantramanav", "Zilla Slab", "Abel", "Alata", "Arapey",
+                    "Bai Jamjuree", "Bitter", "Caladea", "Cantata One", "Caudex", "Caveat",
+                    "Chakra Petch", "Comfortaa", "Cormorant Infant", "Cormorant SC", "Crimson Text",
+                    "Domine", "Eczar", "Encode Sans", "Esteban", "Faustina", "Frank Ruhl Libre",
+                    "Gabriela", "Gentium Basic", "Gilda Display", "Herr Von Muellerhoff", "Imbue",
+                    "Inika", "Josefin Sans", "Kaushan Script", "Libre Caslon Text", "Lustria",
+                    "Martel Sans", "Merienda", "Merriweather Sans", "Monda", "Muli", "Neuton",
+                    "Niramit", "Notable", "Nunito Sans", "Orbitron", "Oswald", "Overpass",
+                    "Pacifico", "Philosopher", "Play", "Prompt", "PT Sans", "PT Serif", "Quattrocento Sans",
+                    "Racing Sans One", "Recursive", "Red Hat Display", "Red Hat Mono", "Red Hat Text",
+                    "Roboto Condensed", "Roboto Mono", "Roboto Slab", "Rowdies", "Sawarabi Gothic",
+                    "Sawarabi Mincho", "Sen", "Shadows Into Light", "Sintony", "Squada One",
+                    "Syne", "Teko", "Tenor Sans", "Tinos", "Unbounded", "Vazirmatn", "Viga",
+                    "Yeseva One", "Yrsa", "ZCOOL KuaiLe", "ZCOOL QingKe HuangYou", "Zen Dots",
+                    "Zeyada", "Anton", "Archivo", "Archivo Black", "Archivo Narrow", "Bebas Neue",
+                    "Big Shoulders Display", "Big Shoulders Text", "Black Ops One", "Bree Serif",
+                    "Bungee", "Bungee Shade", "Capriola", "Chango", "Coiny", "Concert One",
+                    "Creepster", "Diplomata SC", "Eater", "Emblema One", "Fascinate", "Faster One",
+                    "Fondamento", "Fontdiner Swanky", "Fredoka One", "Geo", "Germania One",
+                    "Goblin One", "Graduate", "Gravitas One", "Henny Penny", "Iceland", "Knewave",
+                    "Lacquer", "Lakki Reddy", "Leckerli One", "Lilita One", "Limelight", "Lobster",
+                    "Lobster Two", "Londrina Outline", "Londrina Shadow", "Londrina Sketch",
+                    "Londrina Solid", "Macondo", "MedievalSharp", "Monoton", "Mystery Quest",
+                    "New Rocker", "Nosifer", "Permanent Marker", "Piedra", "Plaster", "Rammetto One",
+                    "Ranga", "Ribeye", "Ribeye Marrow", "Righteous", "Risk", "Rubik Dirt",
+                    "Rubik Glitch", "Rubik Marker Hatch", "Rubik Maze", "Rubik Microbe",
+                    "Rubik One", "Rubik Pixels", "Rubik Spray Paint", "Rubik Storm", "Rubik Vinyl",
+                    "Ruda", "Russo One", "Sancreek", "Shrikhand", "Smythe", "Sniglet", "Spicy Rice",
+                    "Stalinist One", "Stardos Stencil", "Stoke", "Tangerine", "The Girl Next Door",
+                    "Titan One", "Trade Winds", "Train One", "Uncial Antiqua", "Vast Shadow",
+                    "Vibes", "Vina Sans", "Vollkorn SC", "Wallpoet", "Walter Turncoat", "Wire One",
+                    "Yatra One", "Yellowtail", "Yusei Magic", "ZCOOL XiaoWei"
+                ];
+                // Remove duplicates
+                googleFontsList = [...new Set(googleFontsList)];
+                googleFontsList.sort((a, b) => a.localeCompare(b));
+            }
+            // Populate datalist
+            const datalist = document.getElementById('google-fonts');
+            datalist.innerHTML = '';
+            googleFontsList.forEach(font => {
+                const opt = document.createElement('option');
+                opt.value = font;
+                datalist.appendChild(opt);
+            });
+            // Also populate the font preview on input
+            const fontInput = document.getElementById('d-card-font');
+            const previewLabel = document.getElementById('font-preview-label');
+            if (fontInput) {
+                fontInput.addEventListener('input', function() {
+                    const val = this.value.trim();
+                    if (val) {
+                        previewLabel.textContent = val;
+                        previewLabel.style.fontFamily = `"${val}", "DM Mono", monospace`;
+                        // Try loading the font via Google Fonts
+                        try {
+                            const link = document.getElementById('dynamic-font-link');
+                            if (link) link.remove();
+                            const newLink = document.createElement('link');
+                            newLink.id = 'dynamic-font-link';
+                            newLink.rel = 'stylesheet';
+                            newLink.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(val)}:wght@100..900&display=swap`;
+                            document.head.appendChild(newLink);
+                        } catch(e) {}
+                    } else {
+                        previewLabel.textContent = 'DM Mono';
+                        previewLabel.style.fontFamily = '"DM Mono", monospace';
+                    }
+                });
+                // Trigger initial preview
+                if (fontInput.value) {
+                    previewLabel.textContent = fontInput.value;
+                    previewLabel.style.fontFamily = `"${fontInput.value}", "DM Mono", monospace`;
+                }
+            }
+            return googleFontsList;
+        }
+
+        // ===== RESOLVE ROUTE =====
         async function resolveRoute() {
             await fetchCustomBadges();
+            await fetchGoogleFonts(); // preload fonts
             if (!slug || slug === "") { showSignupPage(); return; }
             showProfilePage();
             if (STATIC_USERS[slug]) { C = JSON.parse(JSON.stringify(STATIC_USERS[slug])); likeId = "forgave.lol/" + slug; return; }
@@ -992,6 +1195,16 @@
                 cardContent.style.fontFamily=`${ff},monospace`;
                 if (secondCard) secondCard.style.fontFamily=`${ff},monospace`;
                 document.querySelectorAll(".meta-line,.alias-row,.username,.site-name,#like-btn,.view-count").forEach(el=>{ el.style.fontFamily=`${ff},monospace`; });
+                // Also load the font if not already loaded
+                try {
+                    const link = document.getElementById('dynamic-font-link');
+                    if (link) link.remove();
+                    const newLink = document.createElement('link');
+                    newLink.id = 'dynamic-font-link';
+                    newLink.rel = 'stylesheet';
+                    newLink.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(ff)}:wght@100..900&display=swap`;
+                    document.head.appendChild(newLink);
+                } catch(e) {}
             } else {
                 cardContent.style.fontFamily="";
                 if (secondCard) secondCard.style.fontFamily="";
@@ -1028,13 +1241,11 @@
             const discordLine=document.getElementById("discord-line");
             if (C.discord) { discordLine.style.display=""; document.getElementById("discord-val").textContent=C.discord; } else { discordLine.style.display="none"; }
 
-            // ===== LINKS WITH CUSTOM ICON SUPPORT =====
             const linksContainer=document.getElementById("links-container");
             linksContainer.innerHTML="";
             (C.links||[]).forEach(lk=>{
                 const a=document.createElement("a"); a.className="icon-link"; a.href=lk.url; a.target="_blank"; a.rel="noopener"; a.title=lk.label;
                 if (lk.custom_icon_url && lk.custom_icon_url.trim()) {
-                    // Custom image icon from catbox.moe or any URL
                     const img=document.createElement("img");
                     img.src=lk.custom_icon_url.trim();
                     img.alt=lk.label;
@@ -1195,6 +1406,7 @@
             btn.disabled=false; btn.textContent="create account";
         };
 
+        // ===== SIGN-IN: REDIRECT TO USER PROFILE =====
         document.getElementById("li-submit").onclick=async()=>{
             const btn=document.getElementById("li-submit");
             const username=document.getElementById("li-username").value.trim().toLowerCase();
@@ -1208,7 +1420,11 @@
                 if(!rows||rows.length===0){err.textContent="user not found";btn.disabled=false;btn.textContent="log in";return;}
                 const hash=await hashPassword(pw);
                 if(rows[0].password_hash!==hash){err.textContent="wrong password";btn.disabled=false;btn.textContent="log in";return;}
-                saveSession({username,uid:rows[0].uid}); closeModal(authModal); updateAuthUI();
+                saveSession({username,uid:rows[0].uid});
+                closeModal(authModal);
+                updateAuthUI();
+                // === REDIRECT TO USER'S PROFILE ===
+                window.location.href = '/' + username;
             }catch(e){console.error(e);err.textContent="error — try again";}
             btn.disabled=false; btn.textContent="log in";
         };
@@ -1283,7 +1499,12 @@
                     document.getElementById("d-border-radius").value=u.border_radius!==undefined?u.border_radius:18;
                     document.getElementById("d-card-opacity").value=u.card_opacity!==undefined?u.card_opacity:0.58;
                     document.getElementById("d-parallax").checked=u.parallax_enabled!==undefined?u.parallax_enabled:true;
-                    document.getElementById("d-card-font").value=u.custom_font||"DM Mono";
+                    // Set font input
+                    const fontInput=document.getElementById("d-card-font");
+                    const fontVal=u.custom_font||"DM Mono";
+                    fontInput.value=fontVal;
+                    const previewLabel=document.getElementById("font-preview-label");
+                    if (previewLabel) { previewLabel.textContent=fontVal; previewLabel.style.fontFamily=`"${fontVal}","DM Mono",monospace`; }
                     document.getElementById("d-typewriter1").checked=u.typewriter_line1||false;
                     document.getElementById("d-typewriter2").checked=u.typewriter_line2||false;
                     document.getElementById("d-typewriter3").checked=u.typewriter_line3||false;
@@ -1376,7 +1597,7 @@
             btn.disabled=false; btn.textContent="verify & add";
         };
 
-        // ===== DASHBOARD LINKS WITH CUSTOM ICON URL =====
+        // ===== DASHBOARD LINKS =====
         function renderDashLinks(links) {
             const list=document.getElementById("d-links-list"); list.innerHTML="";
             links.forEach((lk,i)=>addDashLinkRow(lk.label||"",lk.url||"",lk.icon||"tiktok",lk.custom_icon_url||"",i));
@@ -1399,7 +1620,6 @@
             row.querySelector(".dash-link-remove").onclick=()=>row.remove();
             const preview=row.querySelector(".dash-link-icon-preview");
             const customInput=row.querySelector(".dl-custom-icon");
-            // Live preview
             function updatePreview() {
                 const val=customInput.value.trim();
                 if (val) { preview.src=val; preview.style.display="block"; }
@@ -1433,7 +1653,6 @@
             const bg_video_urls=bgVideoRaw?[bgVideoRaw]:[];
             const bg_words=bgWordsRaw.split(",").map(w=>w.trim()).filter(Boolean);
 
-            // Collect links with custom_icon_url
             const linkRows=document.querySelectorAll(".dash-link-row"),links=[];
             linkRows.forEach(row=>{
                 const url=row.querySelector(".dl-url").value.trim();
@@ -1448,7 +1667,8 @@
             const border_radius=parseInt(radiusSlider.value,10);
             const card_opacity=parseFloat(opacitySlider.value);
             const parallax_enabled=document.getElementById("d-parallax").checked;
-            const custom_font=document.getElementById("d-card-font").value;
+            // Get font from input (instead of select)
+            const custom_font=document.getElementById("d-card-font").value.trim()||"DM Mono";
             const typewriter_line1=document.getElementById("d-typewriter1").checked;
             const typewriter_line2=document.getElementById("d-typewriter2").checked;
             const typewriter_line3=document.getElementById("d-typewriter3").checked;
