@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>forgave.lol</title>
+    <title>forgave.lol — leaderboard</title>
     <meta property="og:title" content="forgave.lol">
-    <meta property="og:description" content="forgave.lol //">
+    <meta property="og:description" content="forgave.lol // likes & views leaderboard">
     <meta property="og:image" content="https://files.catbox.moe/fjrfis.png">
     <meta property="og:url" content="https://forgave.lol">
     <meta name="twitter:card" content="summary_large_image">
@@ -226,6 +226,23 @@
         .reset-btn-sm:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
         .test-cursor-btn{background:rgba(255,180,80,.15);border:1px solid rgba(255,180,80,.3);border-radius:6px;padding:5px 12px;font-size:.6rem;cursor:pointer;margin-left:8px;transition:all .15s;color:rgba(255,200,100,.9)}
         .test-cursor-btn:hover{background:rgba(255,180,80,.3)}
+        /* Leaderboard button & modal */
+        #leaderboard-btn{position:fixed;bottom:24px;right:24px;z-index:60;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.65);width:44px;height:44px;border-radius:12px;cursor:pointer;backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:1.2rem}
+        #leaderboard-btn:hover{color:white;background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2)}
+        #leaderboard-modal .modal{width:420px;max-width:calc(100vw - 32px);padding:0}
+        .leaderboard-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+        .leaderboard-header h3{font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);font-weight:400}
+        .leaderboard-tabs{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.07);padding:0 20px}
+        .leaderboard-tab{background:none;border:none;cursor:pointer;font-family:"DM Mono",monospace;font-size:.65rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.3);padding:10px 16px;transition:color .15s,border-color .15s;border-bottom:2px solid transparent;margin-bottom:-1px}
+        .leaderboard-tab.active{color:rgba(255,255,255,.8);border-bottom-color:rgba(255,255,255,.5)}
+        .leaderboard-list{padding:16px 20px 20px;max-height:50vh;overflow-y:auto}
+        .leaderboard-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.7rem}
+        .leaderboard-rank{width:32px;color:rgba(255,255,255,.3)}
+        .leaderboard-name{flex:1;color:rgba(255,255,255,.7)}
+        .leaderboard-name a{color:inherit;text-decoration:none}
+        .leaderboard-name a:hover{color:white;text-decoration:underline}
+        .leaderboard-value{font-weight:500;color:rgba(255,200,100,.8)}
+        .leaderboard-empty{padding:20px;text-align:center;color:rgba(255,255,255,.2);font-size:.65rem}
         @media (max-width:600px){#dash-modal .modal{width:calc(100vw - 24px)}.dash-body{flex-direction:column}.dash-sidebar{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);flex-direction:row;padding:10px 12px;overflow-x:auto;gap:4px}.dash-nav-btn{white-space:nowrap;flex-shrink:0}.dash-panels{padding:16px}}
     </style>
 </head>
@@ -277,141 +294,78 @@
     <div id="second-card"></div>
 </div>
 
-<div id="minimalistic-name"></div>
-
-<div id="not-found">
-    <div class="nf-title">page not found</div>
-    <div class="nf-sub">forgave.lol/<span id="nf-slug"></span></div>
+<!-- Leaderboard button & modal -->
+<button id="leaderboard-btn" title="leaderboard">🏆</button>
+<div class="modal-bg" id="leaderboard-modal">
+    <div class="modal">
+        <div class="leaderboard-header">
+            <h3>leaderboard</h3>
+            <button class="modal-close" id="leaderboard-close">✕</button>
+        </div>
+        <div class="leaderboard-tabs">
+            <button class="leaderboard-tab active" data-tab="likes">❤️ likes</button>
+            <button class="leaderboard-tab" data-tab="views">👁️ views</button>
+        </div>
+        <div class="leaderboard-list" id="leaderboard-list">
+            <div class="leaderboard-empty">loading...</div>
+        </div>
+    </div>
 </div>
+
+<div id="minimalistic-name"></div>
+<div id="not-found"><div class="nf-title">page not found</div><div class="nf-sub">forgave.lol/<span id="nf-slug"></span></div></div>
 
 <!-- Auth Modal -->
-<div class="modal-bg" id="auth-modal">
-    <div class="modal">
-        <button class="modal-close" id="auth-close">✕</button>
-        <div class="modal-title">forgave.lol</div>
-        <div class="modal-tabs">
-            <button class="modal-tab active" id="tab-signup">sign up</button>
-            <button class="modal-tab" id="tab-login">log in</button>
-        </div>
-        <div id="panel-signup">
-            <div class="field"><label>username</label><input type="text" id="su-username" placeholder="yourname" maxlength="24" autocomplete="off" spellcheck="false"><div class="field-hint" id="su-username-hint"></div></div>
-            <div class="field"><label>password</label><input type="password" id="su-password" placeholder="••••••••"></div>
-            <div class="field"><label>confirm password</label><input type="password" id="su-confirm" placeholder="••••••••"><div class="field-hint error" id="su-error"></div></div>
-            <button class="modal-btn" id="su-submit">create account</button>
-            <div class="modal-switch">already have one? <span id="sw-to-login">log in</span></div>
-        </div>
-        <div id="panel-login" style="display:none">
-            <div class="field"><label>username</label><input type="text" id="li-username" placeholder="yourname" autocomplete="off" spellcheck="false"></div>
-            <div class="field"><label>password</label><input type="password" id="li-password" placeholder="••••••••"><div class="field-hint error" id="li-error"></div></div>
-            <button class="modal-btn" id="li-submit">log in</button>
-            <div class="modal-switch">no account? <span id="sw-to-signup">sign up</span></div>
-        </div>
-    </div>
-</div>
+<div class="modal-bg" id="auth-modal"><div class="modal"><button class="modal-close" id="auth-close">✕</button><div class="modal-title">forgave.lol</div>
+<div class="modal-tabs"><button class="modal-tab active" id="tab-signup">sign up</button><button class="modal-tab" id="tab-login">log in</button></div>
+<div id="panel-signup"><div class="field"><label>username</label><input type="text" id="su-username" placeholder="yourname" maxlength="24" autocomplete="off" spellcheck="false"><div class="field-hint" id="su-username-hint"></div></div>
+<div class="field"><label>password</label><input type="password" id="su-password" placeholder="••••••••"></div><div class="field"><label>confirm password</label><input type="password" id="su-confirm" placeholder="••••••••"><div class="field-hint error" id="su-error"></div></div>
+<button class="modal-btn" id="su-submit">create account</button><div class="modal-switch">already have one? <span id="sw-to-login">log in</span></div></div>
+<div id="panel-login" style="display:none"><div class="field"><label>username</label><input type="text" id="li-username" placeholder="yourname" autocomplete="off" spellcheck="false"></div>
+<div class="field"><label>password</label><input type="password" id="li-password" placeholder="••••••••"><div class="field-hint error" id="li-error"></div></div>
+<button class="modal-btn" id="li-submit">log in</button><div class="modal-switch">no account? <span id="sw-to-signup">sign up</span></div></div></div></div>
 
 <!-- Dashboard Modal -->
-<div class="modal-bg" id="dash-modal">
-    <div class="modal">
-        <div class="dash-header">
-            <span class="dash-header-title">dashboard</span>
-            <span class="dash-header-user" id="dash-username-label"></span>
-            <button class="modal-close" id="dash-close">✕</button>
-        </div>
-        <div class="dash-body">
-            <nav class="dash-sidebar">
-                <button class="dash-nav-btn active" data-panel="bio"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>bio</button>
-                <button class="dash-nav-btn" data-panel="socials"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>socials</button>
-                <button class="dash-nav-btn" data-panel="background"><svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zm-5-7l-4 5.14L9 14l-3 4h12l-3-2z"/></svg>background</button>
-                <button class="dash-nav-btn" data-panel="badges"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>badges</button>
-                <button class="dash-nav-btn" data-panel="alias"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>alias</button>
-                <button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
-                <button class="dash-nav-btn" data-panel="cursor"><svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>cursor</button>
-            </nav>
-            <div class="dash-panels">
-                <div class="dash-panel active" id="panel-bio">
-                    <div class="dash-panel-title">bio lines</div>
-                    <div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter1" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
-                    <div class="field"><label>line 2</label><input type="text" id="d-line2" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter2" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
-                    <div class="field"><label>line 3</label><input type="text" id="d-line3" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter3" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
-                    <div class="field"><label>discord tag</label><input type="text" id="d-discord" maxlength="80"></div>
-                    <div class="field"><label>card font</label><select id="d-card-font"><option value="DM Mono">Default (DM Mono)</option><option value="JetBrains Mono">JetBrains Mono</option><option value="Fira Code">Fira Code</option><option value="IBM Plex Mono">IBM Plex Mono</option><option value="Courier New">Courier New</option></select><div class="field-hint">changes the font of your card text</div></div>
-                </div>
-                <div class="dash-panel" id="panel-socials">
-                    <div class="dash-panel-title">links</div>
-                    <div class="dash-links-list" id="d-links-list"></div>
-                    <button class="dash-add-link" id="d-add-link">+ add link</button>
-                </div>
-                <div class="dash-panel" id="panel-background">
-                    <div class="dash-panel-title">background</div>
-                    <div class="dash-section"><div class="dash-section-label">video url</div><div class="field"><input type="text" id="d-bgvideo" placeholder="https://files.catbox.moe/....mp4"><div class="field-hint">upload at <a href="https://catbox.moe/" target="_blank">catbox.moe</a></div></div></div>
-                    <div class="dash-section"><div class="dash-section-label">floating words</div><div class="field"><input type="text" id="d-bgwords" placeholder="word1, word2, </>"></div></div>
-                </div>
-                <div class="dash-panel" id="panel-badges">
-                    <div class="dash-panel-title">badges</div>
-                    <div class="badge-grid" id="badge-grid"></div>
-                </div>
-                <div class="dash-panel" id="panel-alias">
-                    <div class="dash-panel-title">aliases</div>
-                    <div style="font-size:.62rem;color:rgba(255,255,255,.2);margin-bottom:16px;">link other profiles.<br><span style="color:rgba(255,255,255,.35);">also known as: name, name</span></div>
-                    <div class="alias-list" id="alias-list"></div>
-                    <div class="alias-add-form" id="alias-add-form"><div class="field"><label>username</label><input type="text" id="alias-input-user" maxlength="24"></div><div class="field"><label>password</label><input type="password" id="alias-input-pw"></div><div class="alias-form-hint" id="alias-form-hint"></div><div class="alias-form-actions"><button class="alias-form-btn" id="alias-verify-btn">verify & add</button><button class="alias-form-btn cancel" id="alias-cancel-btn">cancel</button></div></div>
-                    <button class="alias-add-trigger" id="alias-add-trigger">+ add alias</button><div class="alias-limit-note">max 3 aliases</div>
-                </div>
-                <div class="dash-panel" id="panel-card">
-                    <div class="dash-panel-title">card appearance</div>
-                    <div class="field"><label>card style</label><select id="d-card-style"><option value="default">Default (original)</option><option value="minimalistic">Minimalistic (centered card)</option><option value="modern">Modern (extra card below)</option></select></div>
-                    <div class="field"><label>border radius</label><div class="slider-container"><label>▯</label><input type="range" id="d-border-radius" min="0" max="30" step="1" value="18"><span class="slider-value" id="border-radius-val">18px</span></div></div>
-                    <div class="field"><label>card opacity</label><div class="slider-container"><label>◐</label><input type="range" id="d-card-opacity" min="0.2" max="1.0" step="0.01" value="0.58"><span class="slider-value" id="card-opacity-val">0.58</span></div></div>
-                    <div class="field"><label>card background color</label><div style="display:flex; align-items:center; gap:8px;"><input type="color" id="d-card-bg-color" value="#0a0a0c"><button class="reset-btn-sm" id="reset-bg-color">reset</button></div><div class="field-hint">overrides the default dark background (opacity still applies)</div></div>
-                    <div class="field"><label>border color</label><div style="display:flex; align-items:center; gap:8px;"><input type="color" id="d-border-color" value="#ffffff"><button class="reset-btn-sm" id="reset-border-color">reset</button></div><div class="field-hint">changes the card's border color</div></div>
-                    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-parallax" style="width:auto;margin:0;"> parallax effect</label></div>
-                    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background (no card background, only border and text)</label><div class="field-hint">makes the card background fully transparent (ignores color picker)</div></div>
-                    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow (removes drop shadow)</label></div>
-                </div>
-                <div class="dash-panel" id="panel-cursor">
-                    <div class="dash-panel-title">cursor trail</div>
-                    <div class="field"><label>effect</label><select id="d-cursor-effect"><option value="ghost">Ghost (default arrows)</option><option value="sparkle">Sparkle (stars)</option><option value="trail">Trail Dots</option><option value="simple">Simple Dot</option><option value="none">None</option></select></div>
-                    <div class="field">
-                        <label>custom cursor image URL (catbox link)</label>
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <input type="text" id="d-custom-cursor-url" placeholder="https://files.catbox.moe/yourcursor.png" style="flex:1">
-                            <button type="button" id="test-cursor-btn" class="test-cursor-btn">test</button>
-                        </div>
-                        <div class="cursor-preview" id="cursor-preview-container" style="display:none;"><span style="font-size:.58rem;">preview:</span><img id="cursor-preview-img" class="cursor-preview-img" alt="cursor preview"><button id="cursor-reset-btn" class="cursor-reset-btn">reset</button></div>
-                        <div class="field-hint">enter a direct link to an image (PNG, GIF, CUR). Overrides cursor everywhere.</div>
-                    </div>
-                </div>
-                <div class="dash-panel" id="panel-admin">
-                    <div class="dash-panel-title" style="color:rgba(255,180,80,.4);">admin panel</div>
-                    <div class="admin-search-row"><input type="text" id="admin-search-input" placeholder="search username..."><button class="admin-search-btn" id="admin-search-btn">look up</button></div>
-                    <div class="admin-not-found" id="admin-not-found">user not found.</div>
-                    <div class="admin-user-card" id="admin-user-card">
-                        <div class="admin-user-header"><span class="admin-user-name" id="admin-target-name"></span><span class="admin-user-uid" id="admin-target-uid"></span></div>
-                        <div><div class="admin-section-title">uid</div><div class="admin-row"><input type="number" id="admin-uid-input" placeholder="new uid"><button class="admin-apply-btn" id="admin-uid-btn">apply</button></div><div class="admin-status" id="admin-uid-status"></div></div>
-                        <div><div class="admin-section-title">likes</div><div class="admin-row"><input type="number" id="admin-likes-input" placeholder="set exact count"><button class="admin-apply-btn" id="admin-likes-btn">set</button></div><div class="admin-status" id="admin-likes-status"></div></div>
-                        <div><div class="admin-section-title">badges — click to toggle, then save</div><div class="admin-badge-grid" id="admin-badge-grid"></div><button class="admin-save-badges-btn" id="admin-save-badges-btn">save badges</button><div class="admin-status" id="admin-badges-status"></div></div>
-                        <div><div class="admin-section-title" style="color:rgba(255,100,100,.7);">password reset</div><div class="admin-row"><button class="admin-apply-btn" id="admin-reset-pw-btn" style="background:rgba(255,80,80,.1);border-color:rgba(255,80,80,.3);color:rgba(255,120,120,.9);">reset password</button></div><div class="admin-status" id="admin-pw-status"></div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="dash-footer">
-            <span class="dash-save-status" id="d-save-status"></span>
-            <button class="modal-btn" id="d-save">save changes</button>
-        </div>
-    </div>
-</div>
+<div class="modal-bg" id="dash-modal"><div class="modal"><div class="dash-header"><span class="dash-header-title">dashboard</span><span class="dash-header-user" id="dash-username-label"></span><button class="modal-close" id="dash-close">✕</button></div>
+<div class="dash-body"><nav class="dash-sidebar"><button class="dash-nav-btn active" data-panel="bio"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>bio</button>
+<button class="dash-nav-btn" data-panel="socials"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>socials</button>
+<button class="dash-nav-btn" data-panel="background"><svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zm-5-7l-4 5.14L9 14l-3 4h12l-3-2z"/></svg>background</button>
+<button class="dash-nav-btn" data-panel="badges"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>badges</button>
+<button class="dash-nav-btn" data-panel="alias"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>alias</button>
+<button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
+<button class="dash-nav-btn" data-panel="cursor"><svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>cursor</button></nav>
+<div class="dash-panels"><div class="dash-panel active" id="panel-bio"><div class="dash-panel-title">bio lines</div><div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter1" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
+<div class="field"><label>line 2</label><input type="text" id="d-line2" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter2" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
+<div class="field"><label>line 3</label><input type="text" id="d-line3" maxlength="60"><div style="display:flex; align-items:center; gap:8px; margin-top:5px;"><input type="checkbox" id="d-typewriter3" style="width:auto; margin:0;"><label style="font-size:.58rem; letter-spacing:1px; margin:0;">Enable typewriter effect for this line (looping)</label></div></div>
+<div class="field"><label>discord tag</label><input type="text" id="d-discord" maxlength="80"></div><div class="field"><label>card font</label><select id="d-card-font"><option value="DM Mono">Default (DM Mono)</option><option value="JetBrains Mono">JetBrains Mono</option><option value="Fira Code">Fira Code</option><option value="IBM Plex Mono">IBM Plex Mono</option><option value="Courier New">Courier New</option></select><div class="field-hint">changes the font of your card text</div></div></div>
+<div class="dash-panel" id="panel-socials"><div class="dash-panel-title">links</div><div class="dash-links-list" id="d-links-list"></div><button class="dash-add-link" id="d-add-link">+ add link</button></div>
+<div class="dash-panel" id="panel-background"><div class="dash-panel-title">background</div><div class="dash-section"><div class="dash-section-label">video url</div><div class="field"><input type="text" id="d-bgvideo" placeholder="https://files.catbox.moe/....mp4"><div class="field-hint">upload at <a href="https://catbox.moe/" target="_blank">catbox.moe</a></div></div></div>
+<div class="dash-section"><div class="dash-section-label">floating words</div><div class="field"><input type="text" id="d-bgwords" placeholder="word1, word2, </>"></div></div></div>
+<div class="dash-panel" id="panel-badges"><div class="dash-panel-title">badges</div><div class="badge-grid" id="badge-grid"></div></div>
+<div class="dash-panel" id="panel-alias"><div class="dash-panel-title">aliases</div><div style="font-size:.62rem;color:rgba(255,255,255,.2);margin-bottom:16px;">link other profiles.<br><span style="color:rgba(255,255,255,.35);">also known as: name, name</span></div>
+<div class="alias-list" id="alias-list"></div><div class="alias-add-form" id="alias-add-form"><div class="field"><label>username</label><input type="text" id="alias-input-user" maxlength="24"></div><div class="field"><label>password</label><input type="password" id="alias-input-pw"></div><div class="alias-form-hint" id="alias-form-hint"></div><div class="alias-form-actions"><button class="alias-form-btn" id="alias-verify-btn">verify & add</button><button class="alias-form-btn cancel" id="alias-cancel-btn">cancel</button></div></div>
+<button class="alias-add-trigger" id="alias-add-trigger">+ add alias</button><div class="alias-limit-note">max 3 aliases</div></div>
+<div class="dash-panel" id="panel-card"><div class="dash-panel-title">card appearance</div><div class="field"><label>card style</label><select id="d-card-style"><option value="default">Default (original)</option><option value="minimalistic">Minimalistic (centered card)</option><option value="modern">Modern (extra card below)</option></select></div>
+<div class="field"><label>border radius</label><div class="slider-container"><label>▯</label><input type="range" id="d-border-radius" min="0" max="30" step="1" value="18"><span class="slider-value" id="border-radius-val">18px</span></div></div>
+<div class="field"><label>card opacity</label><div class="slider-container"><label>◐</label><input type="range" id="d-card-opacity" min="0.2" max="1.0" step="0.01" value="0.58"><span class="slider-value" id="card-opacity-val">0.58</span></div></div>
+<div class="field"><label>card background color</label><div style="display:flex; align-items:center; gap:8px;"><input type="color" id="d-card-bg-color" value="#0a0a0c"><button class="reset-btn-sm" id="reset-bg-color">reset</button></div><div class="field-hint">overrides the default dark background (opacity still applies)</div></div>
+<div class="field"><label>border color</label><div style="display:flex; align-items:center; gap:8px;"><input type="color" id="d-border-color" value="#ffffff"><button class="reset-btn-sm" id="reset-border-color">reset</button></div><div class="field-hint">changes the card's border color</div></div>
+<div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-parallax" style="width:auto;margin:0;"> parallax effect</label></div>
+<div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background (no card background, only border and text)</label><div class="field-hint">makes the card background fully transparent (ignores color picker)</div></div>
+<div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow (removes drop shadow)</label></div></div>
+<div class="dash-panel" id="panel-cursor"><div class="dash-panel-title">cursor trail</div><div class="field"><label>effect</label><select id="d-cursor-effect"><option value="ghost">Ghost (default arrows)</option><option value="sparkle">Sparkle (stars)</option><option value="trail">Trail Dots</option><option value="simple">Simple Dot</option><option value="none">None</option></select></div>
+<div class="field"><label>custom cursor image URL (catbox link)</label><div style="display:flex; gap:8px; align-items:center;"><input type="text" id="d-custom-cursor-url" placeholder="https://files.catbox.moe/yourcursor.png" style="flex:1"><button type="button" id="test-cursor-btn" class="test-cursor-btn">test</button></div>
+<div class="cursor-preview" id="cursor-preview-container" style="display:none;"><span style="font-size:.58rem;">preview:</span><img id="cursor-preview-img" class="cursor-preview-img" alt="cursor preview"><button id="cursor-reset-btn" class="cursor-reset-btn">reset</button></div>
+<div class="field-hint">enter a direct link to an image (PNG, GIF, CUR). Overrides cursor everywhere.</div></div></div>
+<div class="dash-panel" id="panel-admin"><div class="dash-panel-title" style="color:rgba(255,180,80,.4);">admin panel</div><div class="admin-search-row"><input type="text" id="admin-search-input" placeholder="search username..."><button class="admin-search-btn" id="admin-search-btn">look up</button></div>
+<div class="admin-not-found" id="admin-not-found">user not found.</div><div class="admin-user-card" id="admin-user-card"><div class="admin-user-header"><span class="admin-user-name" id="admin-target-name"></span><span class="admin-user-uid" id="admin-target-uid"></span></div>
+<div><div class="admin-section-title">uid</div><div class="admin-row"><input type="number" id="admin-uid-input" placeholder="new uid"><button class="admin-apply-btn" id="admin-uid-btn">apply</button></div><div class="admin-status" id="admin-uid-status"></div></div>
+<div><div class="admin-section-title">likes</div><div class="admin-row"><input type="number" id="admin-likes-input" placeholder="set exact count"><button class="admin-apply-btn" id="admin-likes-btn">set</button></div><div class="admin-status" id="admin-likes-status"></div></div>
+<div><div class="admin-section-title">badges — click to toggle, then save</div><div class="admin-badge-grid" id="admin-badge-grid"></div><button class="admin-save-badges-btn" id="admin-save-badges-btn">save badges</button><div class="admin-status" id="admin-badges-status"></div></div>
+<div><div class="admin-section-title" style="color:rgba(255,100,100,.7);">password reset</div><div class="admin-row"><button class="admin-apply-btn" id="admin-reset-pw-btn" style="background:rgba(255,80,80,.1);border-color:rgba(255,80,80,.3);color:rgba(255,120,120,.9);">reset password</button></div><div class="admin-status" id="admin-pw-status"></div></div></div></div></div></div>
+<div class="dash-footer"><span class="dash-save-status" id="d-save-status"></span><button class="modal-btn" id="d-save">save changes</button></div></div></div>
 
-<!-- Modal for displaying reset password -->
-<div class="modal-bg" id="reset-pw-modal">
-    <div class="modal">
-        <button class="modal-close" id="reset-pw-close">✕</button>
-        <div class="modal-title">password reset</div>
-        <div class="field"><label>new temporary password</label><input type="text" id="reset-pw-value" readonly style="background:rgba(255,255,255,.1);font-family:monospace;"></div>
-        <div class="field-hint" style="color:rgba(100,220,150,.8);">copy this password and share it with the user. they can log in and change it.</div>
-        <button class="modal-btn" id="copy-pw-btn">copy to clipboard</button>
-    </div>
-</div>
+<div class="modal-bg" id="reset-pw-modal"><div class="modal"><button class="modal-close" id="reset-pw-close">✕</button><div class="modal-title">password reset</div><div class="field"><label>new temporary password</label><input type="text" id="reset-pw-value" readonly style="background:rgba(255,255,255,.1);font-family:monospace;"></div><div class="field-hint" style="color:rgba(100,220,150,.8);">copy this password and share it with the user. they can log in and change it.</div><button class="modal-btn" id="copy-pw-btn">copy to clipboard</button></div></div>
 
 <script>
     // ========== SUPABASE CONFIG ==========
@@ -635,20 +589,16 @@
         let styleTag = document.getElementById("force-cursor-style");
         if (styleTag) styleTag.remove();
         if (url && url.trim() && (url.startsWith("http://") || url.startsWith("https://"))) {
-            // Preload image to ensure browser can apply it as cursor
             const img = new Image();
             img.onload = () => {
-                // After preload, inject style
                 styleTag = document.createElement("style");
                 styleTag.id = "force-cursor-style";
-                // Use hotspot (0,0) and fallback to auto
                 styleTag.textContent = `* { cursor: url('${url}') 0 0, auto !important; } html, body { cursor: url('${url}') 0 0, auto !important; }`;
                 document.head.appendChild(styleTag);
                 console.log("Custom cursor applied:", url);
             };
             img.onerror = () => {
                 console.warn("Failed to load custom cursor image:", url);
-                // Fallback: remove any cursor override
                 styleTag = document.createElement("style");
                 styleTag.id = "force-cursor-style";
                 styleTag.textContent = `* { cursor: auto !important; }`;
@@ -656,7 +606,6 @@
             };
             img.src = url;
         } else {
-            // Reset to default
             styleTag = document.createElement("style");
             styleTag.id = "force-cursor-style";
             styleTag.textContent = `* { cursor: auto !important; }`;
@@ -853,6 +802,68 @@
         setTimeout(() => { typeStep(); }, delayBeforeStart);
     }
 
+    // ========== LEADERBOARD FUNCTIONALITY ==========
+    const leaderboardBtn = document.getElementById("leaderboard-btn");
+    const leaderboardModal = document.getElementById("leaderboard-modal");
+    const leaderboardClose = document.getElementById("leaderboard-close");
+    const leaderboardList = document.getElementById("leaderboard-list");
+    let currentLeaderboardTab = "likes";
+
+    async function fetchLeaderboard(tab) {
+        leaderboardList.innerHTML = '<div class="leaderboard-empty">loading...</div>';
+        try {
+            if (tab === "likes") {
+                // Get all likes from 'likes' table, join with users to get username
+                const likes = await supa.get("likes", "select=id,count&order=count.desc&limit=20");
+                const results = [];
+                for (let like of likes) {
+                    let username = like.id.replace(/^forgave\.lol\//, "");
+                    if (username === "forgave.lol") username = "n";
+                    results.push({ name: username, value: like.count });
+                }
+                renderLeaderboard(results);
+            } else if (tab === "views") {
+                const users = await supa.get("users", "select=username,views&order=views.desc&limit=20");
+                const results = users.map(u => ({ name: u.username, value: u.views || 0 }));
+                renderLeaderboard(results);
+            }
+        } catch (e) {
+            console.error(e);
+            leaderboardList.innerHTML = '<div class="leaderboard-empty">failed to load</div>';
+        }
+    }
+
+    function renderLeaderboard(entries) {
+        if (!entries || entries.length === 0) {
+            leaderboardList.innerHTML = '<div class="leaderboard-empty">no entries yet</div>';
+            return;
+        }
+        const html = entries.map((entry, idx) => {
+            const displayName = entry.name === "n" ? "forgave.lol" : entry.name;
+            return `<div class="leaderboard-item">
+                <div class="leaderboard-rank">${idx+1}.</div>
+                <div class="leaderboard-name"><a href="/${entry.name}" target="_blank">${displayName}</a></div>
+                <div class="leaderboard-value">${formatNumber(entry.value)}</div>
+            </div>`;
+        }).join("");
+        leaderboardList.innerHTML = html;
+    }
+
+    leaderboardBtn.onclick = () => {
+        leaderboardModal.classList.add("open");
+        fetchLeaderboard(currentLeaderboardTab);
+    };
+    leaderboardClose.onclick = () => leaderboardModal.classList.remove("open");
+    leaderboardModal.onclick = (e) => { if (e.target === leaderboardModal) leaderboardModal.classList.remove("open"); };
+    document.querySelectorAll(".leaderboard-tab").forEach(tab => {
+        tab.onclick = () => {
+            document.querySelectorAll(".leaderboard-tab").forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            currentLeaderboardTab = tab.dataset.tab;
+            fetchLeaderboard(currentLeaderboardTab);
+        };
+    });
+
     // ========== RENDER CARD ==========
     function renderCard() {
         if (!C) {
@@ -863,7 +874,6 @@
         }
         document.getElementById("last-change-date").textContent = C.lastChange;
         
-        // Apply custom font
         const cardContent = document.getElementById("content");
         const secondCard = document.getElementById("second-card");
         if (C.custom_font && C.custom_font !== "DM Mono") {
@@ -945,7 +955,6 @@
         linksContainer.innerHTML = "";
         (C.links || []).forEach(lk => { const a = document.createElement("a"); a.className = "icon-link"; a.href = lk.url; a.target = "_blank"; a.rel = "noopener"; a.title = lk.label; a.innerHTML = ICONS[lk.icon] || lk.label; linksContainer.appendChild(a); });
         
-        // View count
         document.getElementById("view-num").textContent = formatNumber(C.views || 0);
         
         const nameEl = document.getElementById("site-name");
@@ -1307,11 +1316,9 @@
     radiusSlider.addEventListener("input", () => { document.getElementById("border-radius-val").textContent = radiusSlider.value + "px"; });
     opacitySlider.addEventListener("input", () => { document.getElementById("card-opacity-val").textContent = parseFloat(opacitySlider.value).toFixed(2); });
     
-    // RESET color buttons
     document.getElementById("reset-bg-color").onclick = () => { document.getElementById("d-card-bg-color").value = "#0a0a0c"; };
     document.getElementById("reset-border-color").onclick = () => { document.getElementById("d-border-color").value = "#ffffff"; };
     
-    // CURSOR URL handling
     const cursorUrlInput = document.getElementById("d-custom-cursor-url");
     const cursorPreviewContainer = document.getElementById("cursor-preview-container");
     const cursorPreviewImg = document.getElementById("cursor-preview-img");
@@ -1380,7 +1387,6 @@
         try {
             await supa.patch("users", `username=eq.${encodeURIComponent(session.username)}`, payload);
             updateAliasRowOnCard(cleanAliases);
-            // Apply cursor after save
             applyCustomCursor(custom_cursor);
             if (!silent) { status.textContent = "saved ✓"; status.style.color = "rgba(100,220,150,.5)"; setTimeout(() => { status.textContent = ""; }, 3000); if (slug === session.username) location.reload(); }
             else { if (slug === session.username) location.reload(); }
