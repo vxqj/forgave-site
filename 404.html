@@ -884,17 +884,20 @@
         const authBtnEl = document.getElementById('auth-btn');
         const userPillElem = document.getElementById('user-pill');
 
-        function showSignupPage() {
-            signupPage.style.display = 'flex';
-            cardStackElem.style.display = 'none';
-            overlayElem.style.display = 'none';
-            authBtnEl.style.display = 'none';
-            userPillElem.style.display = 'none';
-            document.getElementById('leaderboard-btn').style.display = 'none';
-            document.getElementById('landing-page').style.display = 'flex';
-            document.getElementById('signup-form-page').style.display = 'none';
-            document.getElementById('landing-username-input').value = '';
-        }
+        function showProfilePage() {
+    signupPage.style.display = 'none';
+    cardStackElem.style.display = '';
+    overlayElem.style.display = 'flex';          // show overlay
+    overlayElem.style.opacity = '1';
+    overlayElem.style.transition = 'opacity 0.15s ease';
+    overlayElem.classList.remove('hide');
+    if (session) authBtnEl.style.display = 'none';
+    else authBtnEl.style.display = 'flex';
+    userPillElem.style.display = '';
+    document.getElementById('leaderboard-btn').style.display = '';
+    overlayElem.style.pointerEvents = 'auto';
+    overlayElem.style.cursor = 'pointer';
+}
 
         function showProfilePage() {
             signupPage.style.display = 'none';
@@ -911,20 +914,20 @@
         }
 
         // INSTANT OVERLAY REMOVAL
-        overlayElem.addEventListener('click', function() {
-            this.classList.add('hide');
-            // Remove from DOM after fade
-            setTimeout(() => {
-                if (this.style.display !== 'none') {
-                    // Just keep it hidden
-                }
-            }, 300);
-            // Play video if exists
-            const bgvideo = document.getElementById('bgvideo');
-            if (bgvideo && bgvideo.style.display !== 'none') {
-                bgvideo.play().catch(() => {});
-            }
-        });
+       overlayElem.addEventListener('click', function() {
+    // Fade out instantly
+    this.style.transition = 'opacity 0.15s ease';
+    this.style.opacity = '0';
+    // After fade, hide completely
+    setTimeout(() => {
+        this.style.display = 'none';
+    }, 150);
+    // Play video if exists
+    const bgvideo = document.getElementById('bgvideo');
+    if (bgvideo && bgvideo.style.display !== 'none') {
+        bgvideo.play().catch(() => {});
+    }
+});
 
         async function handleSignup() {
             const btn = document.getElementById('su-submit-page');
