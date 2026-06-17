@@ -660,7 +660,11 @@
                     body: JSON.stringify(body)
                 });
                 const text = await res.text();
-                if (!res.ok) throw new Error(`POST ${table} failed: ${res.status}`);
+                if (!res.ok) {
+                    let errMsg = `POST ${table} failed: ${res.status}`;
+                    try { const errData = JSON.parse(text); errMsg = errData.message || errData.error || errMsg; } catch(e) {}
+                    throw new Error(errMsg);
+                }
                 return text ? JSON.parse(text) : [];
             },
             async patch(table, query, body) {
@@ -780,7 +784,7 @@
         function showSignupPage() {
             signupPage.style.display = 'flex';
             cardStackElem.style.display = 'none';
-            overlayElem.style.display = 'none';
+            overlayElem.style.display = 'none'; // hide overlay on root
             authBtnEl.style.display = 'none';
             userPillElem.style.display = 'none';
             document.getElementById('leaderboard-btn').style.display = 'none';
@@ -792,7 +796,9 @@
         function showProfilePage() {
             signupPage.style.display = 'none';
             cardStackElem.style.display = '';
-            overlayElem.style.display = 'flex';
+            overlayElem.style.display = 'flex'; // show overlay on profiles
+            overlayElem.style.opacity = '1';
+            overlayElem.classList.remove('hide');
             if (session) authBtnEl.style.display = 'none';
             else authBtnEl.style.display = 'flex';
             userPillElem.style.display = '';
@@ -801,6 +807,7 @@
             overlayElem.style.cursor = 'pointer';
         }
 
+        // ===== SIGNUP HANDLERS =====
         async function handleSignup() {
             const btn = document.getElementById('su-submit-page');
             const username = document.getElementById('su-username-page').value.trim().toLowerCase();
@@ -824,6 +831,7 @@
                 try { const allUsers = await supa.get("users", "order=uid.desc&limit=1"); if (allUsers && allUsers.length > 0) nextUid = allUsers[0].uid + 1; } catch(e) {}
                 const hash = await hashPassword(pw);
                 const now = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+                // Removed link_stats, daily_views, device_stats to avoid column errors – they'll be added when stats update
                 const result = await supa.post("users", {
                     username, password_hash: hash, uid: nextUid, lines: ["","",""], discord: "", links: [],
                     bg_video_urls: [], bg_video_opacity: 0.45, bg_words: ["</>","///"], last_change: now,
@@ -831,7 +839,6 @@
                     card_opacity: 0.58, parallax_enabled: true, cursor_effect: "ghost", custom_cursor: "",
                     custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
                     transparent_bg: false, disable_shadow: false, card_bg_color: "", border_color: "", views: 0,
-                    link_stats: {}, daily_views: {}, device_stats: {},
                     music_url: "", music_volume: 0.4, music_autoplay: false
                 });
                 if (result && result[0]) {
@@ -839,7 +846,10 @@
                     saveSession({ username, uid: nextUid });
                     window.location.href = '/' + username;
                 } else { err.textContent = "something went wrong"; }
-            } catch(e) { console.error(e); err.textContent = e.message?.includes("duplicate") ? "username taken" : "error — check console"; }
+            } catch(e) {
+                console.error(e);
+                err.textContent = e.message?.includes("duplicate") ? "username taken" : "error: " + e.message;
+            }
             btn.disabled = false; btn.textContent = "Create Account →";
         }
 
@@ -1514,9 +1524,10 @@
                 try{const allUsers=await supa.get("users","order=uid.desc&limit=1");if(allUsers&&allUsers.length>0)nextUid=allUsers[0].uid+1;}catch(e){}
                 const hash=await hashPassword(pw);
                 const now=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
-                const result=await supa.post("users",{username,password_hash:hash,uid:nextUid,lines:["","",""],discord:"",links:[],bg_video_urls:[],bg_video_opacity:0.45,bg_words:["</>","///"],last_change:now,aliases:[],equipped_badges:[],is_admin:false,card_style:"default",border_radius:18,card_opacity:0.58,parallax_enabled:true,cursor_effect:"ghost",custom_cursor:"",custom_font:"DM Mono",typewriter_line1:false,typewriter_line2:false,typewriter_line3:false,transparent_bg:false,disable_shadow:false,card_bg_color:"",border_color:"",views:0,link_stats:{},daily_views:{},device_stats:{},music_url:"",music_volume:0.4,music_autoplay:false});
+                // REMOVED link_stats, daily_views, device_stats to avoid column errors
+                const result=await supa.post("users",{username,password_hash:hash,uid:nextUid,lines:["","",""],discord:"",links:[],bg_video_urls:[],bg_video_opacity:0.45,bg_words:["</>","///"],last_change:now,aliases:[],equipped_badges:[],is_admin:false,card_style:"default",border_radius:18,card_opacity:0.58,parallax_enabled:true,cursor_effect:"ghost",custom_cursor:"",custom_font:"DM Mono",typewriter_line1:false,typewriter_line2:false,typewriter_line3:false,transparent_bg:false,disable_shadow:false,card_bg_color:"",border_color:"",views:0,music_url:"",music_volume:0.4,music_autoplay:false});
                 if(result&&result[0]){await notifyDiscord(username,nextUid);saveSession({username,uid:nextUid});closeModal(authModal);updateAuthUI();openDashboard();}else{err.textContent="something went wrong";}
-            }catch(e){console.error(e);err.textContent=e.message?.includes("duplicate")?"username taken":"error — check console";}
+            }catch(e){console.error(e);err.textContent=e.message?.includes("duplicate")?"username taken":"error: "+e.message;}
             btn.disabled=false; btn.textContent="create account";
         };
 
