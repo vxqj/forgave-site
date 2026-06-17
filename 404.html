@@ -21,7 +21,7 @@
         #wordfield{position:fixed;inset:0;z-index:1;pointer-events:none}
         #trail{position:fixed;inset:0;z-index:5;pointer-events:none}
 
-        /* ===== OVERLAY (fixed) ===== */
+        /* ===== OVERLAY ===== */
         #overlay{position:fixed;inset:0;z-index:100;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity 0.15s ease;pointer-events:auto}
         #overlay.hide{opacity:0;pointer-events:none}
         #overlay-text{font-family:"DM Mono",monospace;font-size:.7rem;color:rgba(255,255,255,.2);letter-spacing:3.5px;text-transform:uppercase;animation:pulse 2.8s ease-in-out infinite}
@@ -1122,10 +1122,26 @@
             try {
                 const offset = (page - 1) * limit;
                 const rows = await supa.get("guestbook", `profile_username=eq.${encodeURIComponent(username)}&order=created_at.desc&limit=${limit}&offset=${offset}`);
-                const countRes = await supa.get("guestbook", `profile_username=eq.${encodeURIComponent(username)}&select=count`);
-                const total = countRes.length > 0 ? countRes[0].count : 0;
+                // Get total count using a separate query
+                let total = 0;
+                try {
+                    const countRes = await supa.get("guestbook", `profile_username=eq.${encodeURIComponent(username)}&select=count`);
+                    if (countRes && countRes.length > 0 && countRes[0].count !== undefined) {
+                        total = countRes[0].count;
+                    } else {
+                        // fallback: count via rows length if no count column
+                        // but we'll just set total to rows length if less than limit
+                        total = rows.length < limit ? rows.length : rows.length + 1; // placeholder
+                    }
+                } catch(e) {
+                    // fallback: assume total is rows.length if less than limit, else estimate
+                    total = rows.length < limit ? rows.length : rows.length + 1;
+                }
                 return { entries: rows || [], total };
-            } catch(e) { return { entries: [], total: 0 }; }
+            } catch(e) {
+                console.error('Guestbook fetch error:', e);
+                return { entries: [], total: 0 };
+            }
         }
 
         async function postGuestbook(profileUsername, visitorName, text) {
@@ -1570,9 +1586,7 @@
 
             document.getElementById("view-num").textContent=formatNumber(C.views||0);
 
-            // Site name typing (already handled in avatar wrap)
-            // But we also need to update the site name in the header if not using avatar wrap?
-            // The avatar wrap contains its own site-name element, so we set it there.
+            // Site name typing
             const nameEl = avatarWrap.querySelector('.site-name') || document.getElementById('site-name');
             const typeText = C.siteName;
             let ti=0,deleting=false;
@@ -1726,7 +1740,7 @@
             linksPane.id = 'pane-links';
             let linksHtml = '';
             (C.links||[]).forEach(lk => {
-                linksHtml += `<div class="meta-line" style="display:flex;align-items:center;gap:8px;">
+                linksHtml += `<div class="meta-line" style="display:flex;align-items:center;gap:8px;padding-right:6px;">
                     <a href="${lk.url}" target="_blank" style="color:rgba(255,255,255,.6);text-decoration:none;">${lk.icon || '🔗'} ${lk.label}</a>
                 </div>`;
             });
@@ -1766,7 +1780,7 @@
             const data = await fetchGuestbook(slug, page, GUESTBOOK_LIMIT);
             const entries = data.entries || [];
             const total = data.total || 0;
-            const totalPages = Math.ceil(total / GUESTBOOK_LIMIT);
+            const totalPages = Math.ceil(total / GUESTBOOK_LIMIT) || 1;
 
             const container = document.createElement('div');
             container.id = 'gb-entries';
@@ -2470,7 +2484,8 @@
             if(!container) return;
             if(!session) return;
             try {
-                const entries=await fetchGuestbook(session.username);
+                const data = await fetchGuestbook(session.username, 1, 50);
+                const entries = data.entries || [];
                 if(entries.length===0){
                     container.innerHTML='<div style="font-size:.6rem;color:rgba(255,255,255,.2);padding:12px 0;">No comments yet.</div>';
                     return;
