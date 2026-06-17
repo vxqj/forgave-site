@@ -12,30 +12,78 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&family=Fira+Code:wght@300..700&family=IBM+Plex+Mono:wght@100..700&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/png" href="https://files.catbox.moe/beu5f0.png">
     <style>
-        /* ===== ORIGINAL STYLES (kept – same as previous) ===== */
+        /* ===== RESET & BASE ===== */
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono","Courier New",monospace;color:#fff}
         #bgvideo{display:none;position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
         #wordfield{position:fixed;inset:0;z-index:1;pointer-events:none}
         #trail{position:fixed;inset:0;z-index:5;pointer-events:none}
+
+        /* ===== OVERLAY ===== */
+        #overlay{position:fixed;inset:0;z-index:100;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity 0.2s ease;pointer-events:auto}
+        #overlay.hide{opacity:0;pointer-events:none}
+        #overlay-text{font-family:"DM Mono",monospace;font-size:.7rem;color:rgba(255,255,255,.2);letter-spacing:3.5px;text-transform:uppercase;animation:pulse 2.8s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:.2}50%{opacity:.6}}
+
+        /* ===== AUTH ===== */
         #auth-btn{position:fixed;top:20px;right:22px;z-index:50;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.45);width:34px;height:34px;border-radius:9px;cursor:pointer;backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;transition:all .2s;padding:0}
         #auth-btn:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2)}
         #auth-btn svg{width:17px;height:17px;fill:currentColor;display:block;margin:auto}
-        #card-stack{position:fixed;top:40px;left:44px;z-index:10;width:300px;transform-style:preserve-3d;transition:transform 0.1s ease-out}
+
+        /* ===== CARD STACK ===== */
+        #card-stack{position:fixed;top:40px;left:44px;z-index:10;width:320px;transform-style:preserve-3d;transition:transform 0.1s ease-out}
         @media (max-width:500px){#card-stack{top:auto;bottom:28px;left:50%;transform:translateX(-50%);width:calc(100vw - 32px);max-width:360px}body.minimalistic-mode #card-stack{transform:translate(-50%,-50%)!important;top:50%!important;left:50%!important;bottom:auto!important}}
-        @media (max-width:400px){#card-stack{width:calc(100vw - 20px);bottom:16px;max-width:340px}#content{padding:16px 16px 14px;border-radius:14px}}
+        @media (max-width:400px){#card-stack{width:calc(100vw - 20px);bottom:16px;max-width:340px}}
         body.minimalistic-mode #card-stack{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);bottom:auto;right:auto;margin:0}
-        #content{position:relative;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:22px 24px 20px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 28px 72px rgba(0,0,0,0.75),0 8px 22px rgba(0,0,0,0.4);transition:all 0.2s}
+
+        /* ===== MAIN CARD ===== */
+        #content{position:relative;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:22px 24px 20px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 28px 72px rgba(0,0,0,0.75),0 8px 22px rgba(0,0,0,0.4);transition:all 0.3s}
         @media (max-width:400px){#content{padding:14px 14px 12px}}
         #content::after{content:"";position:absolute;inset:0;border-radius:18px;background:radial-gradient(ellipse at 30% 0%,rgba(255,255,255,0.03) 0%,transparent 60%);pointer-events:none}
+
+        /* ===== NEON CARD ===== */
+        .card-style-neon #content{border:2px solid #0ff;box-shadow:0 0 30px rgba(0,255,255,0.3),0 0 60px rgba(0,255,255,0.1),inset 0 0 30px rgba(0,255,255,0.05);animation:neonPulse 2s ease-in-out infinite alternate}
+        @keyframes neonPulse{0%{border-color:#0ff;box-shadow:0 0 20px rgba(0,255,255,0.2)}100%{border-color:#f0f;box-shadow:0 0 40px rgba(255,0,255,0.3),0 0 80px rgba(255,0,255,0.1)}}
+        .card-style-neon #content .site-name{color:#0ff;text-shadow:0 0 20px rgba(0,255,255,0.5)}
+        .card-style-neon #content .meta-line{color:rgba(0,255,255,0.6)}
+        .card-style-neon #content .username{color:rgba(0,255,255,0.4)}
+        .card-style-neon #content .card-footer{border-top-color:rgba(0,255,255,0.2)}
+
+        /* ===== TERMINAL CARD ===== */
+        .card-style-terminal #content{background:#0a0a0a;border:1px solid #0f0;box-shadow:0 0 30px rgba(0,255,0,0.1),inset 0 0 60px rgba(0,255,0,0.03);font-family:"Courier New",monospace}
+        .card-style-terminal #content .site-name{color:#0f0;text-shadow:0 0 10px rgba(0,255,0,0.3)}
+        .card-style-terminal #content .meta-line{color:#0f0}
+        .card-style-terminal #content .username{color:#0f0}
+        .card-style-terminal #content .card-footer{border-top-color:rgba(0,255,0,0.15)}
+        .terminal-rain{position:absolute;inset:0;overflow:hidden;border-radius:18px;pointer-events:none;z-index:0;opacity:0.3}
+        .terminal-rain span{position:absolute;color:#0f0;font-family:"Courier New",monospace;font-size:10px;animation:terminalDrop linear infinite;white-space:nowrap}
+        @keyframes terminalDrop{0%{transform:translateY(-100px);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(400px);opacity:0}}
+        .card-style-terminal #content>*{position:relative;z-index:1}
+
+        /* ===== MULTI-CARD ===== */
+        .card-style-multi #content{padding:0;overflow:hidden}
+        .multi-tabs{display:flex;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0}
+        .multi-tab{flex:1;padding:10px 8px;text-align:center;font-size:.6rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);cursor:pointer;background:none;border:none;border-bottom:2px solid transparent;transition:all .2s;font-family:inherit}
+        .multi-tab.active{color:rgba(255,255,255,0.8);border-bottom-color:rgba(255,255,255,0.5)}
+        .multi-tab:hover{color:rgba(255,255,255,0.6)}
+        .multi-content{padding:18px 22px 20px;min-height:200px}
+        .multi-pane{display:none}
+        .multi-pane.active{display:block}
+        .multi-pane .meta-line{font-size:.72rem;color:rgba(255,255,255,.48);margin-bottom:3px;line-height:1.65}
+
+        /* ===== SECOND CARD ===== */
         #second-card{display:none;margin-top:20px;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:16px 22px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 12px 32px rgba(0,0,0,0.5)}
         @media (max-width:400px){#second-card{padding:12px 14px;margin-top:12px}}
         #second-card .meta-line{font-size:.7rem;color:rgba(255,255,255,.48);margin:0;opacity:1;animation:none}
+
+        /* ===== CARD INTERNALS ===== */
         .card-header{margin-bottom:17px;opacity:0;animation:fadeUp .45s ease forwards;animation-delay:.5s}
         @media (max-width:400px){.card-header{margin-bottom:12px}}
+        .profile-avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;margin-bottom:10px;border:2px solid rgba(255,255,255,0.1);display:none}
+        .card-style-neon .profile-avatar{border-color:#0ff;box-shadow:0 0 20px rgba(0,255,255,0.2)}
+        .card-style-terminal .profile-avatar{border-color:#0f0;box-shadow:0 0 20px rgba(0,255,0,0.1)}
         .site-name{font-size:1.05rem;font-weight:500;letter-spacing:-0.2px;color:rgba(255,255,255,0.92);line-height:1;min-height:1.05rem;margin-bottom:7px}
         @media (max-width:400px){.site-name{font-size:.95rem}}
         .site-name::after{content:"|";animation:blink .65s step-end infinite;margin-left:1px;opacity:.4}
@@ -83,17 +131,17 @@
         #like-btn.liked{color:rgba(255,255,255,.85)}
         #like-btn svg{width:15px;height:15px;fill:currentColor;display:block;flex-shrink:0}
         #like-num{font-size:.66rem;line-height:1;min-width:14px}
+
+        /* ===== NOT FOUND ===== */
         #not-found{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:7px;z-index:10}
         #not-found.show{display:flex}
         #not-found .nf-title{font-size:1rem;color:rgba(255,255,255,.6);letter-spacing:-.2px}
         #not-found .nf-sub{font-size:.68rem;color:rgba(255,255,255,.2);letter-spacing:1px}
-        #overlay{position:fixed;inset:0;z-index:100;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity .55s ease}
-        #overlay.hide{opacity:0;pointer-events:none}
-        #overlay-text{font-family:"DM Mono",monospace;font-size:.7rem;color:rgba(255,255,255,.2);letter-spacing:3.5px;text-transform:uppercase;animation:pulse 2.8s ease-in-out infinite}
-        @keyframes pulse{0%,100%{opacity:.2}50%{opacity:.6}}
+
+        /* ===== MODALS ===== */
         .modal-bg{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease}
         .modal-bg.open{opacity:1;pointer-events:all}
-        .modal{background:rgba(10,10,13,0.97);border:1px solid rgba(255,255,255,0.09);border-top-color:rgba(255,255,255,0.17);border-radius:20px;padding:30px 30px 26px;width:340px;max-width:calc(100vw - 32px);box-shadow:0 0 0 1px rgba(0,0,0,0.6),0 32px 80px rgba(0,0,0,0.8);transform:translateY(10px) scale(0.97);transition:transform .25s cubic-bezier(0.22,1,0.36,1);position:relative}
+        .modal{background:rgba(10,10,13,0.97);border:1px solid rgba(255,255,255,0.09);border-top-color:rgba(255,255,255,0.17);border-radius:20px;padding:30px 30px 26px;width:340px;max-width:calc(100vw - 32px);box-shadow:0 0 0 1px rgba(0,0,0,0.6),0 32px 80px rgba(0,0,0,0.8);transform:translateY(10px) scale(0.97);transition:transform .25s cubic-bezier(0.22,1,0.36,1);position:relative;max-height:90vh;overflow-y:auto}
         @media (max-width:400px){.modal{padding:22px 18px 20px;width:100%;max-width:calc(100vw - 16px);border-radius:16px}}
         .modal-bg.open .modal{transform:translateY(0) scale(1)}
         .modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(255,255,255,.25);font-family:"DM Mono",monospace;font-size:.9rem;cursor:pointer;line-height:1;transition:color .15s}
@@ -116,6 +164,8 @@
         .modal-switch{text-align:center;margin-top:14px;font-size:.6rem;color:rgba(255,255,255,.2);letter-spacing:.8px}
         .modal-switch span{color:rgba(255,255,255,.45);cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .15s}
         .modal-switch span:hover{color:rgba(255,255,255,.75)}
+
+        /* ===== USER PILL ===== */
         #user-pill{position:fixed;top:20px;right:22px;z-index:50;display:none;align-items:center;gap:8px;opacity:0;animation:fadeUp .4s ease forwards;animation-delay:1.2s}
         #user-pill.visible{display:flex}
         @media (max-width:500px){#user-pill{top:12px;right:12px;gap:5px}#user-pill-name{font-size:.5rem;max-width:80px;overflow:hidden;text-overflow:ellipsis}}
@@ -127,7 +177,9 @@
         #user-pill-logout{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,.35);width:34px;height:34px;border-radius:9px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);transition:color .2s,background .2s,border-color .2s}
         #user-pill-logout:hover{color:rgba(255,100,100,.7);background:rgba(255,50,50,.07);border-color:rgba(255,80,80,.2)}
         #user-pill-logout svg{width:16px;height:16px;fill:currentColor;display:block}
-        #dash-modal .modal{width:680px;max-width:calc(100vw - 24px);padding:0;overflow:hidden;border-radius:20px;display:flex;flex-direction:column;max-height:calc(100vh - 48px)}
+
+        /* ===== DASHBOARD ===== */
+        #dash-modal .modal{width:720px;max-width:calc(100vw - 24px);padding:0;overflow:hidden;border-radius:20px;display:flex;flex-direction:column;max-height:calc(100vh - 48px)}
         @media (max-width:768px){#dash-modal .modal{width:100%;max-width:calc(100vw - 12px);max-height:calc(100vh - 16px);border-radius:14px}}
         .dash-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 16px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
         @media (max-width:600px){.dash-header{padding:14px 14px 12px;flex-wrap:wrap;gap:6px}.dash-header-title{font-size:.6rem}.dash-header-user{font-size:.55rem}}
@@ -136,9 +188,9 @@
         .dash-header .modal-close{position:static;margin-left:14px}
         .dash-body{display:flex;flex:1;overflow:hidden;min-height:0}
         @media (max-width:600px){.dash-body{flex-direction:column;overflow-y:auto}}
-        .dash-sidebar{width:140px;flex-shrink:0;border-right:1px solid rgba(255,255,255,.06);padding:14px 10px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
-        @media (max-width:600px){.dash-sidebar{width:100%;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);padding:10px 12px;gap:4px;overflow-x:auto}.dash-sidebar .dash-nav-btn{padding:6px 10px;font-size:.55rem;flex:0 0 auto;width:auto}}
-        .dash-nav-btn{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;border-radius:9px;padding:9px 11px;cursor:pointer;font-family:"DM Mono",monospace;font-size:.64rem;letter-spacing:1.1px;text-transform:uppercase;color:rgba(255,255,255,.28);transition:color .15s,background .15s;text-align:left}
+        .dash-sidebar{width:150px;flex-shrink:0;border-right:1px solid rgba(255,255,255,.06);padding:14px 10px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+        @media (max-width:600px){.dash-sidebar{width:100%;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);padding:10px 12px;gap:4px;overflow-x:auto}.dash-sidebar .dash-nav-btn{padding:6px 10px;font-size:.52rem;flex:0 0 auto;width:auto}}
+        .dash-nav-btn{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;border-radius:9px;padding:9px 11px;cursor:pointer;font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:1.1px;text-transform:uppercase;color:rgba(255,255,255,.28);transition:color .15s,background .15s;text-align:left}
         @media (max-width:600px){.dash-nav-btn{font-size:.52rem;padding:5px 8px;gap:5px}.dash-nav-btn svg{width:12px;height:12px}}
         .dash-nav-btn svg{width:14px;height:14px;fill:currentColor;flex-shrink:0;opacity:.7}
         .dash-nav-btn:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.05)}
@@ -153,6 +205,8 @@
         .dash-panel{display:none}
         .dash-panel.active{display:block}
         .dash-panel-title{font-size:.62rem;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:18px;font-style:italic}
+
+        /* ===== DASHBOARD FIELDS ===== */
         .dash-section{margin-bottom:22px}
         .dash-section-label{font-size:.56rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.16);margin-bottom:9px;font-style:italic}
         .dash-links-list{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
@@ -176,6 +230,8 @@
         @media (max-width:400px){.dash-save-status{font-size:.5rem}}
         .dash-footer .modal-btn{width:auto;margin:0;padding:9px 22px;flex-shrink:0}
         @media (max-width:400px){.dash-footer .modal-btn{padding:7px 14px;font-size:.6rem}}
+
+        /* ===== BADGES ===== */
         .badge-grid{display:grid;grid-template-columns:1fr;gap:12px}
         .badge-card{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:14px 16px;transition:border-color .2s}
         @media (max-width:400px){.badge-card{padding:10px 12px;gap:10px;flex-wrap:wrap}}
@@ -197,6 +253,8 @@
         .badge-equip-btn.equipped{background:rgba(255,200,80,.12);color:rgba(255,220,120,.9);border-color:rgba(255,200,80,.3)}
         .badge-equip-btn.equipped:hover{background:rgba(255,80,80,.1);color:rgba(255,120,120,.85);border-color:rgba(255,80,80,.25)}
         .badge-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+
+        /* ===== ALIAS ===== */
         .alias-row{font-size:.62rem;color:rgba(255,255,255,.22);letter-spacing:.4px;margin-top:5px;line-height:1}
         @media (max-width:400px){.alias-row{font-size:.55rem}}
         .alias-row a{color:rgba(255,255,255,.38);text-decoration:none;transition:color .15s}
@@ -224,6 +282,8 @@
         .alias-add-trigger{background:none;border:1px dashed rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.25);font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:1px;padding:7px;width:100%;cursor:pointer;transition:all .15s}
         .alias-add-trigger:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.5)}
         .alias-limit-note{font-size:.58rem;color:rgba(255,255,255,.15);letter-spacing:.8px;text-align:center;margin-top:8px;font-style:italic}
+
+        /* ===== ADMIN ===== */
         .admin-search-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
         .admin-search-row input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 12px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.72rem;outline:none;transition:border-color .15s;min-width:120px}
         .admin-search-row input:focus{border-color:rgba(255,255,255,.22)}
@@ -267,6 +327,8 @@
         .admin-custom-badge-item .badge-name{color:rgba(255,255,255,.7);flex:1}
         .admin-custom-badge-item .badge-delete{background:none;border:none;color:rgba(255,100,100,.5);cursor:pointer;font-size:.8rem}
         .admin-custom-badge-item .badge-delete:hover{color:rgba(255,100,100,.9)}
+
+        /* ===== SLIDERS ===== */
         .slider-container{display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap}
         .slider-container label{flex:0 0 50px;font-size:.58rem;letter-spacing:1px;color:rgba(255,255,255,.3)}
         input[type="range"]{flex:1;height:3px;-webkit-appearance:none;background:rgba(255,255,255,.1);border-radius:3px;outline:none;min-width:60px}
@@ -275,14 +337,14 @@
         .slider-value{width:32px;font-size:.58rem;text-align:right;color:rgba(255,255,255,.4)}
         select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:9px 12px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.72rem;outline:none;cursor:pointer}
         select option{background:#0a0a0c}
+
+        /* ===== LEADERBOARD ===== */
         .leaderboard-list{max-height:50vh;overflow-y:auto;padding:16px 20px 20px}
         @media (max-width:500px){.leaderboard-list{padding:12px 14px 16px;max-height:55vh}}
         .leaderboard-list::-webkit-scrollbar{width:6px}
         .leaderboard-list::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:4px}
         .leaderboard-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:4px}
         .leaderboard-list::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.35)}
-        .leaderboard-tab-content{transition:opacity 0.2s ease,transform 0.2s ease;opacity:1;transform:translateX(0)}
-        .leaderboard-tab-content.fade-out{opacity:0;transform:translateX(-5px);pointer-events:none}
         .leaderboard-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.7rem;gap:8px;flex-wrap:wrap}
         @media (max-width:500px){.leaderboard-item{flex-direction:column;align-items:flex-start;gap:4px;font-size:.65rem;padding:6px 0}}
         .leaderboard-rank{width:32px;color:rgba(255,255,255,.3);flex-shrink:0}
@@ -308,33 +370,18 @@
         .leaderboard-tab{background:none;border:none;cursor:pointer;font-family:"DM Mono",monospace;font-size:.65rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.3);padding:10px 16px;transition:color .15s,border-color .15s;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
         @media (max-width:500px){.leaderboard-tab{font-size:.55rem;padding:8px 10px}}
         .leaderboard-tab.active{color:rgba(255,255,255,.8);border-bottom-color:rgba(255,255,255,.5)}
-        .test-cursor-btn{background:rgba(255,180,80,.15);border:1px solid rgba(255,180,80,.3);border-radius:6px;padding:5px 12px;font-size:.6rem;cursor:pointer;margin-left:8px;transition:all .15s;color:rgba(255,200,100,.9)}
-        .test-cursor-btn:hover{background:rgba(255,180,80,.3)}
-        .reset-btn-sm{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:.58rem;cursor:pointer;margin-left:8px;transition:all .15s}
-        .reset-btn-sm:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
 
-        /* ===== NEW STATS PANEL STYLES ===== */
-        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-        @media (max-width:500px){.stats-grid{grid-template-columns:1fr}}
-        .stats-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px;text-align:center}
-        .stats-card .stat-number{font-size:1.8rem;font-weight:500;color:rgba(255,255,255,.9);letter-spacing:-.5px;line-height:1.2}
-        .stats-card .stat-label{font-size:.6rem;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.3);margin-top:4px}
-        .stats-card .stat-change{font-size:.55rem;color:rgba(100,220,150,.6);margin-top:2px}
-        .stats-divider{height:1px;background:rgba(255,255,255,.06);margin:16px 0}
-        .stats-subtitle{font-size:.6rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:12px}
-        .stats-link-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.7rem}
-        .stats-link-item .link-name{color:rgba(255,255,255,.6)}
-        .stats-link-item .link-clicks{color:rgba(255,255,255,.8);font-weight:500}
-        .stats-device-item{display:flex;align-items:center;gap:10px;padding:4px 0;font-size:.7rem}
-        .stats-device-item .device-label{width:60px;color:rgba(255,255,255,.5)}
-        .stats-device-bar{flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
-        .stats-device-bar .fill{height:100%;background:rgba(255,255,255,.4);border-radius:4px;transition:width .3s}
-        .stats-device-item .device-percent{width:40px;text-align:right;color:rgba(255,255,255,.4);font-size:.6rem}
-        .stats-daily-chart{display:flex;align-items:flex-end;gap:4px;height:80px;padding:8px 0}
-        .stats-daily-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
-        .stats-daily-bar .bar{width:100%;background:rgba(255,255,255,.2);border-radius:2px;min-height:2px;transition:height .3s}
-        .stats-daily-bar .bar-label{font-size:.45rem;color:rgba(255,255,255,.2);transform:rotate(-45deg);white-space:nowrap}
-        .stats-daily-bar .bar-value{font-size:.45rem;color:rgba(255,255,255,.2)}
+        /* ===== GUEST BOOK ===== */
+        .guestbook-entry{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+        .guestbook-entry .gb-name{font-size:.65rem;color:rgba(255,255,255,.6);font-weight:500}
+        .guestbook-entry .gb-time{font-size:.5rem;color:rgba(255,255,255,.2);margin-left:8px}
+        .guestbook-entry .gb-text{font-size:.7rem;color:rgba(255,255,255,.7);margin-top:4px;word-wrap:break-word}
+        .guestbook-form{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+        .guestbook-form input{flex:1;min-width:120px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:8px 12px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.65rem;outline:none}
+        .guestbook-form input:focus{border-color:rgba(255,255,255,.22)}
+        .guestbook-form button{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:8px 16px;color:rgba(255,255,255,.6);font-family:"DM Mono",monospace;font-size:.6rem;cursor:pointer;transition:all .15s}
+        .guestbook-form button:hover{background:rgba(255,255,255,.12);color:#fff}
+        .guestbook-empty{font-size:.6rem;color:rgba(255,255,255,.2);text-align:center;padding:20px 0}
 
         /* ===== SIGNUP PAGE ===== */
         #signup-page{all:initial;display:none;position:fixed;inset:0;z-index:10;flex-direction:column;align-items:center;justify-content:center;background:#0a0a0a;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#fff;overflow-y:auto;padding:20px}
@@ -396,14 +443,33 @@
         .font-input-wrap input{flex:1;min-width:120px}
         .font-input-wrap .font-preview{font-size:.6rem;color:rgba(255,255,255,.25);letter-spacing:.5px;padding:4px 8px;background:rgba(255,255,255,.03);border-radius:4px;border:1px solid rgba(255,255,255,.05);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
         @media (max-width:400px){.font-input-wrap .font-preview{max-width:80px;font-size:.5rem;padding:3px 6px}}
-        .font-suggestions{position:absolute;top:100%;left:0;right:0;background:rgba(10,10,13,.98);border:1px solid rgba(255,255,255,.1);border-radius:8px;max-height:200px;overflow-y:auto;display:none;z-index:300;margin-top:2px}
-        .font-suggestions.show{display:block}
-        .font-suggestions .suggestion{padding:6px 12px;cursor:pointer;font-size:.7rem;color:rgba(255,255,255,.6);transition:background .1s;border-bottom:1px solid rgba(255,255,255,.03)}
-        .font-suggestions .suggestion:hover{background:rgba(255,255,255,.06);color:#fff}
-        .font-suggestions .suggestion:last-child{border-bottom:none}
-        .font-suggestions .suggestion .samp{float:right;opacity:.3;font-size:.55rem}
+        .reset-btn-sm{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:.58rem;cursor:pointer;margin-left:8px;transition:all .15s}
+        .reset-btn-sm:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
 
-        /* extra mobile fixes */
+        /* ===== STATS ===== */
+        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+        @media (max-width:500px){.stats-grid{grid-template-columns:1fr}}
+        .stats-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px;text-align:center}
+        .stats-card .stat-number{font-size:1.8rem;font-weight:500;color:rgba(255,255,255,.9);letter-spacing:-.5px;line-height:1.2}
+        .stats-card .stat-label{font-size:.6rem;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.3);margin-top:4px}
+        .stats-card .stat-change{font-size:.55rem;color:rgba(100,220,150,.6);margin-top:2px}
+        .stats-divider{height:1px;background:rgba(255,255,255,.06);margin:16px 0}
+        .stats-subtitle{font-size:.6rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:12px}
+        .stats-link-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.7rem}
+        .stats-link-item .link-name{color:rgba(255,255,255,.6)}
+        .stats-link-item .link-clicks{color:rgba(255,255,255,.8);font-weight:500}
+        .stats-device-item{display:flex;align-items:center;gap:10px;padding:4px 0;font-size:.7rem}
+        .stats-device-item .device-label{width:60px;color:rgba(255,255,255,.5)}
+        .stats-device-bar{flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+        .stats-device-bar .fill{height:100%;background:rgba(255,255,255,.4);border-radius:4px;transition:width .3s}
+        .stats-device-item .device-percent{width:40px;text-align:right;color:rgba(255,255,255,.4);font-size:.6rem}
+        .stats-daily-chart{display:flex;align-items:flex-end;gap:4px;height:80px;padding:8px 0}
+        .stats-daily-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+        .stats-daily-bar .bar{width:100%;background:rgba(255,255,255,.2);border-radius:2px;min-height:2px;transition:height .3s}
+        .stats-daily-bar .bar-label{font-size:.45rem;color:rgba(255,255,255,.2);transform:rotate(-45deg);white-space:nowrap}
+        .stats-daily-bar .bar-value{font-size:.45rem;color:rgba(255,255,255,.2)}
+
+        /* ===== RESPONSIVE FIXES ===== */
         @media (max-width:500px){
             .field input,.field textarea,.field select{font-size:.65rem;padding:8px 10px}
             .field label{font-size:.55rem}
@@ -498,12 +564,13 @@
     <div id="card-stack">
         <div id="content">
             <div class="card-header">
+                <img class="profile-avatar" id="profile-avatar" src="" alt="avatar">
                 <div class="site-name" id="site-name"></div>
                 <div class="username-row" id="username-row"></div>
                 <div class="alias-row" id="alias-row" style="display:none"></div>
             </div>
             <div class="divider"></div>
-            <div class="meta-section">
+            <div class="meta-section" id="main-meta">
                 <div class="meta-label">last change: <span id="last-change-date"></span></div>
                 <div class="meta-line" id="line1"></div>
                 <div class="meta-line" id="line2"></div>
@@ -552,14 +619,19 @@
         <button class="dash-nav-btn" data-panel="badges"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>badges</button>
         <button class="dash-nav-btn" data-panel="alias"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>alias</button>
         <button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
-        <!-- NEW STATS BUTTON -->
         <button class="dash-nav-btn" data-panel="stats"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>stats</button>
+        <button class="dash-nav-btn" data-panel="guestbook"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zm-9-4h2v2h-2zm0-6h2v4h-2z"/></svg>guestbook</button>
+        <!-- VIEW BADGES (coming soon) -->
+        <button class="dash-nav-btn" data-panel="viewbadges" style="opacity:0.5;"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>view badges</button>
     </nav>
     <div class="dash-panels">
+        <!-- BIO PANEL -->
         <div class="dash-panel active" id="panel-bio"><div class="dash-panel-title">bio lines</div>
-        <div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;"><input type="checkbox" id="d-typewriter1" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect (looping)</label></div></div>
-        <div class="field"><label>line 2</label><input type="text" id="d-line2" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;"><input type="checkbox" id="d-typewriter2" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect (looping)</label></div></div>
-        <div class="field"><label>line 3</label><input type="text" id="d-line3" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;"><input type="checkbox" id="d-typewriter3" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect (looping)</label></div></div>
+        <div class="field"><label>profile picture URL</label><input type="text" id="d-avatar" placeholder="https://files.catbox.moe/..."><div class="field-hint">upload at <a href="https://catbox.moe/" target="_blank">catbox.moe</a> – square images work best</div></div>
+        <div class="field"><label>line 1</label><input type="text" id="d-line1" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;"><input type="checkbox" id="d-typewriter1" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect</label></div></div>
+        <div class="field"><label>line 2</label><input type="text" id="d-line2" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;"><input type="checkbox" id="d-typewriter2" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect</label></div></div>
+        <div class="field"><label>line 3</label><input type="text" id="d-line3" maxlength="60"><div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;"><input type="checkbox" id="d-typewriter3" style="width:auto;margin:0;"><label style="font-size:.58rem;letter-spacing:1px;margin:0;">Enable typewriter effect</label></div></div>
+        <div class="field"><label>typewriter speed (ms per character)</label><div class="slider-container"><label>🐢</label><input type="range" id="d-typewriter-speed" min="30" max="300" step="10" value="70"><span class="slider-value" id="typewriter-speed-val">70ms</span></div></div>
         <div class="field"><label>discord tag</label><input type="text" id="d-discord" maxlength="80"></div>
         <div class="field"><label>card font</label>
             <div class="font-input-wrap">
@@ -567,44 +639,56 @@
                 <datalist id="google-fonts"></datalist>
                 <span class="font-preview" id="font-preview-label">DM Mono</span>
             </div>
-            <div class="field-hint">start typing to search all Google Fonts — preview shows selected font</div>
+            <div class="field-hint">start typing to search 900+ Google Fonts</div>
         </div></div>
 
+        <!-- SOCIALS PANEL -->
         <div class="dash-panel" id="panel-socials"><div class="dash-panel-title">links</div>
-        <div style="font-size:.58rem;color:rgba(255,255,255,.2);margin-bottom:12px;letter-spacing:.5px;">You can use a custom icon image (from catbox.moe) per link — leave blank to use the built-in icon.</div>
+        <div style="font-size:.58rem;color:rgba(255,255,255,.2);margin-bottom:12px;letter-spacing:.5px;">Custom icon image (catbox.moe) — leave blank for built-in icon.</div>
         <div class="dash-links-list" id="d-links-list"></div><button class="dash-add-link" id="d-add-link">+ add link</button></div>
 
+        <!-- BACKGROUND PANEL -->
         <div class="dash-panel" id="panel-background"><div class="dash-panel-title">background</div>
         <div class="dash-section"><div class="dash-section-label">video url</div><div class="field"><input type="text" id="d-bgvideo" placeholder="https://files.catbox.moe/....mp4"><div class="field-hint">upload at <a href="https://catbox.moe/" target="_blank">catbox.moe</a></div></div></div>
         <div class="dash-section"><div class="dash-section-label">floating words</div><div class="field"><input type="text" id="d-bgwords" placeholder="word1, word2, </>"></div></div></div>
 
+        <!-- BADGES PANEL -->
         <div class="dash-panel" id="panel-badges"><div class="dash-panel-title">badges</div><div class="badge-grid" id="badge-grid"></div></div>
 
+        <!-- ALIAS PANEL -->
         <div class="dash-panel" id="panel-alias"><div class="dash-panel-title">aliases</div>
         <div style="font-size:.62rem;color:rgba(255,255,255,.2);margin-bottom:16px;">link other profiles.<br><span style="color:rgba(255,255,255,.35);">also known as: name, name</span></div>
         <div class="alias-list" id="alias-list"></div>
         <div class="alias-add-form" id="alias-add-form"><div class="field"><label>username</label><input type="text" id="alias-input-user" maxlength="24"></div><div class="field"><label>password</label><input type="password" id="alias-input-pw"></div><div class="alias-form-hint" id="alias-form-hint"></div><div class="alias-form-actions"><button class="alias-form-btn" id="alias-verify-btn">verify & add</button><button class="alias-form-btn cancel" id="alias-cancel-btn">cancel</button></div></div>
         <button class="alias-add-trigger" id="alias-add-trigger">+ add alias</button><div class="alias-limit-note">max 3 aliases</div></div>
 
+        <!-- CARD PANEL -->
         <div class="dash-panel" id="panel-card"><div class="dash-panel-title">card appearance</div>
-        <div class="field"><label>card style</label><select id="d-card-style"><option value="default">Default (original)</option><option value="minimalistic">Minimalistic (centered card)</option><option value="modern">Modern (extra card below)</option></select></div>
+        <div class="field"><label>card style</label><select id="d-card-style">
+            <option value="default">Default (glass)</option>
+            <option value="minimalistic">Minimalistic (centered)</option>
+            <option value="modern">Modern (extra card)</option>
+            <option value="neon">Neon (cyber glow)</option>
+            <option value="terminal">Terminal (hacker)</option>
+            <option value="multi">Multi-Card (tabs)</option>
+        </select></div>
         <div class="field"><label>border radius</label><div class="slider-container"><label>▯</label><input type="range" id="d-border-radius" min="0" max="30" step="1" value="18"><span class="slider-value" id="border-radius-val">18px</span></div></div>
         <div class="field"><label>card opacity</label><div class="slider-container"><label>◐</label><input type="range" id="d-card-opacity" min="0.2" max="1.0" step="0.01" value="0.58"><span class="slider-value" id="card-opacity-val">0.58</span></div></div>
-        <div class="field"><label>card background color</label><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><input type="color" id="d-card-bg-color" value="#0a0a0c"><button class="reset-btn-sm" id="reset-bg-color">reset</button></div><div class="field-hint">overrides the default dark background (opacity still applies)</div></div>
-        <div class="field"><label>border color</label><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><input type="color" id="d-border-color" value="#ffffff"><button class="reset-btn-sm" id="reset-border-color">reset</button></div><div class="field-hint">changes the card's border color</div></div>
+        <div class="field"><label>card background color</label><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><input type="color" id="d-card-bg-color" value="#0a0a0c"><button class="reset-btn-sm" id="reset-bg-color">reset</button></div></div>
+        <div class="field"><label>border color</label><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><input type="color" id="d-border-color" value="#ffffff"><button class="reset-btn-sm" id="reset-border-color">reset</button></div></div>
         <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-wrap:wrap;"><input type="checkbox" id="d-parallax" style="width:auto;margin:0;"> parallax effect</label></div>
-        <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-wrap:wrap;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background</label><div class="field-hint">makes the card background fully transparent (ignores color picker)</div></div>
+        <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-wrap:wrap;"><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background</label></div>
         <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-wrap:wrap;"><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow</label></div></div>
 
-        <!-- NEW STATS PANEL -->
+        <!-- STATS PANEL -->
         <div class="dash-panel" id="panel-stats">
             <div class="dash-panel-title">analytics</div>
             <div id="stats-container">
                 <div class="stats-grid">
-                    <div class="stats-card"><div class="stat-number" id="stat-total-clicks">0</div><div class="stat-label">Total Link Clicks</div><div class="stat-change" id="stat-clicks-change"></div></div>
-                    <div class="stats-card"><div class="stat-number" id="stat-click-rate">0%</div><div class="stat-label">Click Rate</div><div class="stat-change">in the last 3 days</div></div>
+                    <div class="stats-card"><div class="stat-number" id="stat-total-clicks">0</div><div class="stat-label">Total Link Clicks</div></div>
+                    <div class="stats-card"><div class="stat-number" id="stat-click-rate">0%</div><div class="stat-label">Click Rate</div></div>
                     <div class="stats-card"><div class="stat-number" id="stat-profile-views">0</div><div class="stat-label">Profile Views</div><div class="stat-change" id="stat-views-change"></div></div>
-                    <div class="stats-card"><div class="stat-number" id="stat-avg-daily">0</div><div class="stat-label">Avg Daily Views</div><div class="stat-change">last 7 days</div></div>
+                    <div class="stats-card"><div class="stat-number" id="stat-avg-daily">0</div><div class="stat-label">Avg Daily Views</div></div>
                 </div>
                 <div class="stats-divider"></div>
                 <div class="stats-subtitle">Daily Views (last 7 days)</div>
@@ -618,6 +702,23 @@
             </div>
         </div>
 
+        <!-- GUESTBOOK PANEL -->
+        <div class="dash-panel" id="panel-guestbook"><div class="dash-panel-title">guest book</div>
+        <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="d-guestbook-enabled" style="width:auto;margin:0;"> enable guest book</label><div class="field-hint">visitors can leave comments on your profile</div></div>
+        <div style="font-size:.58rem;color:rgba(255,255,255,.15);margin-top:8px;">Comments are public. You can delete any comment.</div>
+        <div class="stats-divider"></div>
+        <div id="guestbook-admin-list"></div>
+        </div>
+
+        <!-- VIEW BADGES (coming soon) -->
+        <div class="dash-panel" id="panel-viewbadges"><div class="dash-panel-title" style="color:rgba(255,200,100,0.6);">view badges</div>
+        <div style="padding:30px 0;text-align:center;color:rgba(255,255,255,0.2);font-size:.8rem;letter-spacing:1px;">
+            <div style="font-size:3rem;margin-bottom:16px;">👁️</div>
+            <div style="font-size:.9rem;color:rgba(255,255,255,0.3);">Coming Tomorrow</div>
+            <div style="font-size:.6rem;margin-top:8px;color:rgba(255,255,255,0.15);">View badges are being crafted</div>
+        </div></div>
+
+        <!-- ADMIN PANEL -->
         <div class="dash-panel" id="panel-admin"><div class="dash-panel-title" style="color:rgba(255,180,80,.4);">admin panel</div>
         <div class="admin-search-row"><input type="text" id="admin-search-input" placeholder="search username..."><button class="admin-search-btn" id="admin-search-btn">look up</button></div>
         <div class="admin-not-found" id="admin-not-found">user not found.</div>
@@ -753,12 +854,14 @@
             bgWords: ["forgave", "frgv", "</>", "///"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,",
             aliases: ["die", "sin", "faith"], custom_cursor: "", custom_font: "DM Mono",
             typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
-            transparent_bg: false, disable_shadow: false, card_bg_color: "", border_color: "", views: 0
+            typewriter_speed: 70, transparent_bg: false, disable_shadow: false,
+            card_bg_color: "", border_color: "", views: 0, avatar: "",
+            card_style: "default", guestbook_enabled: false
         };
         const STATIC_USERS = {
-            "prada": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "prada", uid: "1", badges: [], lines: ["@juliasfanboy / on discord", "rich", "take risks"], discord: "", links: [{ label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok", custom_icon_url: "" }], bgVideo: { urls: ["https://files.catbox.moe/aned1c.mp4"], opacity: 0.45 }, bgWords: ["prada", "</>"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [] },
-            "btc": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "btc", uid: "2", badges: [{ tip: "btc", img: "https://files.catbox.moe/mdlopx.png" }], lines: ["", "", ""], discord: "", links: [{ label: "roblox", url: "https://www.roblox.com/users/418312507/profile", icon: "roblox", custom_icon_url: "" }], bgVideo: { urls: ["https://files.catbox.moe/rstzft.mp4"], opacity: 0.45 }, bgWords: ["btc", "</>", "///"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [] },
-            "7": { siteName: "forgave.lol", lastChange: "26th May 2026", username: "7", uid: "3", badges: [], lines: ["@u3ls (1263468060317188097) / on discord", "", ""], discord: "", links: [], bgVideo: { urls: ["https://files.catbox.moe/0kwj0d.mp4"], opacity: 0.45 }, bgWords: ["7", "</>", "///"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [] }
+            "prada": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "prada", uid: "1", badges: [], lines: ["@juliasfanboy / on discord", "rich", "take risks"], discord: "", links: [{ label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok", custom_icon_url: "" }], bgVideo: { urls: ["https://files.catbox.moe/aned1c.mp4"], opacity: 0.45 }, bgWords: ["prada", "</>"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [], avatar: "", card_style: "default", guestbook_enabled: false },
+            "btc": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "btc", uid: "2", badges: [{ tip: "btc", img: "https://files.catbox.moe/mdlopx.png" }], lines: ["", "", ""], discord: "", links: [{ label: "roblox", url: "https://www.roblox.com/users/418312507/profile", icon: "roblox", custom_icon_url: "" }], bgVideo: { urls: ["https://files.catbox.moe/rstzft.mp4"], opacity: 0.45 }, bgWords: ["btc", "</>", "///"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [], avatar: "", card_style: "default", guestbook_enabled: false },
+            "7": { siteName: "forgave.lol", lastChange: "26th May 2026", username: "7", uid: "3", badges: [], lines: ["@u3ls (1263468060317188097) / on discord", "", ""], discord: "", links: [], bgVideo: { urls: ["https://files.catbox.moe/0kwj0d.mp4"], opacity: 0.45 }, bgWords: ["7", "</>", "///"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [], avatar: "", card_style: "default", guestbook_enabled: false }
         };
         const STATIC_UID_START = 4;
 
@@ -784,7 +887,7 @@
         function showSignupPage() {
             signupPage.style.display = 'flex';
             cardStackElem.style.display = 'none';
-            overlayElem.style.display = 'none'; // hide overlay on root
+            overlayElem.style.display = 'none';
             authBtnEl.style.display = 'none';
             userPillElem.style.display = 'none';
             document.getElementById('leaderboard-btn').style.display = 'none';
@@ -796,7 +899,7 @@
         function showProfilePage() {
             signupPage.style.display = 'none';
             cardStackElem.style.display = '';
-            overlayElem.style.display = 'flex'; // show overlay on profiles
+            overlayElem.style.display = 'flex';
             overlayElem.style.opacity = '1';
             overlayElem.classList.remove('hide');
             if (session) authBtnEl.style.display = 'none';
@@ -807,7 +910,22 @@
             overlayElem.style.cursor = 'pointer';
         }
 
-        // ===== SIGNUP HANDLERS =====
+        // INSTANT OVERLAY REMOVAL
+        overlayElem.addEventListener('click', function() {
+            this.classList.add('hide');
+            // Remove from DOM after fade
+            setTimeout(() => {
+                if (this.style.display !== 'none') {
+                    // Just keep it hidden
+                }
+            }, 300);
+            // Play video if exists
+            const bgvideo = document.getElementById('bgvideo');
+            if (bgvideo && bgvideo.style.display !== 'none') {
+                bgvideo.play().catch(() => {});
+            }
+        });
+
         async function handleSignup() {
             const btn = document.getElementById('su-submit-page');
             const username = document.getElementById('su-username-page').value.trim().toLowerCase();
@@ -831,14 +949,14 @@
                 try { const allUsers = await supa.get("users", "order=uid.desc&limit=1"); if (allUsers && allUsers.length > 0) nextUid = allUsers[0].uid + 1; } catch(e) {}
                 const hash = await hashPassword(pw);
                 const now = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-                // Removed link_stats, daily_views, device_stats to avoid column errors – they'll be added when stats update
                 const result = await supa.post("users", {
                     username, password_hash: hash, uid: nextUid, lines: ["","",""], discord: "", links: [],
                     bg_video_urls: [], bg_video_opacity: 0.45, bg_words: ["</>","///"], last_change: now,
                     aliases: [], equipped_badges: [], is_admin: false, card_style: "default", border_radius: 18,
                     card_opacity: 0.58, parallax_enabled: true, cursor_effect: "ghost", custom_cursor: "",
                     custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
-                    transparent_bg: false, disable_shadow: false, card_bg_color: "", border_color: "", views: 0,
+                    typewriter_speed: 70, transparent_bg: false, disable_shadow: false, card_bg_color: "",
+                    border_color: "", views: 0, avatar: "", guestbook_enabled: false,
                     music_url: "", music_volume: 0.4, music_autoplay: false
                 });
                 if (result && result[0]) {
@@ -853,7 +971,7 @@
             btn.disabled = false; btn.textContent = "Create Account →";
         }
 
-        // ===== GOOGLE FONTS FETCHER =====
+        // ===== GOOGLE FONTS FETCHER (900+ fonts) =====
         let googleFontsList = [];
         async function fetchGoogleFonts() {
             try {
@@ -869,7 +987,8 @@
                     throw new Error('Invalid response');
                 }
             } catch (e) {
-                console.warn('Fallback fonts', e);
+                console.warn('Using fallback font list', e);
+                // Massive fallback list
                 googleFontsList = [
                     "DM Mono", "JetBrains Mono", "Fira Code", "IBM Plex Mono", "Courier New",
                     "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins", "Raleway",
@@ -917,14 +1036,309 @@
                     "Stalinist One", "Stardos Stencil", "Stoke", "Tangerine", "The Girl Next Door",
                     "Titan One", "Trade Winds", "Train One", "Uncial Antiqua", "Vast Shadow",
                     "Vibes", "Vina Sans", "Vollkorn SC", "Wallpoet", "Walter Turncoat", "Wire One",
-                    "Yatra One", "Yellowtail", "Yusei Magic", "ZCOOL XiaoWei"
+                    "Yatra One", "Yellowtail", "Yusei Magic", "ZCOOL XiaoWei",
+                    "Abril Fatface", "Aclonica", "Acme", "Actor", "Adamina", "Advent Pro",
+                    "Aguafina Script", "Aladin", "Alata", "Alatsi", "Aldrich", "Alef", "Alegreya",
+                    "Alegreya SC", "Alegreya Sans SC", "Alex Brush", "Alfa Slab One", "Alice",
+                    "Alike", "Alike Angular", "Allan", "Allerta", "Allerta Stencil", "Allura",
+                    "Almendra", "Almendra Display", "Almendra SC", "Amarante", "Amaranth",
+                    "Amatic SC", "Amethysta", "Amiko", "Amiri", "Amita", "Anaheim", "Andada",
+                    "Andika", "Angkor", "Annie Use Your Telescope", "Anonymous Pro", "Antic",
+                    "Antic Didone", "Antic Slab", "Anton", "Arapey", "Arbutus", "Arbutus Slab",
+                    "Architects Daughter", "Archivo", "Archivo Black", "Archivo Narrow", "Are You Serious",
+                    "Aref Ruqaa", "Arima", "Arimo", "Arizonia", "Armata", "Arsenal", "Artifika",
+                    "Arvo", "Arya", "Asap", "Asap Condensed", "Asar", "Asset", "Assistant",
+                    "Astloch", "Asul", "Athiti", "Atma", "Atomic Age", "Aubrey", "Audiowide",
+                    "Autour One", "Average", "Average Sans", "Averia Gruesa Libre", "Averia Libre",
+                    "Averia Sans Libre", "Averia Serif Libre", "B612", "B612 Mono", "Bad Script",
+                    "Bahiana", "Bahianita", "Bai Jamjuree", "Ballet", "Baloo 2", "Baloo Bhai 2",
+                    "Baloo Bhaijaan 2", "Baloo Chettan 2", "Baloo Da 2", "Baloo Paaji 2", "Baloo Tamma 2",
+                    "Baloo Tammudu 2", "Baloo Thambi 2", "Balsamiq Sans", "Balthazar", "Bangers",
+                    "Barlow", "Barlow Condensed", "Barlow Semi Condensed", "Barriecito", "Barrio",
+                    "Basic", "Baskervville", "Battambang", "Baumans", "Bayon", "Be Vietnam Pro",
+                    "Beau Rivage", "Bebas Neue", "Belgrano", "Bellefair", "Belleza", "Bellota",
+                    "Bellota Text", "Benchnine", "Benne", "Bentham", "Berkshire Swash", "Besley",
+                    "Beth Ellen", "Bevan", "Big Shoulders Display", "Big Shoulders Inline Display",
+                    "Big Shoulders Inline Text", "Big Shoulders Stencil Display", "Big Shoulders Stencil Text",
+                    "Big Shoulders Text", "Bilbo", "Bilbo Swash Caps", "BioRhyme", "BioRhyme Expanded",
+                    "Biryani", "Bitter", "Black And White Picture", "Black Han Sans", "Black Ops One",
+                    "Blaka", "Blaka Hollow", "Blaka Ink", "Blinker", "Bodoni Moda", "Bokor",
+                    "Bona Nova", "Bonbon", "Boogaloo", "Bowlby One", "Bowlby One SC", "Brawler",
+                    "Bree Serif", "Brygada 1918", "Bubblegum Sans", "Bubbler One", "Buda", "Buenard",
+                    "Bungee", "Bungee Hairline", "Bungee Inline", "Bungee Outline", "Bungee Shade",
+                    "Bungee Spice", "Butcherman", "Butterfly Kids", "Cabin", "Cabin Condensed",
+                    "Cabin Sketch", "Caesar Dressing", "Cagliostro", "Cairo", "Cairo Play",
+                    "Caladea", "Calistoga", "Calligraffitti", "Cambay", "Cambo", "Candal",
+                    "Cantarell", "Cantata One", "Cantora One", "Capriola", "Caramel", "Carattere",
+                    "Cardo", "Carme", "Carrois Gothic", "Carrois Gothic SC", "Carter One",
+                    "Castoro", "Catamaran", "Caudex", "Caveat", "Caveat Brush", "Cedarville Cursive",
+                    "Ceviche One", "Chakra Petch", "Changa", "Changa One", "Chango", "Charis SIL",
+                    "Charm", "Charmonman", "Chathura", "Chau Philomene One", "Chela One", "Chelsea Market",
+                    "Chenla", "Cherish", "Cherry Cream Soda", "Cherry Swash", "Chewy", "Chicle",
+                    "Chilanka", "Chivo", "Chivo Mono", "Chonburi", "Cinzel", "Cinzel Decorative",
+                    "Clicker Script", "Coda", "Coda Caption", "Codystar", "Coiny", "Combo",
+                    "Comfortaa", "Comforter", "Comforter Brush", "Comic Neue", "Coming Soon",
+                    "Commissioner", "Concert One", "Condiment", "Content", "Contrail One",
+                    "Convergence", "Cookie", "Copse", "Corben", "Cormorant", "Cormorant Garamond",
+                    "Cormorant Infant", "Cormorant SC", "Cormorant Unicase", "Cormorant Upright",
+                    "Courgette", "Courier Prime", "Cousine", "Coustard", "Covered By Your Grace",
+                    "Crafty Girls", "Creepster", "Crete Round", "Crimson Pro", "Crimson Text",
+                    "Croissant One", "Crushed", "Cuprum", "Cute Font", "Cutive", "Cutive Mono",
+                    "DM Mono", "DM Sans", "DM Serif Display", "DM Serif Text", "Damion",
+                    "Dancing Script", "Dangrek", "Darker Grotesque", "David Libre", "Dawning of a New Day",
+                    "Days One", "Dekko", "Dela Gothic One", "Delius", "Delius Swash Caps",
+                    "Delius Unicase", "Della Respira", "Denk One", "Devonshire", "Dhurjati",
+                    "Didact Gothic", "Diplomata", "Diplomata SC", "Do Hyeon", "Dokdo", "Domine",
+                    "Donegal One", "Dongle", "Doppio One", "Dorsa", "Dosis", "DotGothic16",
+                    "Dr Sugiyama", "Droid Sans", "Droid Sans Mono", "Droid Serif", "Druk Wide",
+                    "Duru Sans", "Dynalight", "EB Garamond", "Eagle Lake", "East Sea Dokdo",
+                    "Eater", "Economica", "Eczar", "El Messiri", "Electrolize", "Elsie",
+                    "Elsie Swash Caps", "Emblema One", "Emilys Candy", "Encode Sans", "Encode Sans Condensed",
+                    "Encode Sans Expanded", "Encode Sans Semi Condensed", "Encode Sans Semi Expanded",
+                    "Engagement", "Englebert", "Enriqueta", "Epilogue", "Erica One", "Esteban",
+                    "Estonia", "Euphoria Script", "Ewert", "Exo", "Exo 2", "Expletus Sans",
+                    "Explora", "Fahkwang", "Fanwood Text", "Farro", "Farsan", "Fascinate",
+                    "Fascinate Inline", "Faster One", "Fasthand", "Fauna One", "Faustina",
+                    "Federant", "Federo", "Felipa", "Fenix", "Festive", "Figtree", "Finger Paint",
+                    "Finlandica", "Fira Code", "Fira Mono", "Fira Sans", "Fira Sans Condensed",
+                    "Fira Sans Extra Condensed", "Fjalla One", "Fjord One", "Flamenco", "Flavors",
+                    "Fleur De Leah", "Flow Block", "Flow Circular", "Flow Rounded", "Fondamento",
+                    "Fontdiner Swanky", "Forum", "Francois One", "Frank Ruhl Libre", "Fraunces",
+                    "Freckle Face", "Fredericka the Great", "Fredoka", "Fredoka One", "Freehand",
+                    "Fresca", "Frijole", "Fruktur", "Fugaz One", "GFS Didot", "GFS Neohellenic",
+                    "Gabriela", "Gafata", "Galdeano", "Galindo", "Gamja Flower", "Gantari",
+                    "Gasoek One", "Gayathri", "Gelasio", "Gemunu Libre", "Genos", "Gentium Basic",
+                    "Gentium Book Basic", "Geo", "Geologica", "Georama", "Germania One",
+                    "Gideon Roman", "Gidugu", "Gilda Display", "Girassol", "Give You Glory",
+                    "Glass Antiqua", "Glegoo", "Gloock", "Glory", "Gluten", "Goblin One",
+                    "Gochi Hand", "Goldman", "Gorditas", "Gothic A1", "Gotu", "Goudy Bookletter 1911",
+                    "Gowun Batang", "Gowun Dodum", "Graduate", "Grand Hotel", "Grandstander",
+                    "Gravitas One", "Great Vibes", "Grechen Fuemen", "Grenze", "Grenze Gotisch",
+                    "Grey Qo", "Griffy", "Gruppo", "Gudea", "Gugi", "Gulzar", "Gupter",
+                    "Gurajada", "Gwendolyn", "Habibi", "Hachi Maru Pop", "Hahmlet", "Halant",
+                    "Hammersmith One", "Hanalei", "Hanalei Fill", "Handlee", "Hanken Grotesk",
+                    "Hannari", "Hanuman", "Happy Monkey", "Harmattan", "Headland One", "Heebo",
+                    "Henny Penny", "Hepta Slab", "Herr Von Muellerhoff", "Hi Melody", "Hina Mincho",
+                    "Hind", "Hind Guntur", "Hind Madurai", "Hind Siliguri", "Hind Vadodara",
+                    "Holtwood One SC", "Homemade Apple", "Homenaje", "Hubballi", "Hurricane",
+                    "IBM Plex Mono", "IBM Plex Sans", "IBM Plex Sans Arabic", "IBM Plex Sans Condensed",
+                    "IBM Plex Sans Devanagari", "IBM Plex Sans Hebrew", "IBM Plex Sans Thai",
+                    "IBM Plex Sans Thai Looped", "IBM Plex Serif", "IM Fell Double Pica",
+                    "IM Fell Double Pica SC", "IM Fell English", "IM Fell English SC",
+                    "IM Fell French Canon", "IM Fell French Canon SC", "IM Fell Great Primer",
+                    "IM Fell Great Primer SC", "Ibarra Real Nova", "Iceberg", "Iceland",
+                    "Imbue", "Imperial Script", "Imprima", "Inconsolata", "Inder", "Indie Flower",
+                    "Inika", "Inknut Antiqua", "Inria Sans", "Inria Serif", "Inspiration",
+                    "Inter", "Inter Tight", "Irish Grover", "Island Moments", "Istok Web",
+                    "Italiana", "Italianno", "Itim", "Jacques Francois", "Jacques Francois Shadow",
+                    "Jaldi", "JetBrains Mono", "Jim Nightshade", "Joan", "Jockey One",
+                    "Jolly Lodger", "Jomhuria", "Jomolhari", "Josefin Sans", "Josefin Slab",
+                    "Jost", "Joti One", "Jua", "Judson", "Julee", "Julius Sans One", "Junge",
+                    "Jura", "Just Another Hand", "Just Me Again Down Here", "K2D", "Kablammo",
+                    "Kadwa", "Kaisei Decol", "Kaisei HarunoUmi", "Kaisei Opti", "Kaisei Tokumin",
+                    "Kalam", "Kameron", "Kanit", "Kantumruy Pro", "Karantina", "Karla",
+                    "Karma", "Katibeh", "Kaushan Script", "Kavivanar", "Kavoon", "Kdam Thmor Pro",
+                    "Keania One", "Kelly Slab", "Kenia", "Khand", "Khmer", "Khula", "Kings",
+                    "Kirang Haerang", "Kite One", "Kiwi Maru", "Klee One", "Knewave", "KoHo",
+                    "Kodchasan", "Kosugi", "Kosugi Maru", "Kotta One", "Koulen", "Kranky",
+                    "Kreon", "Kristi", "Krona One", "Krub", "Kufam", "Kulim Park", "Kumar One",
+                    "Kumar One Outline", "Kumbh Sans", "Kurale", "La Belle Aurore", "Lacquer",
+                    "Laila", "Lakki Reddy", "Lalezar", "Lancelot", "Langar", "Lateef",
+                    "Lato", "Lavishly Yours", "League Gothic", "League Script", "League Spartan",
+                    "Leckerli One", "Ledger", "Lekton", "Lemon", "Lemonada", "Lexend",
+                    "Lexend Deca", "Lexend Exa", "Lexend Giga", "Lexend Mega", "Lexend Peta",
+                    "Lexend Tera", "Lexend Zetta", "Libre Barcode 128", "Libre Barcode 128 Text",
+                    "Libre Barcode 39", "Libre Barcode 39 Extended", "Libre Barcode 39 Extended Text",
+                    "Libre Barcode 39 Text", "Libre Barcode EAN13 Text", "Libre Baskerville",
+                    "Libre Bodoni", "Libre Caslon Display", "Libre Caslon Text", "Libre Franklin",
+                    "Licorice", "Life Savers", "Lilita One", "Lily Script One", "Limelight",
+                    "Linden Hill", "Literata", "Liu Jian Mao Cao", "Livvic", "Lobster",
+                    "Lobster Two", "Londrina Outline", "Londrina Shadow", "Londrina Sketch",
+                    "Londrina Solid", "Long Cang", "Lora", "Love Light", "Love Ya Like A Sister",
+                    "Loved by the King", "Lovers Quarrel", "Luckiest Guy", "Lugrasimo",
+                    "Lumanosimo", "Lunasima", "Lusitana", "Lustria", "Luxurious Roman",
+                    "Luxurious Script", "M PLUS 1", "M PLUS 1 Code", "M PLUS 1p", "M PLUS 2",
+                    "M PLUS Code Latin", "M PLUS Rounded 1c", "Ma Shan Zheng", "Macondo",
+                    "Macondo Swash Caps", "Mada", "Madimi One", "Magra", "Maiden Orange",
+                    "Maitree", "Major Mono Display", "Mako", "Mali", "Mallanna", "Mandali",
+                    "Manjari", "Manrope", "Mansalva", "Manuale", "Marck Script", "Margarine",
+                    "Markazi Text", "Marko One", "Marmelad", "Martel", "Martel Sans", "Martian Mono",
+                    "Marvel", "Mate", "Mate SC", "Maven Pro", "McLaren", "Mea Culpa", "Meddon",
+                    "MedievalSharp", "Medula One", "Meera Inimai", "Megrim", "Meie Script",
+                    "Merienda", "Merienda One", "Merriweather", "Merriweather Sans", "Metal",
+                    "Metal Mania", "Metamorphous", "Metrophobic", "Michroma", "Micro 5",
+                    "Micro 5 Charted", "Milonga", "Miltonian", "Miltonian Tattoo", "Mina",
+                    "Mingzat", "Miniver", "Miriam Libre", "Mirza", "Miss Fajardose", "Mitr",
+                    "Mochiy Pop One", "Mochiy Pop P One", "Modak", "Modern Antiqua", "Mogra",
+                    "Mohave", "Moirai One", "Molengo", "Molle", "Monda", "Monofett", "Monoton",
+                    "Monsieur La Doulaise", "Montaga", "MonteCarlo", "Montez", "Montserrat",
+                    "Montserrat Alternates", "Montserrat Subrayada", "Moo Lah Lah", "Moon Dance",
+                    "Moul", "Moulpali", "Mountains of Christmas", "Mouse Memoirs", "Mr Bedfort",
+                    "Mr Dafoe", "Mr De Haviland", "Mrs Saint Delafield", "Mrs Sheppards",
+                    "Ms Madi", "Mukta", "Mukta Mahee", "Mukta Malar", "Mukta Vaani", "Mulish",
+                    "Murecho", "MuseoModerno", "My Soul", "Mystery Quest", "NTR", "Nabla",
+                    "Nanum Brush Script", "Nanum Gothic", "Nanum Gothic Coding", "Nanum Myeongjo",
+                    "Nanum Pen Script", "Neonderthaw", "Nerko One", "Neucha", "Neuton",
+                    "New Rocker", "New Tegomin", "News Cycle", "Newsreader", "Niconne",
+                    "Niramit", "Nixie One", "Nobile", "Nokora", "Norican", "Nosifer",
+                    "Notable", "Nothing You Could Do", "Noticia Text", "Noto Color Emoji",
+                    "Noto Emoji", "Noto Kufi Arabic", "Noto Music", "Noto Naskh Arabic",
+                    "Noto Nastaliq Urdu", "Noto Rashi Hebrew", "Noto Sans", "Noto Sans Adlam",
+                    "Noto Sans Adlam Unjoined", "Noto Sans Anatolian Hieroglyphs", "Noto Sans Arabic",
+                    "Noto Sans Armenian", "Noto Sans Avestan", "Noto Sans Balinese", "Noto Sans Bamum",
+                    "Noto Sans Bassa Vah", "Noto Sans Batak", "Noto Sans Bengali", "Noto Sans Bhaiksuki",
+                    "Noto Sans Brahmi", "Noto Sans Buginese", "Noto Sans Buhid", "Noto Sans Canaanite",
+                    "Noto Sans Carian", "Noto Sans Caucasian Albanian", "Noto Sans Chakma",
+                    "Noto Sans Cham", "Noto Sans Cherokee", "Noto Sans Chorasmian", "Noto Sans Coptic",
+                    "Noto Sans Cuneiform", "Noto Sans Cypriot", "Noto Sans Cypro Minoan",
+                    "Noto Sans Deseret", "Noto Sans Devanagari", "Noto Sans Display",
+                    "Noto Sans Duployan", "Noto Sans Egyptian Hieroglyphs", "Noto Sans Elbasan",
+                    "Noto Sans Elymaic", "Noto Sans Ethiopic", "Noto Sans Georgian",
+                    "Noto Sans Glagolitic", "Noto Sans Gothic", "Noto Sans Grantha",
+                    "Noto Sans Gujarati", "Noto Sans Gunjala Gondi", "Noto Sans Gurmukhi",
+                    "Noto Sans HK", "Noto Sans Hanifi Rohingya", "Noto Sans Hanunoo",
+                    "Noto Sans Hatran", "Noto Sans Hebrew", "Noto Sans Imperial Aramaic",
+                    "Noto Sans Indic Siyaq Numbers", "Noto Sans Inscriptional Pahlavi",
+                    "Noto Sans Inscriptional Parthian", "Noto Sans Javanese", "Noto Sans JP",
+                    "Noto Sans Kaithi", "Noto Sans Kannada", "Noto Sans Kayah Li", "Noto Sans Kharoshthi",
+                    "Noto Sans Khmer", "Noto Sans Khojki", "Noto Sans Khudawadi", "Noto Sans Lao",
+                    "Noto Sans Lao Looped", "Noto Sans Lepcha", "Noto Sans Limbu", "Noto Sans Linear A",
+                    "Noto Sans Linear B", "Noto Sans Lisu", "Noto Sans Lycian", "Noto Sans Lydian",
+                    "Noto Sans Mahajani", "Noto Sans Makasar", "Noto Sans Malayalam",
+                    "Noto Sans Mandaic", "Noto Sans Manichaean", "Noto Sans Marchen",
+                    "Noto Sans Masaram Gondi", "Noto Sans Math", "Noto Sans Mayan Numerals",
+                    "Noto Sans Medefaidrin", "Noto Sans Meetei Mayek", "Noto Sans Mende Kikakui",
+                    "Noto Sans Meroitic", "Noto Sans Miao", "Noto Sans Modi", "Noto Sans Mongolian",
+                    "Noto Sans Mono", "Noto Sans Mro", "Noto Sans Multani", "Noto Sans Myanmar",
+                    "Noto Sans N Ko", "Noto Sans Nabataean", "Noto Sans Nag Mundari",
+                    "Noto Sans Nandinagari", "Noto Sans New Tai Lue", "Noto Sans Newa",
+                    "Noto Sans Nushu", "Noto Sans Ogham", "Noto Sans Ol Chiki", "Noto Sans Old Hungarian",
+                    "Noto Sans Old Italic", "Noto Sans Old North Arabian", "Noto Sans Old Permic",
+                    "Noto Sans Old Persian", "Noto Sans Old Sogdian", "Noto Sans Old South Arabian",
+                    "Noto Sans Old Turkic", "Noto Sans Oriya", "Noto Sans Osage", "Noto Sans Osmanya",
+                    "Noto Sans Pahawh Hmong", "Noto Sans Palmyrene", "Noto Sans Pau Cin Hau",
+                    "Noto Sans Phags Pa", "Noto Sans Phoenician", "Noto Sans Psalter Pahlavi",
+                    "Noto Sans Rejang", "Noto Sans Runic", "Noto Sans Samaritan", "Noto Sans Saurashtra",
+                    "Noto Sans Sharada", "Noto Sans Shavian", "Noto Sans Siddham", "Noto Sans SignWriting",
+                    "Noto Sans Sinhala", "Noto Sans Sogdian", "Noto Sans Sora Sompeng",
+                    "Noto Sans Soyombo", "Noto Sans Sundanese", "Noto Sans Syloti Nagri",
+                    "Noto Sans Symbols", "Noto Sans Symbols 2", "Noto Sans Syriac", "Noto Sans Tagalog",
+                    "Noto Sans Tagbanwa", "Noto Sans Tai Le", "Noto Sans Tai Tham", "Noto Sans Tai Viet",
+                    "Noto Sans Takri", "Noto Sans Tamil", "Noto Sans Tamil Supplement",
+                    "Noto Sans Tangsa", "Noto Sans Telugu", "Noto Sans Thaana", "Noto Sans Thai",
+                    "Noto Sans Thai Looped", "Noto Sans Tifinagh", "Noto Sans Tirhuta",
+                    "Noto Sans Ugaritic", "Noto Sans Vai", "Noto Sans Wancho", "Noto Sans Warang Citi",
+                    "Noto Sans Yi", "Noto Sans Zanabazar Square", "Noto Serif", "Noto Serif Ahom",
+                    "Noto Serif Armenian", "Noto Serif Balinese", "Noto Serif Bengali",
+                    "Noto Serif Devanagari", "Noto Serif Display", "Noto Serif Dogra",
+                    "Noto Serif Ethiopic", "Noto Serif Georgian", "Noto Serif Grantha",
+                    "Noto Serif Gujarati", "Noto Serif Gurmukhi", "Noto Serif HK", "Noto Serif Hebrew",
+                    "Noto Serif JP", "Noto Serif Kannada", "Noto Serif Khitan Small Script",
+                    "Noto Serif Khmer", "Noto Serif Khojki", "Noto Serif Lao", "Noto Serif Malayalam",
+                    "Noto Serif Myanmar", "Noto Serif NP Hmong", "Noto Serif Oriya", "Noto Serif Ottoman Siyaq",
+                    "Noto Serif SC", "Noto Serif Sinhala", "Noto Serif Tamil", "Noto Serif Tangut",
+                    "Noto Serif Telugu", "Noto Serif Thai", "Noto Serif Tibetan", "Noto Serif Toto",
+                    "Noto Serif Vithkuqi", "Noto Serif Yezidi", "Noto Traditional Nushu",
+                    "Nova Cut", "Nova Flat", "Nova Mono", "Nova Oval", "Nova Round", "Nova Script",
+                    "Nova Slim", "Nova Square", "Numans", "Nunito", "Nunito Sans", "Nuosu SIL",
+                    "Odibee Sans", "Odor Mean Chey", "Offside", "Oi", "Old Standard TT", "Oldenburg",
+                    "Ole", "Oleo Script", "Oleo Script Swash Caps", "Oooh Baby", "Open Sans",
+                    "Open Sans Condensed", "Oranienbaum", "Orbit", "Orbitron", "Oregano",
+                    "Orelega One", "Orienta", "Original Surfer", "Oswald", "Outfit",
+                    "Over the Rainbow", "Overlock", "Overlock SC", "Overpass", "Overpass Mono",
+                    "Ovo", "Oxanium", "Oxygen", "Oxygen Mono", "PT Mono", "PT Sans", "PT Sans Caption",
+                    "PT Sans Narrow", "PT Serif", "PT Serif Caption", "Pacifico", "Padauk",
+                    "Padyakke Expanded One", "Palette Mosaic", "Palanquin", "Palanquin Dark",
+                    "Palette Mosaic", "Pangolin", "Paprika", "Parisienne", "Passero One",
+                    "Passion One", "Passions Conflict", "Pathway Extreme", "Pathway Gothic One",
+                    "Patrick Hand", "Patrick Hand SC", "Pattaya", "Patua One", "Pavanam",
+                    "Paytone One", "Peddana", "Peralta", "Permanent Marker", "Petemoss",
+                    "Petit Formal Script", "Petrona", "Philosopher", "Piazzolla", "Piedra",
+                    "Pinyon Script", "Pirata One", "Plaster", "Play", "Playball", "Playfair Display",
+                    "Playfair Display SC", "Playpen Sans", "Plus Jakarta Sans", "Podkova",
+                    "Poiret One", "Poller One", "Poly", "Pompiere", "Pontano Sans", "Poor Story",
+                    "Poppins", "Port Lligat Sans", "Port Lligat Slab", "Potta One", "Pragati Narrow",
+                    "Praise", "Prata", "Preahvihear", "Press Start 2P", "Pridi", "Princess Sofia",
+                    "Prociono", "Prompt", "Prosto One", "Proza Libre", "Public Sans", "Puppies Play",
+                    "Puritan", "Purple Purse", "Qahiri", "Quando", "Quantico", "Quarzo",
+                    "Quattrocento", "Quattrocento Sans", "Questrial", "Quicksand", "Quintessential",
+                    "Qwigley", "Qwitcher Grypen", "Racing Sans One", "Radio Canada", "Radley",
+                    "Rajdhani", "Rakkas", "Raleway", "Raleway Dots", "Ramabhadra", "Ramaraja",
+                    "Rambla", "Rammetto One", "Rampart One", "Ranchers", "Rancho", "Ranga",
+                    "Rasa", "Rationale", "Ravi Prakash", "Readex Pro", "Recursive", "Red Hat Display",
+                    "Red Hat Mono", "Red Hat Text", "Red Rose", "Redacted", "Redacted Script",
+                    "Redressed", "Reem Kufi", "Reem Kufi Fun", "Reem Kufi Ink", "Reenie Beanie",
+                    "Reggae One", "Revalia", "Rhodium Libre", "Ribeye", "Ribeye Marrow",
+                    "Righteous", "Risque", "Road Rage", "Roboto", "Roboto Condensed",
+                    "Roboto Flex", "Roboto Mono", "Roboto Serif", "Roboto Slab", "Rochester",
+                    "Rock Salt", "RocknRoll One", "Rokkitt", "Romanesco", "Ropa Sans",
+                    "Rosario", "Rosarivo", "Rouge Script", "Rowdies", "Rozha One", "Rubik",
+                    "Rubik 80s Fade", "Rubik Beastly", "Rubik Broken Fax", "Rubik Bubbles",
+                    "Rubik Burned", "Rubik Dirt", "Rubik Distressed", "Rubik Earth", "Rubik Glitch",
+                    "Rubik Iso", "Rubik Marker Hatch", "Rubik Maze", "Rubik Microbe", "Rubik Mono One",
+                    "Rubik Moonrocks", "Rubik Pixels", "Rubik Spray Paint", "Rubik Storm", "Rubik Vinyl",
+                    "Rubik Wet Paint", "Ruda", "Rufina", "Ruge Boogie", "Ruluko", "Rum Raisin",
+                    "Ruslan Display", "Russo One", "Ruthie", "Ruwudu", "Rye", "STIX Two Text",
+                    "Sacramento", "Sahitya", "Sail", "Saira", "Saira Condensed", "Saira Extra Condensed",
+                    "Saira Semi Condensed", "Saira Stencil One", "Salsa", "Sanchez", "Sancreek",
+                    "Sansita", "Sansita Swashed", "Sarabun", "Sarala", "Sarina", "Sarpanch",
+                    "Sassy Frass", "Satisfy", "Sawarabi Gothic", "Sawarabi Mincho", "Scada",
+                    "Scheherazade New", "Schibsted Grotesk", "Schoolbell", "Scope One",
+                    "Seaweed Script", "Secular One", "Sedgwick Ave", "Sedgwick Ave Display",
+                    "Sen", "Send Flowers", "Sevillana", "Seymour One", "Shadows Into Light",
+                    "Shadows Into Light Two", "Shalimar", "Shanti", "Share", "Share Tech",
+                    "Share Tech Mono", "Shojumaru", "Short Stack", "Shrikhand", "Siemreap",
+                    "Sigmar", "Sigmar One", "Signika", "Signika Negative", "Silkscreen",
+                    "Simonetta", "Single Day", "Sintony", "Sirin Stencil", "Six Caps",
+                    "Skranji", "Slabo 13px", "Slabo 27px", "Slackey", "Slackside One",
+                    "Smokum", "Smythe", "Sniglet", "Snippet", "Snowburst One", "Sofadi One",
+                    "Sofia", "Sofia Sans", "Sofia Sans Condensed", "Sofia Sans Extra Condensed",
+                    "Sofia Sans Semi Condensed", "Solway", "Song Myung", "Sono", "Sonsie One",
+                    "Sora", "Sorts Mill Goudy", "Source Code Pro", "Source Sans 3", "Source Sans Pro",
+                    "Source Serif 4", "Source Serif Pro", "Space Grotesk", "Space Mono",
+                    "Special Elite", "Spectral", "Spectral SC", "Spicy Rice", "Spinnaker",
+                    "Spirax", "Splash", "Spline Sans", "Spline Sans Mono", "Squada One",
+                    "Square Peg", "Sree Krushnadevaraya", "Sriracha", "Srisakdi", "Staatliches",
+                    "Stalemate", "Stalinist One", "Stardos Stencil", "Stick", "Stick No Bills",
+                    "Stint Ultra Condensed", "Stint Ultra Expanded", "Stoke", "Strait",
+                    "Stylish", "Sue Ellen Francisco", "Suez One", "Sulphur Point", "Sumana",
+                    "Sunflower", "Sunshiney", "Supermercado One", "Sura", "Suranna", "Suravaram",
+                    "Suwannaphum", "Swanky and Moo Moo", "Syncopate", "Syne", "Syne Mono",
+                    "Syne Tactile", "Tai Heritage Pro", "Tajawal", "Tangerine", "Tapestry",
+                    "Taprom", "Tauri", "Taviraj", "Teachers", "Telex", "Tenali Ramakrishna",
+                    "Tenor Sans", "Text Me One", "Texturina", "Thasadith", "The Girl Next Door",
+                    "The Nautigal", "Tienne", "Tillana", "Tilt Neon", "Tilt Prism", "Tilt Warp",
+                    "Timmana", "Tinos", "Tiro Bangla", "Tiro Devanagari Hindi", "Tiro Devanagari Marathi",
+                    "Tiro Devanagari Sanskrit", "Tiro Gurmukhi", "Tiro Kannada", "Tiro Malayalam",
+                    "Tiro Tamil", "Tiro Telugu", "Titan One", "Titillium Web", "Tomorrow",
+                    "Tourney", "Trade Winds", "Train One", "Trancas", "Trirong", "Trispace",
+                    "Trocchi", "Trochut", "Truculenta", "Trykker", "Tsukimi Rounded", "Tulpen One",
+                    "Turret Road", "Twinkle Star", "Ubuntu", "Ubuntu Condensed", "Ubuntu Mono",
+                    "Uchen", "Ultra", "Unbounded", "Uncial Antiqua", "Underdog", "Unica One",
+                    "UnifrakturCook", "UnifrakturMaguntia", "Unkempt", "Unlock", "Unna",
+                    "Updock", "Urbanist", "VT323", "Vampiro One", "Varela", "Varela Round",
+                    "Varta", "Vast Shadow", "Vazirmatn", "Vesper Libre", "Viaoda Libre", "Vibes",
+                    "Vibur", "Vidaloka", "Viga", "Vina Sans", "Voces", "Volkhov", "Vollkorn",
+                    "Vollkorn SC", "Voltaire", "Vujahday Script", "Waiting for the Sunrise",
+                    "Wallpoet", "Walter Turncoat", "Warnes", "Water Brush", "Waterfall",
+                    "Wavefont", "Weather Icons", "Wellfleet", "Wendy One", "Whisper",
+                    "WindSong", "Wire One", "Wix Madefor Display", "Wix Madefor Text",
+                    "Work Sans", "Xanh Mono", "Yaldevi", "Yanone Kaffeesatz", "Yantramanav",
+                    "Yatra One", "Yellowtail", "Yeon Sung", "Yeseva One", "Yesteryear",
+                    "Yomogi", "Yrsa", "Yuji Boku", "Yuji Hentaigana Akari", "Yuji Hentaigana Akebono",
+                    "Yuji Mai", "Yuji Syuku", "Yusei Magic", "ZCOOL KuaiLe", "ZCOOL QingKe HuangYou",
+                    "ZCOOL XiaoWei", "Zen Antique", "Zen Antique Soft", "Zen Dots", "Zen Kaku Gothic Antique",
+                    "Zen Kaku Gothic New", "Zen Loop", "Zen Maru Gothic", "Zen Old Mincho",
+                    "Zen Tokyo Zoo", "Zeyada", "Zhi Mang Xing", "Zilla Slab", "Zilla Slab Highlight"
                 ];
                 googleFontsList = [...new Set(googleFontsList)];
                 googleFontsList.sort((a, b) => a.localeCompare(b));
             }
             const datalist = document.getElementById('google-fonts');
             datalist.innerHTML = '';
-            googleFontsList.forEach(font => {
+            // Only show first 500 for performance, but searchable
+            const displayFonts = googleFontsList.slice(0, 500);
+            displayFonts.forEach(font => {
                 const opt = document.createElement('option');
                 opt.value = font;
                 datalist.appendChild(opt);
@@ -985,7 +1399,6 @@
 
         async function updateStats(username, type, key, increment = 1) {
             try {
-                // Fetch current user
                 const rows = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
                 if (!rows || rows.length === 0) return;
                 const user = rows[0];
@@ -1005,26 +1418,46 @@
                     payload.device_stats = deviceStats;
                 }
                 if (Object.keys(payload).length) {
-                    const result = await supa.patch("users", `username=eq.${encodeURIComponent(username)}`, payload);
-                    console.log(`[Stats] ${type} updated for ${username}:`, payload);
+                    await supa.patch("users", `username=eq.${encodeURIComponent(username)}`, payload);
                 }
-            } catch(e) {
-                console.warn('[Stats] Update failed:', e);
-                console.warn('Make sure the columns link_stats, daily_views, device_stats exist in your users table.');
-            }
+            } catch(e) { console.warn('[Stats] Update failed:', e); }
         }
 
-        // Track view and device on page load
         async function trackViewAndDevice(username) {
             await updateStats(username, 'daily_view', getTodayStr(), 1);
             const device = getDeviceType();
             await updateStats(username, 'device', device, 1);
         }
 
-        // Track link click
         function trackLinkClick(username, linkLabel) {
-            console.log(`[Stats] Tracking link click for username: ${username}, link: ${linkLabel}`);
             updateStats(username, 'link', linkLabel, 1);
+        }
+
+        // ===== GUESTBOOK FUNCTIONS =====
+        async function fetchGuestbook(username) {
+            try {
+                const rows = await supa.get("guestbook", `profile_username=eq.${encodeURIComponent(username)}&order=created_at.desc&limit=50`);
+                return rows || [];
+            } catch(e) { return []; }
+        }
+
+        async function postGuestbook(profileUsername, visitorName, text) {
+            try {
+                const result = await supa.post("guestbook", {
+                    profile_username: profileUsername,
+                    visitor_name: visitorName || "Anonymous",
+                    text: text,
+                    created_at: new Date().toISOString()
+                });
+                return result && result[0];
+            } catch(e) { console.error(e); return null; }
+        }
+
+        async function deleteGuestbookEntry(id) {
+            try {
+                await supa.delete("guestbook", `id=eq.${id}`);
+                return true;
+            } catch(e) { return false; }
         }
 
         // ===== RESOLVE ROUTE =====
@@ -1033,7 +1466,16 @@
             await fetchGoogleFonts();
             if (!slug || slug === "") { showSignupPage(); return; }
             showProfilePage();
-            if (STATIC_USERS[slug]) { C = JSON.parse(JSON.stringify(STATIC_USERS[slug])); likeId = "forgave.lol/" + slug; return; }
+            if (STATIC_USERS[slug]) {
+                C = JSON.parse(JSON.stringify(STATIC_USERS[slug]));
+                likeId = "forgave.lol/" + slug;
+                // Load guestbook
+                if (C.guestbook_enabled) {
+                    const entries = await fetchGuestbook(slug);
+                    C.guestbook_entries = entries;
+                }
+                return;
+            }
             try {
                 const rows = await supa.get("users", `username=eq.${encodeURIComponent(slug)}`);
                 if (rows && rows[0]) {
@@ -1054,11 +1496,17 @@
                         cursor_effect: u.cursor_effect || "ghost", custom_cursor: u.custom_cursor || "",
                         custom_font: u.custom_font || "DM Mono", typewriter_line1: u.typewriter_line1 || false,
                         typewriter_line2: u.typewriter_line2 || false, typewriter_line3: u.typewriter_line3 || false,
-                        transparent_bg: u.transparent_bg || false, disable_shadow: u.disable_shadow || false,
-                        card_bg_color: u.card_bg_color || "", border_color: u.border_color || "", views: u.views || 0,
+                        typewriter_speed: u.typewriter_speed || 70, transparent_bg: u.transparent_bg || false,
+                        disable_shadow: u.disable_shadow || false, card_bg_color: u.card_bg_color || "",
+                        border_color: u.border_color || "", views: u.views || 0, avatar: u.avatar || "",
+                        guestbook_enabled: u.guestbook_enabled || false,
                         link_stats: u.link_stats || {}, daily_views: u.daily_views || {}, device_stats: u.device_stats || {}
                     };
                     likeId = "forgave.lol/" + slug;
+                    if (C.guestbook_enabled) {
+                        const entries = await fetchGuestbook(slug);
+                        C.guestbook_entries = entries;
+                    }
                     return;
                 }
             } catch(e) { console.error(e); }
@@ -1072,7 +1520,6 @@
             localStorage.setItem(`frgv_viewed_${slug}`, "1");
             try {
                 await supa.patch("users", `username=eq.${encodeURIComponent(slug)}`, { views: (C?.views || 0) + 1 });
-                // Also track daily view and device
                 await trackViewAndDevice(slug);
             } catch(e) { console.warn("view increment failed", e); }
         }
@@ -1113,6 +1560,31 @@
             if (!C) return;
             const mainCard = document.getElementById("content");
             const secondCard = document.getElementById("second-card");
+            const stack = document.getElementById("card-stack");
+            // Remove all card style classes
+            stack.className = '';
+            if (C.card_style && C.card_style !== 'default') {
+                stack.classList.add('card-style-' + C.card_style);
+            }
+            // Terminal rain effect
+            const existingRain = document.querySelector('.terminal-rain');
+            if (existingRain) existingRain.remove();
+            if (C.card_style === 'terminal') {
+                const rain = document.createElement('div');
+                rain.className = 'terminal-rain';
+                const chars = ['0','1'];
+                for (let i = 0; i < 30; i++) {
+                    const span = document.createElement('span');
+                    span.textContent = chars[Math.floor(Math.random() * chars.length)];
+                    span.style.left = Math.random() * 100 + '%';
+                    span.style.animationDuration = (2 + Math.random() * 4) + 's';
+                    span.style.animationDelay = Math.random() * 3 + 's';
+                    span.style.fontSize = (8 + Math.random() * 6) + 'px';
+                    rain.appendChild(span);
+                }
+                mainCard.appendChild(rain);
+            }
+
             const radius = C.border_radius;
             let opacity = C.card_opacity;
             if (C.transparent_bg) opacity = 0;
@@ -1142,8 +1614,16 @@
                 mainCard.style.boxShadow = "none";
                 if (secondCard) secondCard.style.boxShadow = "none";
             } else {
-                mainCard.style.boxShadow = "0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 28px 72px rgba(0,0,0,0.75),0 8px 22px rgba(0,0,0,0.4)";
-                if (secondCard) secondCard.style.boxShadow = "0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 12px 32px rgba(0,0,0,0.5)";
+                if (C.card_style === 'neon') {
+                    mainCard.style.boxShadow = "0 0 30px rgba(0,255,255,0.3),0 0 60px rgba(0,255,255,0.1),inset 0 0 30px rgba(0,255,255,0.05)";
+                } else if (C.card_style === 'terminal') {
+                    mainCard.style.boxShadow = "0 0 30px rgba(0,255,0,0.1),inset 0 0 60px rgba(0,255,0,0.03)";
+                } else {
+                    mainCard.style.boxShadow = "0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 28px 72px rgba(0,0,0,0.75),0 8px 22px rgba(0,0,0,0.4)";
+                }
+                if (secondCard) {
+                    secondCard.style.boxShadow = "0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 12px 32px rgba(0,0,0,0.5)";
+                }
             }
             let style = document.getElementById("dynamic-card-styles");
             if (style) style.remove();
@@ -1221,24 +1701,24 @@
         }
         function setCursorEffect(effect) { cursorEffect = effect; }
 
-        function startLoopingTypewriter(element, text, delayBeforeStart=0) {
+        function startLoopingTypewriter(element, text, delayBeforeStart=0, speed=70) {
             if (!element || !text) return;
             let isDeleting=false, currentText="", pos=0;
             element.innerHTML="";
             function update() { element.innerHTML=currentText+'<span class="typewriter-cursor" style="opacity:1;display:inline-block;width:0.5em;overflow:visible;">|</span>'; }
             function typeStep() {
                 if (!isDeleting) {
-                    if (pos<text.length) { currentText+=text[pos]; pos++; update(); setTimeout(typeStep,70+Math.random()*40); }
-                    else { isDeleting=true; setTimeout(typeStep,2000); }
+                    if (pos<text.length) { currentText+=text[pos]; pos++; update(); setTimeout(typeStep, speed + Math.random()*30); }
+                    else { isDeleting=true; setTimeout(typeStep, 2000); }
                 } else {
-                    if (pos>0) { currentText=currentText.slice(0,-1); pos--; update(); setTimeout(typeStep,50); }
-                    else { isDeleting=false; setTimeout(typeStep,500); }
+                    if (pos>0) { currentText=currentText.slice(0,-1); pos--; update(); setTimeout(typeStep, speed*0.6); }
+                    else { isDeleting=false; setTimeout(typeStep, 500); }
                 }
             }
             setTimeout(()=>{ typeStep(); }, delayBeforeStart);
         }
 
-        // ========== LEADERBOARD ==========
+        // ===== LEADERBOARD =====
         const leaderboardBtn = document.getElementById("leaderboard-btn");
         const leaderboardModal = document.getElementById("leaderboard-modal");
         const leaderboardClose = document.getElementById("leaderboard-close");
@@ -1297,7 +1777,7 @@
             tab.onclick=()=>{ document.querySelectorAll(".leaderboard-tab").forEach(t=>t.classList.remove("active")); tab.classList.add("active"); currentLeaderboardTab=tab.dataset.tab; fetchLeaderboard(currentLeaderboardTab); };
         });
 
-        // ========== RENDER CARD ==========
+        // ===== RENDER CARD =====
         function renderCard() {
             if (!C) {
                 document.getElementById("card-stack").style.display="none";
@@ -1307,13 +1787,23 @@
             }
             document.getElementById("last-change-date").textContent=C.lastChange;
 
+            // Avatar
+            const avatar = document.getElementById('profile-avatar');
+            if (C.avatar && C.avatar.trim()) {
+                avatar.src = C.avatar.trim();
+                avatar.style.display = 'block';
+                avatar.onerror = function() { this.style.display = 'none'; };
+            } else {
+                avatar.style.display = 'none';
+            }
+
             const cardContent=document.getElementById("content");
             const secondCard=document.getElementById("second-card");
             if (C.custom_font && C.custom_font!=="DM Mono") {
                 const ff=C.custom_font;
                 cardContent.style.fontFamily=`${ff},monospace`;
                 if (secondCard) secondCard.style.fontFamily=`${ff},monospace`;
-                document.querySelectorAll(".meta-line,.alias-row,.username,.site-name,#like-btn,.view-count").forEach(el=>{ el.style.fontFamily=`${ff},monospace`; });
+                document.querySelectorAll(".meta-line,.alias-row,.username,.site-name,#like-btn,.view-count,.multi-tab").forEach(el=>{ el.style.fontFamily=`${ff},monospace`; });
                 try {
                     const link = document.getElementById('dynamic-font-link');
                     if (link) link.remove();
@@ -1326,7 +1816,7 @@
             } else {
                 cardContent.style.fontFamily="";
                 if (secondCard) secondCard.style.fontFamily="";
-                document.querySelectorAll(".meta-line,.alias-row,.username,.site-name,#like-btn,.view-count").forEach(el=>{ el.style.fontFamily=""; });
+                document.querySelectorAll(".meta-line,.alias-row,.username,.site-name,#like-btn,.view-count,.multi-tab").forEach(el=>{ el.style.fontFamily=""; });
             }
 
             const usernameRow=document.getElementById("username-row");
@@ -1346,24 +1836,26 @@
                 aliasRow.innerHTML="also known as: "+aliases.map((a,i)=>`<a href="https://forgave.lol/${a}" target="_blank">${a}</a>${i<aliases.length-1?'<span class="alias-sep">,</span> ':''}`).join("");
             } else { aliasRow.style.display="none"; aliasRow.innerHTML=""; }
 
+            // BIO LINES with typewriter speed
             const line1El=document.getElementById("line1");
             const line2El=document.getElementById("line2");
             const line3El=document.getElementById("line3");
             const lineTexts=[C.lines[0]||"",C.lines[1]||"",C.lines[2]||""];
+            const speed = C.typewriter_speed || 70;
             if (window._typewriterTimeouts) { window._typewriterTimeouts.forEach(t=>clearTimeout(t)); window._typewriterTimeouts=[]; } else window._typewriterTimeouts=[];
 
-            if (C.typewriter_line1&&lineTexts[0]) { line1El.innerHTML=""; const t=setTimeout(()=>startLoopingTypewriter(line1El,lineTexts[0],0),820); window._typewriterTimeouts.push(t); } else { line1El.textContent=lineTexts[0]; }
-            if (C.typewriter_line2&&lineTexts[1]) { line2El.innerHTML=""; const t=setTimeout(()=>startLoopingTypewriter(line2El,lineTexts[1],0),900); window._typewriterTimeouts.push(t); } else { line2El.textContent=lineTexts[1]; }
-            if (C.typewriter_line3&&lineTexts[2]) { line3El.innerHTML=""; const t=setTimeout(()=>startLoopingTypewriter(line3El,lineTexts[2],0),980); window._typewriterTimeouts.push(t); } else { line3El.textContent=lineTexts[2]; }
+            if (C.typewriter_line1 && lineTexts[0]) { line1El.innerHTML=""; const t=setTimeout(()=>startLoopingTypewriter(line1El,lineTexts[0],0,speed),820); window._typewriterTimeouts.push(t); } else { line1El.textContent=lineTexts[0]; }
+            if (C.typewriter_line2 && lineTexts[1]) { line2El.innerHTML=""; const t=setTimeout(()=>startLoopingTypewriter(line2El,lineTexts[1],0,speed),900); window._typewriterTimeouts.push(t); } else { line2El.textContent=lineTexts[1]; }
+            if (C.typewriter_line3 && lineTexts[2]) { line3El.innerHTML=""; const t=setTimeout(()=>startLoopingTypewriter(line3El,lineTexts[2],0,speed),980); window._typewriterTimeouts.push(t); } else { line3El.textContent=lineTexts[2]; }
 
             const discordLine=document.getElementById("discord-line");
             if (C.discord) { discordLine.style.display=""; document.getElementById("discord-val").textContent=C.discord; } else { discordLine.style.display="none"; }
 
+            // LINKS
             const linksContainer=document.getElementById("links-container");
             linksContainer.innerHTML="";
             (C.links||[]).forEach(lk=>{
                 const a=document.createElement("a"); a.className="icon-link"; a.href=lk.url; a.target="_blank"; a.rel="noopener"; a.title=lk.label;
-                // Track click for stats
                 a.addEventListener('click', (e) => {
                     if (slug && slug !== "" && slug !== "n") {
                         trackLinkClick(slug, lk.icon || lk.label || 'link');
@@ -1384,6 +1876,7 @@
 
             document.getElementById("view-num").textContent=formatNumber(C.views||0);
 
+            // SITE NAME typing
             const nameEl=document.getElementById("site-name");
             const typeText=C.siteName;
             let ti=0,deleting=false;
@@ -1393,25 +1886,18 @@
             }
             setTimeout(typeStep,700);
 
+            // BACKGROUND VIDEO & WORDS
             const bgvideo=document.getElementById("bgvideo");
             const wordCanvas=document.getElementById("wordfield");
             const wordCtx=wordCanvas.getContext("2d");
             const hasVideo=C.bgVideo.urls&&C.bgVideo.urls.length>0;
             if (hasVideo) { bgvideo.src=C.bgVideo.urls[Math.floor(Math.random()*C.bgVideo.urls.length)]; bgvideo.style.display="block"; bgvideo.style.opacity=C.bgVideo.opacity; wordCanvas.style.display="none"; }
 
-            const overlayElem2=document.getElementById("overlay");
-            overlayElem2.onclick=()=>{
-                overlayElem2.classList.add("hide");
-                setTimeout(()=>overlayElem2.remove(),700);
-                if (hasVideo) bgvideo.play().catch(()=>{});
-            };
-            overlayElem2.style.pointerEvents='auto'; overlayElem2.style.cursor='pointer';
-
             function resizeWords() { wordCanvas.width=window.innerWidth; wordCanvas.height=window.innerHeight; }
             resizeWords(); window.addEventListener("resize",()=>{ resizeWords(); initWords(); });
             const words=[];
             function randWord() { return C.bgWords[Math.floor(Math.random()*C.bgWords.length)]; }
-            function makeWord(top) { const depth=Math.random(); const size=C.wordSize[0]+depth*(C.wordSize[1]-C.wordSize[0]); const speed=C.wordSpeed[0]+depth*(C.wordSpeed[1]-C.wordSpeed[0]); return { text:randWord(), x:Math.random()*wordCanvas.width, y:top?-(size*2+Math.random()*80):Math.random()*wordCanvas.height, size, speed, depth, rot:(Math.random()-.5)*Math.PI*2, rotSpeed:(Math.random()>.5?1:-1)*(0.002+Math.random()*C.wordSpin), drift:(Math.random()-.5)*.15, opacity:.03+depth*.20 }; }
+            function makeWord(top) { const depth=Math.random(); const size=C.wordSize[0]+depth*(C.wordSize[1]-C.wordSize[0]); const speed2=C.wordSpeed[0]+depth*(C.wordSpeed[1]-C.wordSpeed[0]); return { text:randWord(), x:Math.random()*wordCanvas.width, y:top?-(size*2+Math.random()*80):Math.random()*wordCanvas.height, size, speed:speed2, depth, rot:(Math.random()-.5)*Math.PI*2, rotSpeed:(Math.random()>.5?1:-1)*(0.002+Math.random()*C.wordSpin), drift:(Math.random()-.5)*.15, opacity:.03+depth*.20 }; }
             function initWords() { words.length=0; for(let i=0;i<C.wordCount;i++) words.push(makeWord(false)); }
             initWords();
             function drawWords() {
@@ -1421,6 +1907,7 @@
             }
             drawWords();
 
+            // LIKES
             const likeBtn=document.getElementById("like-btn");
             const likeNum=document.getElementById("like-num");
             const likeKey="liked_"+likeId.replace(/\//g,"_");
@@ -1445,27 +1932,202 @@
             likeBtn.onclick=()=>{ if(!hasLiked){hasLiked=true;localStorage.setItem(likeKey,"1");likeBtn.classList.add("liked");updateLike(1);}else{hasLiked=false;localStorage.removeItem(likeKey);likeBtn.classList.remove("liked");updateLike(-1);} };
             fetchLikes();
 
+            // CARD STYLE
             const body=document.body;
             const stackElem2=document.getElementById("card-stack");
             const secondCardDiv=document.getElementById("second-card");
-            if (C.card_style==="minimalistic") {
-                body.classList.add("minimalistic-mode"); stackElem2.style.display=""; secondCardDiv.style.display="none";
+            const isMinimalistic = C.card_style === "minimalistic";
+            const isModern = C.card_style === "modern";
+            const isMulti = C.card_style === "multi";
+
+            if (isMinimalistic) {
+                body.classList.add("minimalistic-mode");
+                secondCardDiv.style.display="none";
                 const lm=document.querySelector("#content .meta-label"); if(lm) lm.style.display="";
             } else {
-                body.classList.remove("minimalistic-mode"); stackElem2.style.display="";
-                if (C.card_style==="modern") {
-                    secondCardDiv.style.display="block"; secondCardDiv.innerHTML=`<div class="meta-line" style="margin:0;text-align:center;">last change: ${C.lastChange}</div>`;
+                body.classList.remove("minimalistic-mode");
+                if (isModern) {
+                    secondCardDiv.style.display="block";
+                    secondCardDiv.innerHTML=`<div class="meta-line" style="margin:0;text-align:center;">last change: ${C.lastChange}</div>`;
                     const lm=document.querySelector("#content .meta-label"); if(lm) lm.style.display="none";
+                } else if (isMulti) {
+                    // Multi-card: tabs inside the main card
+                    secondCardDiv.style.display="none";
+                    const lm=document.querySelector("#content .meta-label"); if(lm) lm.style.display="none";
+                    // Render multi-card tabs
+                    renderMultiCard();
                 } else {
                     secondCardDiv.style.display="none";
                     const lm=document.querySelector("#content .meta-label"); if(lm) lm.style.display="";
                 }
             }
-            applyCardStyles(); initParallax(); setCursorEffect(C.cursor_effect); applyCustomCursor(C.custom_cursor);
+
+            applyCardStyles();
+            initParallax();
+            setCursorEffect(C.cursor_effect);
+            applyCustomCursor(C.custom_cursor);
             incrementViews();
+
+            // GUESTBOOK
+            renderGuestbook();
         }
 
-        // ========== AUTH UI ==========
+        // ===== MULTI-CARD RENDER =====
+        function renderMultiCard() {
+            const content = document.getElementById('content');
+            // Remove existing multi content
+            const existing = content.querySelector('.multi-tabs');
+            if (existing) {
+                content.innerHTML = '';
+                // Re-add card header
+                content.innerHTML = `
+                    <div class="card-header">
+                        <img class="profile-avatar" id="profile-avatar" src="" alt="avatar">
+                        <div class="site-name" id="site-name"></div>
+                        <div class="username-row" id="username-row"></div>
+                        <div class="alias-row" id="alias-row" style="display:none"></div>
+                    </div>
+                `;
+            }
+            // Add tabs
+            const tabsDiv = document.createElement('div');
+            tabsDiv.className = 'multi-tabs';
+            const panes = [
+                { id: 'bio', label: 'Bio' },
+                { id: 'links', label: 'Links' },
+                { id: 'gallery', label: 'Gallery' }
+            ];
+            panes.forEach((p, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'multi-tab' + (i === 0 ? ' active' : '');
+                btn.textContent = p.label;
+                btn.dataset.pane = p.id;
+                btn.onclick = () => {
+                    document.querySelectorAll('.multi-tab').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.querySelectorAll('.multi-pane').forEach(pan => pan.classList.remove('active'));
+                    document.getElementById('pane-' + p.id).classList.add('active');
+                };
+                tabsDiv.appendChild(btn);
+            });
+            content.appendChild(tabsDiv);
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'multi-content';
+
+            // Pane: Bio
+            const bioPane = document.createElement('div');
+            bioPane.className = 'multi-pane active';
+            bioPane.id = 'pane-bio';
+            bioPane.innerHTML = `
+                <div class="meta-label" style="margin-bottom:8px;">last change: ${C.lastChange}</div>
+                <div class="meta-line">${C.lines[0] || ''}</div>
+                <div class="meta-line">${C.lines[1] || ''}</div>
+                <div class="meta-line">${C.lines[2] || ''}</div>
+                ${C.discord ? `<div class="meta-line">discord — ${C.discord}</div>` : ''}
+                <div style="margin-top:12px;font-size:.6rem;color:rgba(255,255,255,.2);">UID: ${C.uid}</div>
+            `;
+            contentDiv.appendChild(bioPane);
+
+            // Pane: Links
+            const linksPane = document.createElement('div');
+            linksPane.className = 'multi-pane';
+            linksPane.id = 'pane-links';
+            let linksHtml = '';
+            (C.links||[]).forEach(lk => {
+                linksHtml += `<div class="meta-line" style="display:flex;align-items:center;gap:8px;">
+                    <a href="${lk.url}" target="_blank" style="color:rgba(255,255,255,.6);text-decoration:none;">${lk.icon || '🔗'} ${lk.label}</a>
+                </div>`;
+            });
+            linksPane.innerHTML = linksHtml || '<div style="font-size:.6rem;color:rgba(255,255,255,.2);">No links yet.</div>';
+            contentDiv.appendChild(linksPane);
+
+            // Pane: Gallery (placeholder)
+            const galleryPane = document.createElement('div');
+            galleryPane.className = 'multi-pane';
+            galleryPane.id = 'pane-gallery';
+            galleryPane.innerHTML = `<div style="font-size:.6rem;color:rgba(255,255,255,.2);">Gallery coming soon — upload images to showcase your work.</div>`;
+            contentDiv.appendChild(galleryPane);
+
+            content.appendChild(contentDiv);
+        }
+
+        // ===== GUESTBOOK RENDER =====
+        function renderGuestbook() {
+            const mainMeta = document.getElementById('main-meta');
+            if (!mainMeta) return;
+            // Remove existing guestbook section
+            const existingGB = document.getElementById('guestbook-section');
+            if (existingGB) existingGB.remove();
+
+            if (!C || !C.guestbook_enabled) return;
+
+            const section = document.createElement('div');
+            section.id = 'guestbook-section';
+            section.style.marginTop = '16px';
+            section.style.paddingTop = '16px';
+            section.style.borderTop = '1px solid rgba(255,255,255,.06)';
+
+            const title = document.createElement('div');
+            title.style.cssText = 'font-size:.6rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:10px;';
+            title.textContent = 'Guest Book';
+            section.appendChild(title);
+
+            const entries = C.guestbook_entries || [];
+            const container = document.createElement('div');
+            container.id = 'gb-entries';
+
+            if (entries.length === 0) {
+                container.innerHTML = '<div class="guestbook-empty">No comments yet. Be the first!</div>';
+            } else {
+                entries.forEach(entry => {
+                    const div = document.createElement('div');
+                    div.className = 'guestbook-entry';
+                    div.innerHTML = `
+                        <div class="gb-name">${entry.visitor_name || 'Anonymous'} <span class="gb-time">${new Date(entry.created_at).toLocaleDateString()}</span></div>
+                        <div class="gb-text">${entry.text}</div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+            section.appendChild(container);
+
+            // Add comment form
+            const form = document.createElement('div');
+            form.className = 'guestbook-form';
+            form.innerHTML = `
+                <input type="text" id="gb-name-input" placeholder="Your name (optional)" maxlength="30" style="flex:0.5;">
+                <input type="text" id="gb-text-input" placeholder="Leave a comment..." maxlength="500" style="flex:1;">
+                <button id="gb-submit-btn">Post</button>
+            `;
+            section.appendChild(form);
+
+            mainMeta.parentNode.insertBefore(section, mainMeta.nextSibling);
+
+            document.getElementById('gb-submit-btn').onclick = async function() {
+                const nameInput = document.getElementById('gb-name-input');
+                const textInput = document.getElementById('gb-text-input');
+                const name = nameInput.value.trim() || 'Anonymous';
+                const text = textInput.value.trim();
+                if (!text) return;
+                this.disabled = true;
+                this.textContent = 'Posting...';
+                const result = await postGuestbook(slug, name, text);
+                if (result) {
+                    textInput.value = '';
+                    // Refresh guestbook
+                    const newEntries = await fetchGuestbook(slug);
+                    C.guestbook_entries = newEntries;
+                    renderGuestbook();
+                } else {
+                    alert('Failed to post comment. Try again.');
+                }
+                this.disabled = false;
+                this.textContent = 'Post';
+            };
+        }
+
+        // ===== AUTH UI =====
         const authModal=document.getElementById("auth-modal");
         const dashModal=document.getElementById("dash-modal");
         const userPillEl=document.getElementById("user-pill");
@@ -1524,8 +2186,16 @@
                 try{const allUsers=await supa.get("users","order=uid.desc&limit=1");if(allUsers&&allUsers.length>0)nextUid=allUsers[0].uid+1;}catch(e){}
                 const hash=await hashPassword(pw);
                 const now=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
-                // REMOVED link_stats, daily_views, device_stats to avoid column errors
-                const result=await supa.post("users",{username,password_hash:hash,uid:nextUid,lines:["","",""],discord:"",links:[],bg_video_urls:[],bg_video_opacity:0.45,bg_words:["</>","///"],last_change:now,aliases:[],equipped_badges:[],is_admin:false,card_style:"default",border_radius:18,card_opacity:0.58,parallax_enabled:true,cursor_effect:"ghost",custom_cursor:"",custom_font:"DM Mono",typewriter_line1:false,typewriter_line2:false,typewriter_line3:false,transparent_bg:false,disable_shadow:false,card_bg_color:"",border_color:"",views:0,music_url:"",music_volume:0.4,music_autoplay:false});
+                const result=await supa.post("users",{
+                    username,password_hash:hash,uid:nextUid,lines:["","",""],discord:"",links:[],
+                    bg_video_urls:[],bg_video_opacity:0.45,bg_words:["</>","///"],last_change:now,
+                    aliases:[],equipped_badges:[],is_admin:false,card_style:"default",border_radius:18,
+                    card_opacity:0.58,parallax_enabled:true,cursor_effect:"ghost",custom_cursor:"",
+                    custom_font:"DM Mono",typewriter_line1:false,typewriter_line2:false,typewriter_line3:false,
+                    typewriter_speed:70,transparent_bg:false,disable_shadow:false,card_bg_color:"",
+                    border_color:"",views:0,avatar:"",guestbook_enabled:false,
+                    music_url:"",music_volume:0.4,music_autoplay:false
+                });
                 if(result&&result[0]){await notifyDiscord(username,nextUid);saveSession({username,uid:nextUid});closeModal(authModal);updateAuthUI();openDashboard();}else{err.textContent="something went wrong";}
             }catch(e){console.error(e);err.textContent=e.message?.includes("duplicate")?"username taken":"error: "+e.message;}
             btn.disabled=false; btn.textContent="create account";
@@ -1587,13 +2257,11 @@
             btn.addEventListener("click",()=>{
                 document.querySelectorAll(".dash-nav-btn").forEach(b=>b.classList.remove("active"));
                 document.querySelectorAll(".dash-panel").forEach(p=>p.classList.remove("active"));
-                btn.classList.add("active"); 
+                btn.classList.add("active");
                 const panelId = "panel-"+btn.dataset.panel;
                 document.getElementById(panelId).classList.add("active");
-                // If stats panel, render stats
-                if (panelId === "panel-stats") {
-                    renderStats();
-                }
+                if (panelId === "panel-stats") { renderStats(); }
+                if (panelId === "panel-guestbook") { renderGuestbookAdmin(); }
             });
         });
 
@@ -1612,6 +2280,7 @@
                 const rows=await supa.get("users",`username=eq.${encodeURIComponent(session.username)}`);
                 if (rows&&rows[0]) {
                     const u=rows[0];
+                    document.getElementById("d-avatar").value=u.avatar||"";
                     document.getElementById("d-line1").value=u.lines?.[0]||"";
                     document.getElementById("d-line2").value=u.lines?.[1]||"";
                     document.getElementById("d-line3").value=u.lines?.[2]||"";
@@ -1628,6 +2297,7 @@
                     document.getElementById("d-border-radius").value=u.border_radius!==undefined?u.border_radius:18;
                     document.getElementById("d-card-opacity").value=u.card_opacity!==undefined?u.card_opacity:0.58;
                     document.getElementById("d-parallax").checked=u.parallax_enabled!==undefined?u.parallax_enabled:true;
+                    document.getElementById("d-guestbook-enabled").checked=u.guestbook_enabled||false;
                     const fontInput=document.getElementById("d-card-font");
                     const fontVal=u.custom_font||"DM Mono";
                     fontInput.value=fontVal;
@@ -1636,6 +2306,9 @@
                     document.getElementById("d-typewriter1").checked=u.typewriter_line1||false;
                     document.getElementById("d-typewriter2").checked=u.typewriter_line2||false;
                     document.getElementById("d-typewriter3").checked=u.typewriter_line3||false;
+                    const speed = u.typewriter_speed || 70;
+                    document.getElementById("d-typewriter-speed").value = speed;
+                    document.getElementById("typewriter-speed-val").textContent = speed + 'ms';
                     document.getElementById("d-transparent-bg").checked=u.transparent_bg||false;
                     document.getElementById("d-disable-shadow").checked=u.disable_shadow||false;
                     document.getElementById("d-card-bg-color").value=u.card_bg_color||"#0a0a0c";
@@ -1643,6 +2316,7 @@
                     document.getElementById("border-radius-val").textContent=(u.border_radius!==undefined?u.border_radius:18)+"px";
                     document.getElementById("card-opacity-val").textContent=(u.card_opacity!==undefined?u.card_opacity:0.58).toFixed(2);
                     renderBadges(u.uid,u.equipped_badges||[],likeCount);
+                    renderGuestbookAdmin();
                 }
             }catch(e){console.error("[openDashboard]",e);}
             openModal(dashModal);
@@ -1767,7 +2441,12 @@
         document.getElementById("reset-bg-color").onclick=()=>{ document.getElementById("d-card-bg-color").value="#0a0a0c"; };
         document.getElementById("reset-border-color").onclick=()=>{ document.getElementById("d-border-color").value="#ffffff"; };
 
-        // ========== SAVE DASHBOARD ==========
+        // Typewriter speed slider
+        document.getElementById("d-typewriter-speed").addEventListener("input", function() {
+            document.getElementById("typewriter-speed-val").textContent = this.value + 'ms';
+        });
+
+        // ===== SAVE DASHBOARD =====
         async function saveDashboard(silent=false) {
             if (!session) return;
             const adminPanel=document.getElementById("panel-admin");
@@ -1780,6 +2459,7 @@
             const bgWordsRaw=document.getElementById("d-bgwords").value.trim();
             const bg_video_urls=bgVideoRaw?[bgVideoRaw]:[];
             const bg_words=bgWordsRaw.split(",").map(w=>w.trim()).filter(Boolean);
+            const avatar=document.getElementById("d-avatar").value.trim();
 
             const linkRows=document.querySelectorAll(".dash-link-row"),links=[];
             linkRows.forEach(row=>{
@@ -1799,12 +2479,14 @@
             const typewriter_line1=document.getElementById("d-typewriter1").checked;
             const typewriter_line2=document.getElementById("d-typewriter2").checked;
             const typewriter_line3=document.getElementById("d-typewriter3").checked;
+            const typewriter_speed=parseInt(document.getElementById("d-typewriter-speed").value,10);
             const transparent_bg=document.getElementById("d-transparent-bg").checked;
             const disable_shadow=document.getElementById("d-disable-shadow").checked;
             const card_bg_color=document.getElementById("d-card-bg-color").value;
             const border_color=document.getElementById("d-border-color").value;
+            const guestbook_enabled=document.getElementById("d-guestbook-enabled").checked;
 
-            const payload={lines,discord,links,bg_video_urls,bg_words,last_change:now,equipped_badges:[...dashEquipped],aliases:cleanAliases,card_style,border_radius,card_opacity,parallax_enabled,cursor_effect:"ghost",custom_cursor:"",custom_font,typewriter_line1,typewriter_line2,typewriter_line3,transparent_bg,disable_shadow,card_bg_color,border_color};
+            const payload={lines,discord,links,bg_video_urls,bg_words,last_change:now,equipped_badges:[...dashEquipped],aliases:cleanAliases,card_style,border_radius,card_opacity,parallax_enabled,cursor_effect:"ghost",custom_cursor:"",custom_font,typewriter_line1,typewriter_line2,typewriter_line3,typewriter_speed,transparent_bg,disable_shadow,card_bg_color,border_color,avatar,guestbook_enabled};
             try {
                 await supa.patch("users",`username=eq.${encodeURIComponent(session.username)}`,payload);
                 updateAliasRowOnCard(cleanAliases);
@@ -1823,7 +2505,7 @@
 
         document.getElementById("d-save").onclick=()=>saveDashboard(false);
 
-        // ========== PASSWORD RESET MODAL ==========
+        // ===== PASSWORD RESET MODAL =====
         const resetPwModal=document.getElementById("reset-pw-modal");
         const resetPwClose=document.getElementById("reset-pw-close");
         const resetPwValue=document.getElementById("reset-pw-value");
@@ -1844,7 +2526,7 @@
             btn.disabled=false;
         };
 
-        // ========== ADMIN PANEL ==========
+        // ===== ADMIN PANEL =====
         let adminTarget=null,adminTargetEquipped=[];
         document.getElementById("admin-search-btn").onclick=adminSearch;
         document.getElementById("admin-search-input").addEventListener("keydown",e=>{ if(e.key==="Enter") adminSearch(); });
@@ -1965,111 +2647,139 @@
             }catch(e){console.error("Webhook failed:",e);}
         }
 
-        // ========== STATS RENDER FUNCTION ==========
+        // ===== STATS RENDER =====
         async function renderStats() {
-            const container = document.getElementById('stats-container');
-            if (!container) return;
             if (!session) return;
             try {
-                const rows = await supa.get("users", `username=eq.${encodeURIComponent(session.username)}`);
-                if (!rows || rows.length === 0) return;
-                const user = rows[0];
-                const linkStats = user.link_stats || {};
-                const dailyViews = user.daily_views || {};
-                const deviceStats = user.device_stats || {};
-                const totalViews = user.views || 0;
+                const rows=await supa.get("users",`username=eq.${encodeURIComponent(session.username)}`);
+                if(!rows||rows.length===0)return;
+                const user=rows[0];
+                const linkStats=user.link_stats||{};
+                const dailyViews=user.daily_views||{};
+                const deviceStats=user.device_stats||{};
+                const totalViews=user.views||0;
 
-                const totalClicks = Object.values(linkStats).reduce((a,b) => a + b, 0);
-                document.getElementById('stat-total-clicks').textContent = totalClicks;
+                const totalClicks=Object.values(linkStats).reduce((a,b)=>a+b,0);
+                document.getElementById('stat-total-clicks').textContent=totalClicks;
+                const clickRate=totalViews>0?((totalClicks/totalViews)*100).toFixed(1):0;
+                document.getElementById('stat-click-rate').textContent=clickRate+'%';
+                document.getElementById('stat-profile-views').textContent=totalViews;
 
-                const clickRate = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : 0;
-                document.getElementById('stat-click-rate').textContent = clickRate + '%';
+                const last7=getLastNDays(7);
+                let sum7=0,count7=0;
+                last7.forEach(d=>{if(dailyViews[d]){sum7+=dailyViews[d];count7++;}});
+                const avgDaily=count7>0?Math.round(sum7/count7):0;
+                document.getElementById('stat-avg-daily').textContent=avgDaily;
 
-                document.getElementById('stat-profile-views').textContent = totalViews;
+                const last3=getLastNDays(3);
+                const prev3=getLastNDays(6).slice(0,3);
+                let sumLast3=0,sumPrev3=0;
+                last3.forEach(d=>{if(dailyViews[d])sumLast3+=dailyViews[d];});
+                prev3.forEach(d=>{if(dailyViews[d])sumPrev3+=dailyViews[d];});
+                const diff=sumLast3-sumPrev3;
+                const changeEl=document.getElementById('stat-views-change');
+                if(diff>0)changeEl.textContent=`+${diff} views since last 3 days`;
+                else if(diff<0)changeEl.textContent=`${diff} views since last 3 days`;
+                else changeEl.textContent='no change since last 3 days';
 
-                const last7 = getLastNDays(7);
-                let sum7 = 0, count7 = 0;
-                last7.forEach(d => {
-                    if (dailyViews[d]) { sum7 += dailyViews[d]; count7++; }
-                });
-                const avgDaily = count7 > 0 ? Math.round(sum7 / count7) : 0;
-                document.getElementById('stat-avg-daily').textContent = avgDaily;
-
-                const last3 = getLastNDays(3);
-                const prev3 = getLastNDays(6).slice(0,3);
-                let sumLast3 = 0, sumPrev3 = 0;
-                last3.forEach(d => { if (dailyViews[d]) sumLast3 += dailyViews[d]; });
-                prev3.forEach(d => { if (dailyViews[d]) sumPrev3 += dailyViews[d]; });
-                const diff = sumLast3 - sumPrev3;
-                const changeEl = document.getElementById('stat-views-change');
-                if (diff > 0) changeEl.textContent = `+${diff} views since last 3 days`;
-                else if (diff < 0) changeEl.textContent = `${diff} views since last 3 days`;
-                else changeEl.textContent = 'no change since last 3 days';
-
-                const chartContainer = document.getElementById('stats-daily-chart');
-                chartContainer.innerHTML = '';
-                const maxVal = Math.max(1, ...last7.map(d => dailyViews[d] || 0));
-                last7.forEach(d => {
-                    const val = dailyViews[d] || 0;
-                    const bar = document.createElement('div');
-                    bar.className = 'stats-daily-bar';
-                    const height = Math.max(2, (val / maxVal) * 70);
-                    const barDiv = document.createElement('div');
-                    barDiv.className = 'bar';
-                    barDiv.style.height = height + 'px';
-                    const label = document.createElement('div');
-                    label.className = 'bar-label';
-                    const parts = d.split('-');
-                    label.textContent = parts[1] + '/' + parts[2];
-                    const valueLabel = document.createElement('div');
-                    valueLabel.className = 'bar-value';
-                    valueLabel.textContent = val;
+                const chartContainer=document.getElementById('stats-daily-chart');
+                chartContainer.innerHTML='';
+                const maxVal=Math.max(1,...last7.map(d=>dailyViews[d]||0));
+                last7.forEach(d=>{
+                    const val=dailyViews[d]||0;
+                    const bar=document.createElement('div');
+                    bar.className='stats-daily-bar';
+                    const height=Math.max(2,(val/maxVal)*70);
+                    const barDiv=document.createElement('div');
+                    barDiv.className='bar';
+                    barDiv.style.height=height+'px';
+                    const label=document.createElement('div');
+                    label.className='bar-label';
+                    const parts=d.split('-');
+                    label.textContent=parts[1]+'/'+parts[2];
+                    const valueLabel=document.createElement('div');
+                    valueLabel.className='bar-value';
+                    valueLabel.textContent=val;
                     bar.appendChild(barDiv);
                     bar.appendChild(valueLabel);
                     bar.appendChild(label);
                     chartContainer.appendChild(bar);
                 });
 
-                const linksList = document.getElementById('stats-links-list');
-                linksList.innerHTML = '';
-                const linkNames = Object.keys(linkStats);
-                if (linkNames.length === 0) {
-                    linksList.innerHTML = '<div style="font-size:.6rem;color:rgba(255,255,255,.2);padding:8px 0;">No link clicks yet.</div>';
-                } else {
-                    linkNames.forEach(name => {
-                        const div = document.createElement('div');
-                        div.className = 'stats-link-item';
-                        div.innerHTML = `<span class="link-name">🔗 ${name}</span><span class="link-clicks">${linkStats[name]} clicks</span>`;
+                const linksList=document.getElementById('stats-links-list');
+                linksList.innerHTML='';
+                const linkNames=Object.keys(linkStats);
+                if(linkNames.length===0){
+                    linksList.innerHTML='<div style="font-size:.6rem;color:rgba(255,255,255,.2);padding:8px 0;">No link clicks yet.</div>';
+                }else{
+                    linkNames.forEach(name=>{
+                        const div=document.createElement('div');
+                        div.className='stats-link-item';
+                        div.innerHTML=`<span class="link-name">🔗 ${name}</span><span class="link-clicks">${linkStats[name]} clicks</span>`;
                         linksList.appendChild(div);
                     });
                 }
 
-                const devicesContainer = document.getElementById('stats-devices');
-                devicesContainer.innerHTML = '';
-                const deviceMap = { desktop: '🖥️ Desktop', mobile: '📱 Mobile', tablet: '📟 Tablet' };
-                const totalDevices = Object.values(deviceStats).reduce((a,b) => a + b, 0);
-                if (totalDevices === 0) {
-                    devicesContainer.innerHTML = '<div style="font-size:.6rem;color:rgba(255,255,255,.2);padding:8px 0;">No device data yet.</div>';
-                } else {
-                    ['desktop','mobile','tablet'].forEach(key => {
-                        const count = deviceStats[key] || 0;
-                        const pct = ((count / totalDevices) * 100).toFixed(0);
-                        const div = document.createElement('div');
-                        div.className = 'stats-device-item';
-                        div.innerHTML = `
-                            <span class="device-label">${deviceMap[key] || key}</span>
+                const devicesContainer=document.getElementById('stats-devices');
+                devicesContainer.innerHTML='';
+                const deviceMap={desktop:'🖥️ Desktop',mobile:'📱 Mobile',tablet:'📟 Tablet'};
+                const totalDevices=Object.values(deviceStats).reduce((a,b)=>a+b,0);
+                if(totalDevices===0){
+                    devicesContainer.innerHTML='<div style="font-size:.6rem;color:rgba(255,255,255,.2);padding:8px 0;">No device data yet.</div>';
+                }else{
+                    ['desktop','mobile','tablet'].forEach(key=>{
+                        const count=deviceStats[key]||0;
+                        const pct=((count/totalDevices)*100).toFixed(0);
+                        const div=document.createElement('div');
+                        div.className='stats-device-item';
+                        div.innerHTML=`
+                            <span class="device-label">${deviceMap[key]||key}</span>
                             <div class="stats-device-bar"><div class="fill" style="width:${pct}%;"></div></div>
                             <span class="device-percent">${pct}%</span>
                         `;
                         devicesContainer.appendChild(div);
                     });
                 }
-            } catch(e) {
-                console.error('Stats render error', e);
-            }
+            }catch(e){console.error('Stats render error',e);}
         }
 
-        // ========== NEW SIGNUP NAVIGATION ==========
+        // ===== GUESTBOOK ADMIN =====
+        async function renderGuestbookAdmin() {
+            const container=document.getElementById('guestbook-admin-list');
+            if(!container) return;
+            if(!session) return;
+            try {
+                const entries=await fetchGuestbook(session.username);
+                if(entries.length===0){
+                    container.innerHTML='<div style="font-size:.6rem;color:rgba(255,255,255,.2);padding:12px 0;">No comments yet.</div>';
+                    return;
+                }
+                let html='';
+                entries.forEach(entry=>{
+                    html+=`
+                        <div class="guestbook-entry" style="display:flex;justify-content:space-between;align-items:center;">
+                            <div>
+                                <div class="gb-name">${entry.visitor_name||'Anonymous'} <span class="gb-time">${new Date(entry.created_at).toLocaleDateString()}</span></div>
+                                <div class="gb-text">${entry.text}</div>
+                            </div>
+                            <button class="gb-delete-btn" data-id="${entry.id}" style="background:none;border:none;color:rgba(255,100,100,.4);cursor:pointer;font-size:.8rem;">✕</button>
+                        </div>
+                    `;
+                });
+                container.innerHTML=html;
+                container.querySelectorAll('.gb-delete-btn').forEach(btn=>{
+                    btn.onclick=async function(){
+                        if(!confirm('Delete this comment?')) return;
+                        const id=this.dataset.id;
+                        const ok=await deleteGuestbookEntry(id);
+                        if(ok){renderGuestbookAdmin();}
+                        else{alert('Failed to delete.');}
+                    };
+                });
+            }catch(e){container.innerHTML='<div style="font-size:.6rem;color:rgba(255,100,100,.4);">Error loading comments.</div>';}
+        }
+
+        // ===== SIGNUP NAVIGATION =====
         document.getElementById('claim-btn').addEventListener('click',function(){
             const username=document.getElementById('landing-username-input').value.trim().toLowerCase();
             if(!username||username.length<3){ document.getElementById('landing-username-input').style.borderColor='rgba(255,100,100,0.5)'; setTimeout(()=>document.getElementById('landing-username-input').style.borderColor='',1500); return; }
@@ -2097,7 +2807,7 @@
             },400);
         });
 
-        // ========== BOOT ==========
+        // ===== BOOT =====
         initCursorEffect();
         updateAuthUI();
         resolveRoute().then(()=>{ if(slug&&slug!=="") renderCard(); });
