@@ -1792,153 +1792,154 @@
         }
 
         // ===== GUESTBOOK RENDER (final – with addEventListener) =====
-        let guestbookPage = 1;
-        const GUESTBOOK_LIMIT = 10;
+        // ===== GUESTBOOK RENDER (fixed – button type="button") =====
+let guestbookPage = 1;
+const GUESTBOOK_LIMIT = 10;
 
-        async function renderGuestbook(page = 1) {
-            try {
-                const mainMeta = document.getElementById('main-meta');
-                if (!mainMeta) return;
-                const existingGB = document.getElementById('guestbook-section');
-                if (existingGB) existingGB.remove();
+async function renderGuestbook(page = 1) {
+    try {
+        const mainMeta = document.getElementById('main-meta');
+        if (!mainMeta) return;
+        const existingGB = document.getElementById('guestbook-section');
+        if (existingGB) existingGB.remove();
 
-                if (!C || !C.guestbook_enabled) {
-                    return;
-                }
-
-                const section = document.createElement('div');
-                section.id = 'guestbook-section';
-
-                const title = document.createElement('div');
-                title.style.cssText = 'font-size:.6rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:10px;';
-                title.textContent = 'Guest Book';
-                section.appendChild(title);
-
-                const data = await fetchGuestbook(slug, page, GUESTBOOK_LIMIT);
-                const entries = data.entries || [];
-                const total = data.total || 0;
-                const totalPages = Math.ceil(total / GUESTBOOK_LIMIT) || 1;
-
-                const container = document.createElement('div');
-                container.id = 'gb-entries';
-
-                if (data.error) {
-                    container.innerHTML = `<div class="guestbook-empty" style="color:rgba(255,100,100,.5);">Guestbook table not set up. Please ask the admin.</div>`;
-                } else if (entries.length === 0) {
-                    container.innerHTML = '<div class="guestbook-empty">No comments yet. Be the first!</div>';
-                } else {
-                    entries.forEach(entry => {
-                        const div = document.createElement('div');
-                        div.className = 'guestbook-entry';
-                        const avatarUrl = entry.visitor_avatar || '';
-                        div.innerHTML = `
-                            <img class="gb-avatar" src="${avatarUrl}" onerror="this.style.display='none'" alt="">
-                            <div class="gb-body">
-                                <div class="gb-name">${entry.visitor_name || 'Anonymous'} <span class="gb-time">${new Date(entry.created_at).toLocaleDateString()}</span></div>
-                                <div class="gb-text">${entry.text}</div>
-                            </div>
-                        `;
-                        container.appendChild(div);
-                    });
-                }
-                section.appendChild(container);
-
-                // Pagination
-                if (totalPages > 1 && !data.error) {
-                    const pagination = document.createElement('div');
-                    pagination.className = 'guestbook-pagination';
-                    pagination.innerHTML = `
-                        <button class="gb-prev" ${page <= 1 ? 'disabled' : ''}>‹</button>
-                        <span>${page} / ${totalPages}</span>
-                        <button class="gb-next" ${page >= totalPages ? 'disabled' : ''}>›</button>
-                    `;
-                    const prevBtn = pagination.querySelector('.gb-prev');
-                    const nextBtn = pagination.querySelector('.gb-next');
-                    if (prevBtn) {
-                        prevBtn.addEventListener('click', () => { if (page > 1) renderGuestbook(page - 1); });
-                    }
-                    if (nextBtn) {
-                        nextBtn.addEventListener('click', () => { if (page < totalPages) renderGuestbook(page + 1); });
-                    }
-                    section.appendChild(pagination);
-                }
-
-                // Comment form
-                if (session && !data.error) {
-                    const form = document.createElement('div');
-                    form.className = 'guestbook-form';
-                    const avatarUrl = session.avatar || '';
-                    form.innerHTML = `
-                        <div class="gb-user-info">
-                            <img src="${avatarUrl}" onerror="this.style.display='none'" alt="">
-                            <span>${session.username}</span>
-                        </div>
-                        <input type="text" id="gb-text-input" placeholder="Leave a comment..." maxlength="500">
-                        <button id="gb-submit-btn">Post</button>
-                    `;
-                    section.appendChild(form);
-
-                    // 🔥 Fix: use addEventListener with a named function
-                    const submitBtn = document.getElementById('gb-submit-btn');
-                    if (submitBtn) {
-                        // Remove any previous listeners to avoid duplicates
-                        const newBtn = submitBtn.cloneNode(true);
-                        submitBtn.parentNode.replaceChild(newBtn, submitBtn);
-                        newBtn.addEventListener('click', async function() {
-                            console.log('🔘 Post button clicked!');
-                            const textInput = document.getElementById('gb-text-input');
-                            if (!textInput) {
-                                console.error('Input field not found');
-                                return;
-                            }
-                            const text = textInput.value.trim();
-                            if (!text) {
-                                alert('Please enter a comment.');
-                                return;
-                            }
-                            this.disabled = true;
-                            this.textContent = 'Posting...';
-                            try {
-                                const result = await postGuestbook(slug, session.username, text);
-                                if (result) {
-                                    textInput.value = '';
-                                    await renderGuestbook(1);
-                                } else {
-                                    alert('Failed to post comment. Check console.');
-                                }
-                            } catch (err) {
-                                console.error('Submit error:', err);
-                                alert('Error: ' + err.message);
-                            } finally {
-                                this.disabled = false;
-                                this.textContent = 'Post';
-                            }
-                        });
-                    }
-                } else if (session && data.error) {
-                    const msg = document.createElement('div');
-                    msg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);text-align:center;padding:8px 0;';
-                    msg.textContent = 'Guestbook is not available (table missing).';
-                    section.appendChild(msg);
-                } else if (!session && !data.error) {
-                    const msg = document.createElement('div');
-                    msg.style.cssText = 'font-size:.6rem;color:rgba(255,255,255,.2);text-align:center;padding:8px 0;';
-                    msg.textContent = 'Sign in to leave a comment.';
-                    section.appendChild(msg);
-                }
-
-                mainMeta.parentNode.insertBefore(section, mainMeta.nextSibling);
-            } catch (e) {
-                console.error('Guestbook render error:', e);
-                const mainMeta = document.getElementById('main-meta');
-                if (mainMeta) {
-                    const errMsg = document.createElement('div');
-                    errMsg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);padding:12px 0;';
-                    errMsg.textContent = 'Guestbook failed to load.';
-                    mainMeta.parentNode.insertBefore(errMsg, mainMeta.nextSibling);
-                }
-            }
+        if (!C || !C.guestbook_enabled) {
+            return;
         }
+
+        const section = document.createElement('div');
+        section.id = 'guestbook-section';
+
+        const title = document.createElement('div');
+        title.style.cssText = 'font-size:.6rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:10px;';
+        title.textContent = 'Guest Book';
+        section.appendChild(title);
+
+        const data = await fetchGuestbook(slug, page, GUESTBOOK_LIMIT);
+        const entries = data.entries || [];
+        const total = data.total || 0;
+        const totalPages = Math.ceil(total / GUESTBOOK_LIMIT) || 1;
+
+        const container = document.createElement('div');
+        container.id = 'gb-entries';
+
+        if (data.error) {
+            container.innerHTML = `<div class="guestbook-empty" style="color:rgba(255,100,100,.5);">Guestbook table not set up. Please ask the admin.</div>`;
+        } else if (entries.length === 0) {
+            container.innerHTML = '<div class="guestbook-empty">No comments yet. Be the first!</div>';
+        } else {
+            entries.forEach(entry => {
+                const div = document.createElement('div');
+                div.className = 'guestbook-entry';
+                const avatarUrl = entry.visitor_avatar || '';
+                div.innerHTML = `
+                    <img class="gb-avatar" src="${avatarUrl}" onerror="this.style.display='none'" alt="">
+                    <div class="gb-body">
+                        <div class="gb-name">${entry.visitor_name || 'Anonymous'} <span class="gb-time">${new Date(entry.created_at).toLocaleDateString()}</span></div>
+                        <div class="gb-text">${entry.text}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        section.appendChild(container);
+
+        // Pagination
+        if (totalPages > 1 && !data.error) {
+            const pagination = document.createElement('div');
+            pagination.className = 'guestbook-pagination';
+            pagination.innerHTML = `
+                <button class="gb-prev" ${page <= 1 ? 'disabled' : ''}>‹</button>
+                <span>${page} / ${totalPages}</span>
+                <button class="gb-next" ${page >= totalPages ? 'disabled' : ''}>›</button>
+            `;
+            const prevBtn = pagination.querySelector('.gb-prev');
+            const nextBtn = pagination.querySelector('.gb-next');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => { if (page > 1) renderGuestbook(page - 1); });
+            }
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => { if (page < totalPages) renderGuestbook(page + 1); });
+            }
+            section.appendChild(pagination);
+        }
+
+        // Comment form – only show if user is logged in and table exists
+        if (session && !data.error) {
+            const form = document.createElement('div');
+            form.className = 'guestbook-form';
+            const avatarUrl = session.avatar || '';
+            form.innerHTML = `
+                <div class="gb-user-info">
+                    <img src="${avatarUrl}" onerror="this.style.display='none'" alt="">
+                    <span>${session.username}</span>
+                </div>
+                <input type="text" id="gb-text-input" placeholder="Leave a comment..." maxlength="500">
+                <button type="button" id="gb-submit-btn">Post</button>
+            `;
+            section.appendChild(form);
+
+            // 🔥 Get the button and attach the click handler
+            const submitBtn = document.getElementById('gb-submit-btn');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', async function(e) {
+                    e.preventDefault(); // just in case
+                    console.log('🔘 Post button clicked!');
+                    const textInput = document.getElementById('gb-text-input');
+                    if (!textInput) {
+                        console.error('Input field not found');
+                        return;
+                    }
+                    const text = textInput.value.trim();
+                    if (!text) {
+                        alert('Please enter a comment.');
+                        return;
+                    }
+                    this.disabled = true;
+                    this.textContent = 'Posting...';
+                    try {
+                        const result = await postGuestbook(slug, session.username, text);
+                        if (result) {
+                            textInput.value = '';
+                            await renderGuestbook(1);
+                        } else {
+                            alert('Failed to post comment. Check console.');
+                        }
+                    } catch (err) {
+                        console.error('Submit error:', err);
+                        alert('Error: ' + err.message);
+                    } finally {
+                        this.disabled = false;
+                        this.textContent = 'Post';
+                    }
+                });
+            } else {
+                console.error('Submit button not found!');
+            }
+        } else if (session && data.error) {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);text-align:center;padding:8px 0;';
+            msg.textContent = 'Guestbook is not available (table missing).';
+            section.appendChild(msg);
+        } else if (!session && !data.error) {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'font-size:.6rem;color:rgba(255,255,255,.2);text-align:center;padding:8px 0;';
+            msg.textContent = 'Sign in to leave a comment.';
+            section.appendChild(msg);
+        }
+
+        mainMeta.parentNode.insertBefore(section, mainMeta.nextSibling);
+    } catch (e) {
+        console.error('Guestbook render error:', e);
+        const mainMeta = document.getElementById('main-meta');
+        if (mainMeta) {
+            const errMsg = document.createElement('div');
+            errMsg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);padding:12px 0;';
+            errMsg.textContent = 'Guestbook failed to load.';
+            mainMeta.parentNode.insertBefore(errMsg, mainMeta.nextSibling);
+        }
+    }
+}
 
         // ===== AUTH UI =====
         const authModal=document.getElementById("auth-modal");
