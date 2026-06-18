@@ -44,7 +44,7 @@
         @media (max-width:400px){#content{padding:14px 14px 12px}}
         #content::after{content:"";position:absolute;inset:0;border-radius:18px;background:radial-gradient(ellipse at 30% 0%,rgba(255,255,255,0.03) 0%,transparent 60%);pointer-events:none}
 
-        /* ===== PROFILE AVATAR (guns.lol style) — NO OUTLINE ===== */
+        /* ===== PROFILE AVATAR (no outline) ===== */
         .profile-avatar-wrap{display:flex;align-items:center;gap:14px;margin-bottom:12px}
         .profile-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;display:none;border:none;outline:none;box-shadow:none}
         .profile-avatar-wrap .site-name{margin-bottom:0}
@@ -875,9 +875,9 @@
             card_style: "default", guestbook_enabled: false
         };
         const STATIC_USERS = {
-            "prada": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "prada", uid: "1", badges: [], lines: ["@juliasfanboy / on discord", "rich", "take risks"], discord: "", links: [{ label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok", custom_icon_url: "" }], bgVideo: { urls: ["https://files.catbox.moe/aned1c.mp4"], opacity: 0.45 }, bgWords: ["prada", "</>"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [], avatar: "", card_style: "default", guestbook_enabled: false },
-            "btc": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "btc", uid: "2", badges: [{ tip: "btc", img: "https://files.catbox.moe/mdlopx.png" }], lines: ["", "", ""], discord: "", links: [{ label: "roblox", url: "https://www.roblox.com/users/418312507/profile", icon: "roblox", custom_icon_url: "" }], bgVideo: { urls: ["https://files.catbox.moe/rstzft.mp4"], opacity: 0.45 }, bgWords: ["btc", "</>", "///"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [], avatar: "", card_style: "default", guestbook_enabled: false },
-            "7": { siteName: "forgave.lol", lastChange: "26th May 2026", username: "7", uid: "3", badges: [], lines: ["@u3ls (1263468060317188097) / on discord", "", ""], discord: "", links: [], bgVideo: { urls: ["https://files.catbox.moe/0kwj0d.mp4"], opacity: 0.45 }, bgWords: ["7", "</>", "///"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [], avatar: "", card_style: "default", guestbook_enabled: false }
+            "prada": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "prada", uid: "1", badges: [], lines: ["@juliasfanboy / on discord", "rich", "take risks"], discord: "", links: [{ label: "tiktok", url: "https://tiktok.com/@pradatopeu", icon: "tiktok", custom_icon_url: "" }], bgVideo: { urls: ["https://files.catbox.moe/aned1c.mp4"], opacity: 0.45 }, bgWords: ["prada", "</>"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [], avatar: "", card_style: "default", guestbook_enabled: true },
+            "btc": { siteName: "forgave.lol", lastChange: "25 May 2026", username: "btc", uid: "2", badges: [{ tip: "btc", img: "https://files.catbox.moe/mdlopx.png" }], lines: ["", "", ""], discord: "", links: [{ label: "roblox", url: "https://www.roblox.com/users/418312507/profile", icon: "roblox", custom_icon_url: "" }], bgVideo: { urls: ["https://files.catbox.moe/rstzft.mp4"], opacity: 0.45 }, bgWords: ["btc", "</>", "///"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [], avatar: "", card_style: "default", guestbook_enabled: true },
+            "7": { siteName: "forgave.lol", lastChange: "26th May 2026", username: "7", uid: "3", badges: [], lines: ["@u3ls (1263468060317188097) / on discord", "", ""], discord: "", links: [], bgVideo: { urls: ["https://files.catbox.moe/0kwj0d.mp4"], opacity: 0.45 }, bgWords: ["7", "</>", "///"], wordCount: 26, wordSpeed: [1.0, 2.5], wordSize: [9, 28], wordSpin: 0.007, wordColor: "rgba(180,180,200,", aliases: [], avatar: "", card_style: "default", guestbook_enabled: true }
         };
         const STATIC_UID_START = 4;
 
@@ -972,7 +972,7 @@
                     card_opacity: 0.58, parallax_enabled: true, cursor_effect: "ghost", custom_cursor: "",
                     custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
                     typewriter_speed: 70, transparent_bg: false, disable_shadow: false, card_bg_color: "",
-                    border_color: "", views: 0, avatar: "", guestbook_enabled: false,
+                    border_color: "", views: 0, avatar: "", guestbook_enabled: true, // <-- default ON
                     music_url: "", music_volume: 0.4, music_autoplay: false
                 });
                 if (result && result[0]) {
@@ -1123,25 +1123,22 @@
             try {
                 const offset = (page - 1) * limit;
                 const rows = await supa.get("guestbook", `profile_username=eq.${encodeURIComponent(username)}&order=created_at.desc&limit=${limit}&offset=${offset}`);
-                // Get total count using a separate query
                 let total = 0;
                 try {
                     const countRes = await supa.get("guestbook", `profile_username=eq.${encodeURIComponent(username)}&select=count`);
                     if (countRes && countRes.length > 0 && countRes[0].count !== undefined) {
                         total = countRes[0].count;
                     } else {
-                        // fallback: count via rows length if no count column
-                        // but we'll just set total to rows length if less than limit
-                        total = rows.length < limit ? rows.length : rows.length + 1; // placeholder
+                        total = rows.length < limit ? rows.length : rows.length + 1;
                     }
                 } catch(e) {
-                    // fallback: assume total is rows.length if less than limit, else estimate
                     total = rows.length < limit ? rows.length : rows.length + 1;
                 }
                 return { entries: rows || [], total };
             } catch(e) {
                 console.error('Guestbook fetch error:', e);
-                return { entries: [], total: 0 };
+                // If table missing, return empty and let UI show a message
+                return { entries: [], total: 0, error: true };
             }
         }
 
@@ -1177,6 +1174,7 @@
                     const data = await fetchGuestbook(slug, 1, 10);
                     C.guestbook_entries = data.entries;
                     C.guestbook_total = data.total;
+                    C.guestbook_error = data.error || false;
                 }
                 return;
             }
@@ -1211,6 +1209,7 @@
                         const data = await fetchGuestbook(slug, 1, 10);
                         C.guestbook_entries = data.entries;
                         C.guestbook_total = data.total;
+                        C.guestbook_error = data.error || false;
                     }
                     return;
                 }
@@ -1422,7 +1421,7 @@
             setTimeout(()=>{ typeStep(); }, delayBeforeStart);
         }
 
-        // ===== TAB TITLE TYPEWRITER (guns.lol style) =====
+        // ===== TAB TITLE TYPEWRITER =====
         function startTitleTypewriter() {
             const text = "forgave.lol";
             let i = 0;
@@ -1787,7 +1786,7 @@
             content.appendChild(contentDiv);
         }
 
-        // ===== GUESTBOOK RENDER (with pagination) =====
+        // ===== GUESTBOOK RENDER (with error handling) =====
         let guestbookPage = 1;
         const GUESTBOOK_LIMIT = 10;
 
@@ -1797,7 +1796,10 @@
             const existingGB = document.getElementById('guestbook-section');
             if (existingGB) existingGB.remove();
 
-            if (!C || !C.guestbook_enabled) return;
+            if (!C || !C.guestbook_enabled) {
+                // If disabled, show nothing (or a small note? but keep it clean)
+                return;
+            }
 
             const section = document.createElement('div');
             section.id = 'guestbook-section';
@@ -1816,7 +1818,9 @@
             const container = document.createElement('div');
             container.id = 'gb-entries';
 
-            if (entries.length === 0) {
+            if (data.error) {
+                container.innerHTML = `<div class="guestbook-empty" style="color:rgba(255,100,100,.5);">Guestbook table not set up. Please ask the admin.</div>`;
+            } else if (entries.length === 0) {
                 container.innerHTML = '<div class="guestbook-empty">No comments yet. Be the first!</div>';
             } else {
                 entries.forEach(entry => {
@@ -1836,7 +1840,7 @@
             section.appendChild(container);
 
             // Pagination
-            if (totalPages > 1) {
+            if (totalPages > 1 && !data.error) {
                 const pagination = document.createElement('div');
                 pagination.className = 'guestbook-pagination';
                 pagination.innerHTML = `
@@ -1853,8 +1857,8 @@
                 section.appendChild(pagination);
             }
 
-            // Comment form (only if user is logged in)
-            if (session) {
+            // Comment form (only if user is logged in and table exists)
+            if (session && !data.error) {
                 const form = document.createElement('div');
                 form.className = 'guestbook-form';
                 const avatarUrl = session.avatar || '';
@@ -1884,7 +1888,13 @@
                     this.disabled = false;
                     this.textContent = 'Post';
                 };
-            } else {
+            } else if (session && data.error) {
+                // Show message but no form
+                const msg = document.createElement('div');
+                msg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);text-align:center;padding:8px 0;';
+                msg.textContent = 'Guestbook is not available (table missing).';
+                section.appendChild(msg);
+            } else if (!session && !data.error) {
                 const msg = document.createElement('div');
                 msg.style.cssText = 'font-size:.6rem;color:rgba(255,255,255,.2);text-align:center;padding:8px 0;';
                 msg.textContent = 'Sign in to leave a comment.';
@@ -1960,7 +1970,7 @@
                     card_opacity:0.58,parallax_enabled:true,cursor_effect:"ghost",custom_cursor:"",
                     custom_font:"DM Mono",typewriter_line1:false,typewriter_line2:false,typewriter_line3:false,
                     typewriter_speed:70,transparent_bg:false,disable_shadow:false,card_bg_color:"",
-                    border_color:"",views:0,avatar:"",guestbook_enabled:false,
+                    border_color:"",views:0,avatar:"",guestbook_enabled:true, // <-- default ON
                     music_url:"",music_volume:0.4,music_autoplay:false
                 });
                 if(result&&result[0]){await notifyDiscord(username,nextUid);saveSession({username,uid:nextUid});closeModal(authModal);updateAuthUI();openDashboard();}else{err.textContent="something went wrong";}
@@ -2517,6 +2527,10 @@
             try {
                 const data = await fetchGuestbook(session.username, 1, 50);
                 const entries = data.entries || [];
+                if(data.error){
+                    container.innerHTML='<div style="font-size:.6rem;color:rgba(255,100,100,.5);">Guestbook table not set up.</div>';
+                    return;
+                }
                 if(entries.length===0){
                     container.innerHTML='<div style="font-size:.6rem;color:rgba(255,255,255,.2);padding:12px 0;">No comments yet.</div>';
                     return;
@@ -2580,11 +2594,9 @@
         resolveRoute().then(()=>{ 
             if(slug && slug!=="") {
                 renderCard();
-                // Show the card after rendering to avoid flicker
                 const stack = document.getElementById('card-stack');
                 stack.classList.add('visible');
             }
-            // Start the tab title typewriter
             startTitleTypewriter();
         });
     </script>
