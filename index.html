@@ -1873,24 +1873,41 @@
                     section.appendChild(form);
 
                     const submitBtn = document.getElementById('gb-submit-btn');
-                    if (submitBtn) {
-                        submitBtn.onclick = async function() {
-                            const textInput = document.getElementById('gb-text-input');
-                            const text = textInput.value.trim();
-                            if (!text) return;
-                            this.disabled = true;
-                            this.textContent = 'Posting...';
-                            const result = await postGuestbook(slug, session.username, text);
-                            if (result) {
-                                textInput.value = '';
-                                renderGuestbook(1);
-                            } else {
-                                alert('Failed to post comment.');
-                            }
-                            this.disabled = false;
-                            this.textContent = 'Post';
-                        };
-                    }
+if (submitBtn) {
+    submitBtn.onclick = async function() {
+        const textInput = document.getElementById('gb-text-input');
+        if (!textInput) {
+            alert('Input field not found.');
+            return;
+        }
+        const text = textInput.value.trim();
+        if (!text) {
+            alert('Please enter a comment.');
+            return;
+        }
+        // Disable button to prevent double-submit
+        this.disabled = true;
+        this.textContent = 'Posting...';
+
+        try {
+            const result = await postGuestbook(slug, session.username, text);
+            if (result) {
+                textInput.value = '';
+                // Refresh the guestbook section (page 1)
+                await renderGuestbook(1);
+            } else {
+                alert('Failed to post comment. Check console for details.');
+            }
+        } catch (err) {
+            console.error('Post error:', err);
+            alert('Error: ' + err.message);
+        } finally {
+            // Re-enable button
+            this.disabled = false;
+            this.textContent = 'Post';
+        }
+    };
+}
                 } else if (session && data.error) {
                     const msg = document.createElement('div');
                     msg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);text-align:center;padding:8px 0;';
