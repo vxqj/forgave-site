@@ -972,7 +972,7 @@
                     card_opacity: 0.58, parallax_enabled: true, cursor_effect: "ghost", custom_cursor: "",
                     custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
                     typewriter_speed: 70, transparent_bg: false, disable_shadow: false, card_bg_color: "",
-                    border_color: "", views: 0, avatar: "", guestbook_enabled: true, // <-- default ON
+                    border_color: "", views: 0, avatar: "", guestbook_enabled: true,
                     music_url: "", music_volume: 0.4, music_autoplay: false
                 });
                 if (result && result[0]) {
@@ -1137,7 +1137,6 @@
                 return { entries: rows || [], total };
             } catch(e) {
                 console.error('Guestbook fetch error:', e);
-                // If table missing, return empty and let UI show a message
                 return { entries: [], total: 0, error: true };
             }
         }
@@ -1786,122 +1785,136 @@
             content.appendChild(contentDiv);
         }
 
-        // ===== GUESTBOOK RENDER (with error handling) =====
+        // ===== GUESTBOOK RENDER (fixed: added null-checks) =====
         let guestbookPage = 1;
         const GUESTBOOK_LIMIT = 10;
 
         async function renderGuestbook(page = 1) {
-            const mainMeta = document.getElementById('main-meta');
-            if (!mainMeta) return;
-            const existingGB = document.getElementById('guestbook-section');
-            if (existingGB) existingGB.remove();
+            try {
+                const mainMeta = document.getElementById('main-meta');
+                if (!mainMeta) return;
+                const existingGB = document.getElementById('guestbook-section');
+                if (existingGB) existingGB.remove();
 
-            if (!C || !C.guestbook_enabled) {
-                // If disabled, show nothing (or a small note? but keep it clean)
-                return;
-            }
+                if (!C || !C.guestbook_enabled) {
+                    return;
+                }
 
-            const section = document.createElement('div');
-            section.id = 'guestbook-section';
+                const section = document.createElement('div');
+                section.id = 'guestbook-section';
 
-            const title = document.createElement('div');
-            title.style.cssText = 'font-size:.6rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:10px;';
-            title.textContent = 'Guest Book';
-            section.appendChild(title);
+                const title = document.createElement('div');
+                title.style.cssText = 'font-size:.6rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:10px;';
+                title.textContent = 'Guest Book';
+                section.appendChild(title);
 
-            // Fetch entries for this page
-            const data = await fetchGuestbook(slug, page, GUESTBOOK_LIMIT);
-            const entries = data.entries || [];
-            const total = data.total || 0;
-            const totalPages = Math.ceil(total / GUESTBOOK_LIMIT) || 1;
+                const data = await fetchGuestbook(slug, page, GUESTBOOK_LIMIT);
+                const entries = data.entries || [];
+                const total = data.total || 0;
+                const totalPages = Math.ceil(total / GUESTBOOK_LIMIT) || 1;
 
-            const container = document.createElement('div');
-            container.id = 'gb-entries';
+                const container = document.createElement('div');
+                container.id = 'gb-entries';
 
-            if (data.error) {
-                container.innerHTML = `<div class="guestbook-empty" style="color:rgba(255,100,100,.5);">Guestbook table not set up. Please ask the admin.</div>`;
-            } else if (entries.length === 0) {
-                container.innerHTML = '<div class="guestbook-empty">No comments yet. Be the first!</div>';
-            } else {
-                entries.forEach(entry => {
-                    const div = document.createElement('div');
-                    div.className = 'guestbook-entry';
-                    const avatarUrl = entry.visitor_avatar || '';
-                    div.innerHTML = `
-                        <img class="gb-avatar" src="${avatarUrl}" onerror="this.style.display='none'" alt="">
-                        <div class="gb-body">
-                            <div class="gb-name">${entry.visitor_name || 'Anonymous'} <span class="gb-time">${new Date(entry.created_at).toLocaleDateString()}</span></div>
-                            <div class="gb-text">${entry.text}</div>
-                        </div>
+                if (data.error) {
+                    container.innerHTML = `<div class="guestbook-empty" style="color:rgba(255,100,100,.5);">Guestbook table not set up. Please ask the admin.</div>`;
+                } else if (entries.length === 0) {
+                    container.innerHTML = '<div class="guestbook-empty">No comments yet. Be the first!</div>';
+                } else {
+                    entries.forEach(entry => {
+                        const div = document.createElement('div');
+                        div.className = 'guestbook-entry';
+                        const avatarUrl = entry.visitor_avatar || '';
+                        div.innerHTML = `
+                            <img class="gb-avatar" src="${avatarUrl}" onerror="this.style.display='none'" alt="">
+                            <div class="gb-body">
+                                <div class="gb-name">${entry.visitor_name || 'Anonymous'} <span class="gb-time">${new Date(entry.created_at).toLocaleDateString()}</span></div>
+                                <div class="gb-text">${entry.text}</div>
+                            </div>
+                        `;
+                        container.appendChild(div);
+                    });
+                }
+                section.appendChild(container);
+
+                // Pagination
+                if (totalPages > 1 && !data.error) {
+                    const pagination = document.createElement('div');
+                    pagination.className = 'guestbook-pagination';
+                    pagination.innerHTML = `
+                        <button class="gb-prev" ${page <= 1 ? 'disabled' : ''}>‹</button>
+                        <span>${page} / ${totalPages}</span>
+                        <button class="gb-next" ${page >= totalPages ? 'disabled' : ''}>›</button>
                     `;
-                    container.appendChild(div);
-                });
-            }
-            section.appendChild(container);
-
-            // Pagination
-            if (totalPages > 1 && !data.error) {
-                const pagination = document.createElement('div');
-                pagination.className = 'guestbook-pagination';
-                pagination.innerHTML = `
-                    <button class="gb-prev" ${page <= 1 ? 'disabled' : ''}>‹</button>
-                    <span>${page} / ${totalPages}</span>
-                    <button class="gb-next" ${page >= totalPages ? 'disabled' : ''}>›</button>
-                `;
-                pagination.querySelector('.gb-prev').onclick = () => {
-                    if (page > 1) renderGuestbook(page - 1);
-                };
-                pagination.querySelector('.gb-next').onclick = () => {
-                    if (page < totalPages) renderGuestbook(page + 1);
-                };
-                section.appendChild(pagination);
-            }
-
-            // Comment form (only if user is logged in and table exists)
-            if (session && !data.error) {
-                const form = document.createElement('div');
-                form.className = 'guestbook-form';
-                const avatarUrl = session.avatar || '';
-                form.innerHTML = `
-                    <div class="gb-user-info">
-                        <img src="${avatarUrl}" onerror="this.style.display='none'" alt="">
-                        <span>${session.username}</span>
-                    </div>
-                    <input type="text" id="gb-text-input" placeholder="Leave a comment..." maxlength="500">
-                    <button id="gb-submit-btn">Post</button>
-                `;
-                section.appendChild(form);
-
-                document.getElementById('gb-submit-btn').onclick = async function() {
-                    const textInput = document.getElementById('gb-text-input');
-                    const text = textInput.value.trim();
-                    if (!text) return;
-                    this.disabled = true;
-                    this.textContent = 'Posting...';
-                    const result = await postGuestbook(slug, session.username, text);
-                    if (result) {
-                        textInput.value = '';
-                        renderGuestbook(1); // refresh first page
-                    } else {
-                        alert('Failed to post comment.');
+                    const prevBtn = pagination.querySelector('.gb-prev');
+                    const nextBtn = pagination.querySelector('.gb-next');
+                    if (prevBtn) {
+                        prevBtn.onclick = () => { if (page > 1) renderGuestbook(page - 1); };
                     }
-                    this.disabled = false;
-                    this.textContent = 'Post';
-                };
-            } else if (session && data.error) {
-                // Show message but no form
-                const msg = document.createElement('div');
-                msg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);text-align:center;padding:8px 0;';
-                msg.textContent = 'Guestbook is not available (table missing).';
-                section.appendChild(msg);
-            } else if (!session && !data.error) {
-                const msg = document.createElement('div');
-                msg.style.cssText = 'font-size:.6rem;color:rgba(255,255,255,.2);text-align:center;padding:8px 0;';
-                msg.textContent = 'Sign in to leave a comment.';
-                section.appendChild(msg);
-            }
+                    if (nextBtn) {
+                        nextBtn.onclick = () => { if (page < totalPages) renderGuestbook(page + 1); };
+                    }
+                    section.appendChild(pagination);
+                }
 
-            mainMeta.parentNode.insertBefore(section, mainMeta.nextSibling);
+                // Comment form
+                if (session && !data.error) {
+                    const form = document.createElement('div');
+                    form.className = 'guestbook-form';
+                    const avatarUrl = session.avatar || '';
+                    form.innerHTML = `
+                        <div class="gb-user-info">
+                            <img src="${avatarUrl}" onerror="this.style.display='none'" alt="">
+                            <span>${session.username}</span>
+                        </div>
+                        <input type="text" id="gb-text-input" placeholder="Leave a comment..." maxlength="500">
+                        <button id="gb-submit-btn">Post</button>
+                    `;
+                    section.appendChild(form);
+
+                    const submitBtn = document.getElementById('gb-submit-btn');
+                    if (submitBtn) {
+                        submitBtn.onclick = async function() {
+                            const textInput = document.getElementById('gb-text-input');
+                            const text = textInput.value.trim();
+                            if (!text) return;
+                            this.disabled = true;
+                            this.textContent = 'Posting...';
+                            const result = await postGuestbook(slug, session.username, text);
+                            if (result) {
+                                textInput.value = '';
+                                renderGuestbook(1);
+                            } else {
+                                alert('Failed to post comment.');
+                            }
+                            this.disabled = false;
+                            this.textContent = 'Post';
+                        };
+                    }
+                } else if (session && data.error) {
+                    const msg = document.createElement('div');
+                    msg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);text-align:center;padding:8px 0;';
+                    msg.textContent = 'Guestbook is not available (table missing).';
+                    section.appendChild(msg);
+                } else if (!session && !data.error) {
+                    const msg = document.createElement('div');
+                    msg.style.cssText = 'font-size:.6rem;color:rgba(255,255,255,.2);text-align:center;padding:8px 0;';
+                    msg.textContent = 'Sign in to leave a comment.';
+                    section.appendChild(msg);
+                }
+
+                mainMeta.parentNode.insertBefore(section, mainMeta.nextSibling);
+            } catch (e) {
+                console.error('Guestbook render error:', e);
+                // fallback: show nothing or a tiny error message
+                const mainMeta = document.getElementById('main-meta');
+                if (mainMeta) {
+                    const errMsg = document.createElement('div');
+                    errMsg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);padding:12px 0;';
+                    errMsg.textContent = 'Guestbook failed to load.';
+                    mainMeta.parentNode.insertBefore(errMsg, mainMeta.nextSibling);
+                }
+            }
         }
 
         // ===== AUTH UI =====
@@ -1970,7 +1983,7 @@
                     card_opacity:0.58,parallax_enabled:true,cursor_effect:"ghost",custom_cursor:"",
                     custom_font:"DM Mono",typewriter_line1:false,typewriter_line2:false,typewriter_line3:false,
                     typewriter_speed:70,transparent_bg:false,disable_shadow:false,card_bg_color:"",
-                    border_color:"",views:0,avatar:"",guestbook_enabled:true, // <-- default ON
+                    border_color:"",views:0,avatar:"",guestbook_enabled:true,
                     music_url:"",music_volume:0.4,music_autoplay:false
                 });
                 if(result&&result[0]){await notifyDiscord(username,nextUid);saveSession({username,uid:nextUid});closeModal(authModal);updateAuthUI();openDashboard();}else{err.textContent="something went wrong";}
