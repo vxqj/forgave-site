@@ -1791,8 +1791,7 @@
             content.appendChild(contentDiv);
         }
 
-        // ===== GUESTBOOK RENDER (final – with addEventListener) =====
-       // ===== GUESTBOOK RENDER – FINAL FIX =====
+     // ===== GUESTBOOK RENDER – FINAL FIX (uses section.querySelector) =====
 let guestbookPage = 1;
 const GUESTBOOK_LIMIT = 10;
 
@@ -1885,16 +1884,14 @@ async function renderGuestbook(page = 1) {
             `;
             section.appendChild(form);
 
-            // 🔥 Get the button and attach handler directly using onclick
-            const submitBtn = document.getElementById('gb-submit-btn');
+            // 🔥 Now the button is inside section – use section.querySelector
+            const submitBtn = section.querySelector('#gb-submit-btn');
             if (submitBtn) {
-                // Remove any previous handlers
-                submitBtn.onclick = null;
-                // Assign new handler
+                submitBtn.onclick = null; // clear previous
                 submitBtn.onclick = async function(e) {
                     e.preventDefault();
                     console.log('🔘 Post button clicked!');
-                    const textInput = document.getElementById('gb-text-input');
+                    const textInput = section.querySelector('#gb-text-input'); // also use section
                     if (!textInput) {
                         console.error('Input field not found');
                         return;
@@ -1925,7 +1922,7 @@ async function renderGuestbook(page = 1) {
                 };
                 console.log('✅ Click handler attached to Post button');
             } else {
-                console.error('❌ Post button not found after creation');
+                console.error('❌ Post button not found in section');
             }
         } else if (session && data.error) {
             const msg = document.createElement('div');
@@ -1939,9 +1936,9 @@ async function renderGuestbook(page = 1) {
             section.appendChild(msg);
         }
 
-        // Insert guestbook section after main-meta
+        // Finally, insert the entire section into the DOM
         mainMeta.parentNode.insertBefore(section, mainMeta.nextSibling);
-        console.log('✅ Guestbook section rendered');
+        console.log('✅ Guestbook section rendered and appended');
     } catch (e) {
         console.error('❌ Guestbook render error:', e);
         const mainMeta = document.getElementById('main-meta');
