@@ -1791,7 +1791,7 @@
             content.appendChild(contentDiv);
         }
 
-        // ===== GUESTBOOK RENDER (fixed & stable) =====
+        // ===== GUESTBOOK RENDER (final – with addEventListener) =====
         let guestbookPage = 1;
         const GUESTBOOK_LIMIT = 10;
 
@@ -1855,10 +1855,10 @@
                     const prevBtn = pagination.querySelector('.gb-prev');
                     const nextBtn = pagination.querySelector('.gb-next');
                     if (prevBtn) {
-                        prevBtn.onclick = () => { if (page > 1) renderGuestbook(page - 1); };
+                        prevBtn.addEventListener('click', () => { if (page > 1) renderGuestbook(page - 1); });
                     }
                     if (nextBtn) {
-                        nextBtn.onclick = () => { if (page < totalPages) renderGuestbook(page + 1); };
+                        nextBtn.addEventListener('click', () => { if (page < totalPages) renderGuestbook(page + 1); });
                     }
                     section.appendChild(pagination);
                 }
@@ -1878,11 +1878,19 @@
                     `;
                     section.appendChild(form);
 
+                    // 🔥 Fix: use addEventListener with a named function
                     const submitBtn = document.getElementById('gb-submit-btn');
                     if (submitBtn) {
-                        submitBtn.onclick = async function() {
+                        // Remove any previous listeners to avoid duplicates
+                        const newBtn = submitBtn.cloneNode(true);
+                        submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+                        newBtn.addEventListener('click', async function() {
+                            console.log('🔘 Post button clicked!');
                             const textInput = document.getElementById('gb-text-input');
-                            if (!textInput) return;
+                            if (!textInput) {
+                                console.error('Input field not found');
+                                return;
+                            }
                             const text = textInput.value.trim();
                             if (!text) {
                                 alert('Please enter a comment.');
@@ -1905,7 +1913,7 @@
                                 this.disabled = false;
                                 this.textContent = 'Post';
                             }
-                        };
+                        });
                     }
                 } else if (session && data.error) {
                     const msg = document.createElement('div');
