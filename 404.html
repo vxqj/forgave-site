@@ -1792,20 +1792,26 @@
         }
 
         // ===== GUESTBOOK RENDER (final – with addEventListener) =====
-        // ===== GUESTBOOK RENDER (fixed – button type="button") =====
+       // ===== GUESTBOOK RENDER – FINAL FIX =====
 let guestbookPage = 1;
 const GUESTBOOK_LIMIT = 10;
 
 async function renderGuestbook(page = 1) {
     try {
         const mainMeta = document.getElementById('main-meta');
-        if (!mainMeta) return;
+        if (!mainMeta) {
+            console.warn('mainMeta not found');
+            return;
+        }
         const existingGB = document.getElementById('guestbook-section');
         if (existingGB) existingGB.remove();
 
         if (!C || !C.guestbook_enabled) {
+            console.log('Guestbook disabled or no C');
             return;
         }
+
+        console.log('Rendering guestbook, page:', page);
 
         const section = document.createElement('div');
         section.id = 'guestbook-section';
@@ -1856,15 +1862,15 @@ async function renderGuestbook(page = 1) {
             const prevBtn = pagination.querySelector('.gb-prev');
             const nextBtn = pagination.querySelector('.gb-next');
             if (prevBtn) {
-                prevBtn.addEventListener('click', () => { if (page > 1) renderGuestbook(page - 1); });
+                prevBtn.onclick = () => { if (page > 1) renderGuestbook(page - 1); };
             }
             if (nextBtn) {
-                nextBtn.addEventListener('click', () => { if (page < totalPages) renderGuestbook(page + 1); });
+                nextBtn.onclick = () => { if (page < totalPages) renderGuestbook(page + 1); };
             }
             section.appendChild(pagination);
         }
 
-        // Comment form – only show if user is logged in and table exists
+        // Comment form – only show if logged in and table exists
         if (session && !data.error) {
             const form = document.createElement('div');
             form.className = 'guestbook-form';
@@ -1879,11 +1885,14 @@ async function renderGuestbook(page = 1) {
             `;
             section.appendChild(form);
 
-            // 🔥 Get the button and attach the click handler
+            // 🔥 Get the button and attach handler directly using onclick
             const submitBtn = document.getElementById('gb-submit-btn');
             if (submitBtn) {
-                submitBtn.addEventListener('click', async function(e) {
-                    e.preventDefault(); // just in case
+                // Remove any previous handlers
+                submitBtn.onclick = null;
+                // Assign new handler
+                submitBtn.onclick = async function(e) {
+                    e.preventDefault();
                     console.log('🔘 Post button clicked!');
                     const textInput = document.getElementById('gb-text-input');
                     if (!textInput) {
@@ -1899,6 +1908,7 @@ async function renderGuestbook(page = 1) {
                     this.textContent = 'Posting...';
                     try {
                         const result = await postGuestbook(slug, session.username, text);
+                        console.log('Post result:', result);
                         if (result) {
                             textInput.value = '';
                             await renderGuestbook(1);
@@ -1912,9 +1922,10 @@ async function renderGuestbook(page = 1) {
                         this.disabled = false;
                         this.textContent = 'Post';
                     }
-                });
+                };
+                console.log('✅ Click handler attached to Post button');
             } else {
-                console.error('Submit button not found!');
+                console.error('❌ Post button not found after creation');
             }
         } else if (session && data.error) {
             const msg = document.createElement('div');
@@ -1928,9 +1939,11 @@ async function renderGuestbook(page = 1) {
             section.appendChild(msg);
         }
 
+        // Insert guestbook section after main-meta
         mainMeta.parentNode.insertBefore(section, mainMeta.nextSibling);
+        console.log('✅ Guestbook section rendered');
     } catch (e) {
-        console.error('Guestbook render error:', e);
+        console.error('❌ Guestbook render error:', e);
         const mainMeta = document.getElementById('main-meta');
         if (mainMeta) {
             const errMsg = document.createElement('div');
@@ -1940,7 +1953,6 @@ async function renderGuestbook(page = 1) {
         }
     }
 }
-
         // ===== AUTH UI =====
         const authModal=document.getElementById("auth-modal");
         const dashModal=document.getElementById("dash-modal");
