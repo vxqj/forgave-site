@@ -1142,6 +1142,7 @@
         }
 
         async function postGuestbook(profileUsername, visitorName, text) {
+            console.log('📤 postGuestbook called:', { profileUsername, visitorName, text });
             try {
                 const result = await supa.post("guestbook", {
                     profile_username: profileUsername,
@@ -1149,8 +1150,13 @@
                     text: text,
                     created_at: new Date().toISOString()
                 });
+                console.log('📥 postGuestbook result:', result);
                 return result && result[0];
-            } catch(e) { console.error(e); return null; }
+            } catch(e) {
+                console.error('💥 postGuestbook error:', e);
+                alert('Error: ' + e.message);
+                return null;
+            }
         }
 
         async function deleteGuestbookEntry(id) {
@@ -1785,7 +1791,7 @@
             content.appendChild(contentDiv);
         }
 
-        // ===== GUESTBOOK RENDER (fixed: added null-checks) =====
+        // ===== GUESTBOOK RENDER (fixed & stable) =====
         let guestbookPage = 1;
         const GUESTBOOK_LIMIT = 10;
 
@@ -1873,41 +1879,34 @@
                     section.appendChild(form);
 
                     const submitBtn = document.getElementById('gb-submit-btn');
-if (submitBtn) {
-    submitBtn.onclick = async function() {
-        const textInput = document.getElementById('gb-text-input');
-        if (!textInput) {
-            alert('Input field not found.');
-            return;
-        }
-        const text = textInput.value.trim();
-        if (!text) {
-            alert('Please enter a comment.');
-            return;
-        }
-        // Disable button to prevent double-submit
-        this.disabled = true;
-        this.textContent = 'Posting...';
-
-        try {
-            const result = await postGuestbook(slug, session.username, text);
-            if (result) {
-                textInput.value = '';
-                // Refresh the guestbook section (page 1)
-                await renderGuestbook(1);
-            } else {
-                alert('Failed to post comment. Check console for details.');
-            }
-        } catch (err) {
-            console.error('Post error:', err);
-            alert('Error: ' + err.message);
-        } finally {
-            // Re-enable button
-            this.disabled = false;
-            this.textContent = 'Post';
-        }
-    };
-}
+                    if (submitBtn) {
+                        submitBtn.onclick = async function() {
+                            const textInput = document.getElementById('gb-text-input');
+                            if (!textInput) return;
+                            const text = textInput.value.trim();
+                            if (!text) {
+                                alert('Please enter a comment.');
+                                return;
+                            }
+                            this.disabled = true;
+                            this.textContent = 'Posting...';
+                            try {
+                                const result = await postGuestbook(slug, session.username, text);
+                                if (result) {
+                                    textInput.value = '';
+                                    await renderGuestbook(1);
+                                } else {
+                                    alert('Failed to post comment. Check console.');
+                                }
+                            } catch (err) {
+                                console.error('Submit error:', err);
+                                alert('Error: ' + err.message);
+                            } finally {
+                                this.disabled = false;
+                                this.textContent = 'Post';
+                            }
+                        };
+                    }
                 } else if (session && data.error) {
                     const msg = document.createElement('div');
                     msg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);text-align:center;padding:8px 0;';
@@ -1923,7 +1922,6 @@ if (submitBtn) {
                 mainMeta.parentNode.insertBefore(section, mainMeta.nextSibling);
             } catch (e) {
                 console.error('Guestbook render error:', e);
-                // fallback: show nothing or a tiny error message
                 const mainMeta = document.getElementById('main-meta');
                 if (mainMeta) {
                     const errMsg = document.createElement('div');
