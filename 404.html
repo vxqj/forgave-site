@@ -33,22 +33,23 @@
         #auth-btn svg{width:17px;height:17px;fill:currentColor;display:block;margin:auto}
 
         /* ===== CARD STACK ===== */
-        #card-stack{position:fixed;top:40px;left:44px;z-index:10;width:320px;transform-style:preserve-3d;transition:transform 0.1s ease-out}
+        #card-stack{position:fixed;top:40px;left:44px;z-index:10;width:320px;transform-style:preserve-3d;transition:transform 0.1s ease-out, opacity 0.35s ease;opacity:0;display:none}
         @media (max-width:500px){#card-stack{top:auto;bottom:28px;left:50%;transform:translateX(-50%);width:calc(100vw - 32px);max-width:360px}body.minimalistic-mode #card-stack{transform:translate(-50%,-50%)!important;top:50%!important;left:50%!important;bottom:auto!important}}
         @media (max-width:400px){#card-stack{width:calc(100vw - 20px);bottom:16px;max-width:340px}}
         body.minimalistic-mode #card-stack{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);bottom:auto;right:auto;margin:0}
+        #card-stack.visible{opacity:1;display:block}
 
         /* ===== MAIN CARD ===== */
         #content{position:relative;background:rgba(10,10,12,0.58);backdrop-filter:blur(36px) saturate(160%) brightness(1.04);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.15);border-radius:18px;padding:22px 24px 20px;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 0 0 1px rgba(0,0,0,0.5),0 28px 72px rgba(0,0,0,0.75),0 8px 22px rgba(0,0,0,0.4);transition:all 0.3s;overflow:hidden}
         @media (max-width:400px){#content{padding:14px 14px 12px}}
         #content::after{content:"";position:absolute;inset:0;border-radius:18px;background:radial-gradient(ellipse at 30% 0%,rgba(255,255,255,0.03) 0%,transparent 60%);pointer-events:none}
 
-        /* ===== PROFILE AVATAR (guns.lol style) ===== */
+        /* ===== PROFILE AVATAR (guns.lol style) — NO OUTLINE ===== */
         .profile-avatar-wrap{display:flex;align-items:center;gap:14px;margin-bottom:12px}
-        .profile-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.12);flex-shrink:0;display:none}
+        .profile-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;display:none;border:none;outline:none;box-shadow:none}
         .profile-avatar-wrap .site-name{margin-bottom:0}
-        .card-style-neon .profile-avatar{border-color:#0ff;box-shadow:0 0 20px rgba(0,255,255,0.2)}
-        .card-style-terminal .profile-avatar{border-color:#0f0;box-shadow:0 0 20px rgba(0,255,0,0.1)}
+        .card-style-neon .profile-avatar{border:none;box-shadow:none}
+        .card-style-terminal .profile-avatar{border:none;box-shadow:none}
 
         /* ===== NEON CARD ===== */
         .card-style-neon #content{border:2px solid #0ff;box-shadow:0 0 30px rgba(0,255,255,0.3),0 0 60px rgba(0,255,255,0.1),inset 0 0 30px rgba(0,255,255,0.05);animation:neonPulse 2s ease-in-out infinite alternate}
@@ -916,7 +917,7 @@
 
         function showProfilePage() {
             signupPage.style.display = 'none';
-            cardStackElem.style.display = '';
+            cardStackElem.style.display = 'block';
             overlayElem.style.display = 'flex';
             overlayElem.style.opacity = '1';
             overlayElem.style.pointerEvents = 'auto';
@@ -1419,6 +1420,36 @@
                 }
             }
             setTimeout(()=>{ typeStep(); }, delayBeforeStart);
+        }
+
+        // ===== TAB TITLE TYPEWRITER (guns.lol style) =====
+        function startTitleTypewriter() {
+            const text = "forgave.lol";
+            let i = 0;
+            let isDeleting = false;
+            function typeStep() {
+                if (!isDeleting) {
+                    if (i < text.length) {
+                        document.title = text.slice(0, i + 1) + "|";
+                        i++;
+                        setTimeout(typeStep, 120 + Math.random() * 40);
+                    } else {
+                        isDeleting = true;
+                        setTimeout(typeStep, 2000);
+                    }
+                } else {
+                    if (i > 0) {
+                        document.title = text.slice(0, i) + "|";
+                        i--;
+                        setTimeout(typeStep, 60 + Math.random() * 20);
+                    } else {
+                        isDeleting = false;
+                        document.title = text + "|";
+                        setTimeout(typeStep, 500);
+                    }
+                }
+            }
+            typeStep();
         }
 
         // ===== LEADERBOARD =====
@@ -2546,7 +2577,16 @@
         // ===== BOOT =====
         initCursorEffect();
         updateAuthUI();
-        resolveRoute().then(()=>{ if(slug&&slug!=="") renderCard(); });
+        resolveRoute().then(()=>{ 
+            if(slug && slug!=="") {
+                renderCard();
+                // Show the card after rendering to avoid flicker
+                const stack = document.getElementById('card-stack');
+                stack.classList.add('visible');
+            }
+            // Start the tab title typewriter
+            startTitleTypewriter();
+        });
     </script>
 </body>
 </html>
