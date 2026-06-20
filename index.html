@@ -637,7 +637,7 @@
         <button class="dash-nav-btn" data-panel="alias"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>alias</button>
         <button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
         <button class="dash-nav-btn" data-panel="stats"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>stats</button>
-        <button class="dash-nav-btn" data-panel="guestbook"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>guestbook</button>
+        <button class="dash-nav-btn" data-panel="guestbook"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zm-9-4h2v2h-2zm0-6h2v4h-2z"/></svg>guestbook</button>
         <button class="dash-nav-btn" data-panel="viewbadges" style="opacity:0.5;"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>view badges</button>
     </nav>
     <div class="dash-panels">
@@ -758,12 +758,7 @@
     <div class="modal-bg" id="reset-pw-modal"><div class="modal"><button class="modal-close" id="reset-pw-close">✕</button><div class="modal-title">password reset</div><div class="field"><label>new temporary password</label><input type="text" id="reset-pw-value" readonly style="background:rgba(255,255,255,.1);font-family:monospace;"></div><div class="field-hint" style="color:rgba(100,220,150,.8);">copy this password and share it with the user. they can log in and change it.</div><button class="modal-btn" id="copy-pw-btn">copy to clipboard</button></div></div>
 
     <script>
-        // ========================================================
-        // SUPABASE CONFIG — anon key only, used for low-sensitivity
-        // tables (custom_badges, guestbook). Auth, admin actions,
-        // password data, likes and views all go through /api/*
-        // routes now and never touch Supabase directly from here.
-        // ========================================================
+        // ========== SUPABASE CONFIG ==========
         const SUPA_URL = "https://xqqwyugfyntgbgohzqcz.supabase.co";
         const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxcXd5dWdmeW50Z2Jnb2h6cWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MjI1NTQsImV4cCI6MjA5NTE5ODU1NH0.Y-Z5HawSgxraigCep2BHINLvev98b3m3BGsI1DT_LQY";
 
@@ -812,27 +807,22 @@
             }
         };
 
-        // ========================================================
-        // SESSION — now backed by an httpOnly cookie set by the
-        // server. We just ask the server who we are via /api/auth/me
-        // instead of reading/writing localStorage ourselves.
-        // ========================================================
+        async function hashPassword(pw) {
+            const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw));
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+        }
+
+        function generateRandomPassword(length = 8) {
+            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
+            let result = "";
+            for (let i = 0; i < length; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+            return result;
+        }
+
         let session = null;
-
-        async function refreshSession() {
-            try {
-                const res = await fetch('/api/auth/me');
-                const data = await res.json();
-                session = data.user || null;
-            } catch (e) {
-                session = null;
-            }
-        }
-
-        async function doLogout() {
-            try { await fetch('/api/auth/logout', { method: 'POST' }); } catch (e) {}
-            session = null;
-        }
+        try { session = JSON.parse(localStorage.getItem("frgv_session")); } catch(e) {}
+        function saveSession(u) { session = u; localStorage.setItem("frgv_session", JSON.stringify(u)); }
+        function clearSession() { session = null; localStorage.removeItem("frgv_session"); }
 
         const ADMIN_USERS = ["cash", "die"];
         function isAdmin(u) { return u && ADMIN_USERS.some(a => a.toLowerCase() === (u.username || "").toLowerCase()); }
@@ -952,11 +942,6 @@
             }
         });
 
-        // ========================================================
-        // SIGNUP — patched. No more hashPassword(), no more
-        // supa.post("users", ...), no more notifyDiscord(). All of
-        // that now happens server-side in /api/auth/signup.
-        // ========================================================
         async function handleSignup() {
             const btn = document.getElementById('su-submit-page');
             const username = document.getElementById('su-username-page').value.trim().toLowerCase();
@@ -970,22 +955,36 @@
             if (pw.length < 6) { err.textContent = "password must be 6+ chars"; return; }
             if (pw !== confirm) { err.textContent = "passwords don't match"; return; }
             if (!terms.checked) { err.textContent = "you must agree to the Terms"; return; }
+            try {
+                const rows = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
+                if (rows && rows.length > 0) { err.textContent = "username already taken"; return; }
+            } catch(e) { err.textContent = "error checking username"; return; }
             btn.disabled = true; btn.textContent = "creating...";
             try {
-                const res = await fetch('/api/auth/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password: pw })
+                let nextUid = STATIC_UID_START;
+                try { const allUsers = await supa.get("users", "order=uid.desc&limit=1"); if (allUsers && allUsers.length > 0) nextUid = allUsers[0].uid + 1; } catch(e) {}
+                const hash = await hashPassword(pw);
+                const now = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+                const result = await supa.post("users", {
+                    username, password_hash: hash, uid: nextUid, lines: ["","",""], discord: "", links: [],
+                    bg_video_urls: [], bg_video_opacity: 0.45, bg_words: ["</>","///"], last_change: now,
+                    aliases: [], equipped_badges: [], is_admin: false, card_style: "default", border_radius: 18,
+                    card_opacity: 0.58, parallax_enabled: true, cursor_effect: "ghost", custom_cursor: "",
+                    custom_font: "DM Mono", typewriter_line1: false, typewriter_line2: false, typewriter_line3: false,
+                    typewriter_speed: 70, transparent_bg: false, disable_shadow: false, card_bg_color: "",
+                    border_color: "", views: 0, avatar: "", guestbook_enabled: true,
+                    music_url: "", music_volume: 0.4, music_autoplay: false
                 });
-                const data = await res.json();
-                if (!res.ok) { err.textContent = data.error || "something went wrong"; btn.disabled = false; btn.textContent = "Create Account →"; return; }
-                session = { username: data.username, uid: data.uid };
-                window.location.href = '/' + username;
+                if (result && result[0]) {
+                    await notifyDiscord(username, nextUid);
+                    saveSession({ username, uid: nextUid });
+                    window.location.href = '/' + username;
+                } else { err.textContent = "something went wrong"; }
             } catch(e) {
                 console.error(e);
-                err.textContent = "error: " + e.message;
-                btn.disabled = false; btn.textContent = "Create Account →";
+                err.textContent = e.message?.includes("duplicate") ? "username taken" : "error: " + e.message;
             }
+            btn.disabled = false; btn.textContent = "Create Account →";
         }
 
         // ===== GOOGLE FONTS =====
@@ -1083,31 +1082,43 @@
             return 'desktop';
         }
 
-        // ========================================================
-        // STATS TRACKING — patched to go through /api/stats instead
-        // of patching the users table directly with the anon key.
-        // ========================================================
-        async function updateStats(username, type, key) {
+        async function updateStats(username, type, key, increment = 1) {
             try {
-                await fetch('/api/stats', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, type, key })
-                });
+                const rows = await supa.get("users", `username=eq.${encodeURIComponent(username)}`);
+                if (!rows || rows.length === 0) return;
+                const user = rows[0];
+                let payload = {};
+                if (type === 'link') {
+                    let linkStats = user.link_stats || {};
+                    linkStats[key] = (linkStats[key] || 0) + increment;
+                    payload.link_stats = linkStats;
+                } else if (type === 'daily_view') {
+                    let dailyViews = user.daily_views || {};
+                    const today = getTodayStr();
+                    dailyViews[today] = (dailyViews[today] || 0) + increment;
+                    payload.daily_views = dailyViews;
+                } else if (type === 'device') {
+                    let deviceStats = user.device_stats || {};
+                    deviceStats[key] = (deviceStats[key] || 0) + increment;
+                    payload.device_stats = deviceStats;
+                }
+                if (Object.keys(payload).length) {
+                    await supa.patch("users", `username=eq.${encodeURIComponent(username)}`, payload);
+                }
             } catch(e) { console.warn('[Stats] Update failed:', e); }
         }
 
         async function trackViewAndDevice(username) {
-            await updateStats(username, 'daily_view', getTodayStr());
+            await updateStats(username, 'daily_view', getTodayStr(), 1);
             const device = getDeviceType();
-            await updateStats(username, 'device', device);
+            await updateStats(username, 'device', device, 1);
         }
 
         function trackLinkClick(username, linkLabel) {
-            updateStats(username, 'link', linkLabel);
+            updateStats(username, 'link', linkLabel, 1);
         }
 
-        // ===== GUESTBOOK (unchanged — not password-sensitive) =====
+        // ===== GUESTBOOK =====
         async function fetchGuestbook(username, page = 1, limit = 10) {
             try {
                 const offset = (page - 1) * limit;
@@ -1131,6 +1142,7 @@
         }
 
         async function postGuestbook(profileUsername, visitorName, text) {
+            console.log('📤 postGuestbook called:', { profileUsername, visitorName, text });
             try {
                 const result = await supa.post("guestbook", {
                     profile_username: profileUsername,
@@ -1138,9 +1150,10 @@
                     text: text,
                     created_at: new Date().toISOString()
                 });
+                console.log('📥 postGuestbook result:', result);
                 return result && result[0];
             } catch(e) {
-                console.error('postGuestbook error:', e);
+                console.error('💥 postGuestbook error:', e);
                 alert('Error: ' + e.message);
                 return null;
             }
@@ -1153,11 +1166,7 @@
             } catch(e) { return false; }
         }
 
-        // ========================================================
-        // RESOLVE ROUTE — patched to fetch /api/profile/:username
-        // instead of querying the users table directly. The API
-        // route never includes password_hash in its response.
-        // ========================================================
+        // ===== RESOLVE ROUTE =====
         async function resolveRoute() {
             await fetchCustomBadges();
             await fetchGoogleFonts();
@@ -1175,15 +1184,15 @@
                 return;
             }
             try {
-                const res = await fetch('/api/profile/' + encodeURIComponent(slug));
-                if (res.ok) {
-                    const { user: u } = await res.json();
+                const rows = await supa.get("users", `username=eq.${encodeURIComponent(slug)}`);
+                if (rows && rows[0]) {
+                    const u = rows[0];
                     const equippedBadges = u.equipped_badges || [];
                     const cardBadges = [];
                     for (let bid of equippedBadges) { const def = getBadgeDef(bid); if (def) cardBadges.push({ tip: def.name, img: def.img }); }
                     let aliases = Array.isArray(u.aliases) ? u.aliases.filter(a => a && a.trim()) : [];
                     C = {
-                        siteName: "forgave.lol", lastChange: u.last_change || "",
+                        siteName: "forgave.lol", lastChange: u.last_change || u.created_at?.slice(0,10) || "",
                         username: u.username, uid: String(u.uid), badges: cardBadges,
                         lines: u.lines || ["","",""], discord: u.discord || "",
                         links: (u.links || []).map(lk => ({ ...lk, custom_icon_url: lk.custom_icon_url || "" })),
@@ -1213,18 +1222,13 @@
             C = null;
         }
 
-        // ========================================================
-        // VIEW INCREMENT — patched to call /api/stats (type:'view'),
-        // which increments atomically server-side instead of trusting
-        // a client-computed "current + 1" value.
-        // ========================================================
         async function incrementViews() {
             if (!slug || slug === "" || slug === "n") return;
             const viewedBefore = localStorage.getItem(`frgv_viewed_${slug}`);
             if (viewedBefore) return;
             localStorage.setItem(`frgv_viewed_${slug}`, "1");
             try {
-                await updateStats(slug, 'view', null);
+                await supa.patch("users", `username=eq.${encodeURIComponent(slug)}`, { views: (C?.views || 0) + 1 });
                 await trackViewAndDevice(slug);
             } catch(e) { console.warn("view increment failed", e); }
         }
@@ -1452,12 +1456,7 @@
             typeStep();
         }
 
-        // ========================================================
-        // LEADERBOARD — patched to call /api/leaderboard, which
-        // already includes uid + badge images server-side. We still
-        // overlay STATIC_USERS data locally since those three
-        // profiles aren't in the database.
-        // ========================================================
+        // ===== LEADERBOARD =====
         const leaderboardBtn = document.getElementById("leaderboard-btn");
         const leaderboardModal = document.getElementById("leaderboard-modal");
         const leaderboardClose = document.getElementById("leaderboard-close");
@@ -1470,30 +1469,41 @@
                 leaderboardList.innerHTML='<div class="leaderboard-empty">loading...</div>';
                 leaderboardList.classList.remove("fade-out");
                 try {
-                    const res = await fetch('/api/leaderboard?tab=' + tab);
-                    const data = await res.json();
-                    let entries = data.entries || [];
-                    entries = entries.map(e => {
-                        if (STATIC_USERS[e.name]) {
-                            const su = STATIC_USERS[e.name];
-                            return { ...e, uid: su.uid, badges: (su.badges || []).map(b => b.img).filter(Boolean) };
+                    let entries=[];
+                    if (tab==="likes") {
+                        const likes=await supa.get("likes","select=id,count&order=count.desc&limit=25");
+                        entries=likes.map(l=>{ let username=l.id.replace(/^forgave\.lol\//,""); if(username==="forgave.lol") username="n"; return {name:username,value:l.count}; });
+                    } else {
+                        const users=await supa.get("users","select=username,views&order=views.desc&limit=25");
+                        entries=users.map(u=>({name:u.username,value:u.views||0}));
+                    }
+                    const usernames=entries.map(e=>e.name);
+                    const userDetails={};
+                    for (let uname of usernames) {
+                        if (STATIC_USERS[uname]) { const badgeImgs=(STATIC_USERS[uname].badges||[]).map(b=>b.img).filter(Boolean); userDetails[uname]={uid:STATIC_USERS[uname].uid,badges:badgeImgs}; }
+                    }
+                    const dynamicUsernames=usernames.filter(u=>!STATIC_USERS[u]&&u!=="n");
+                    if (dynamicUsernames.length) {
+                        const filter=dynamicUsernames.map(u=>`username.eq.${u}`).join(",");
+                        const rows=await supa.get("users",`or=(${filter})&select=username,uid,equipped_badges`);
+                        for (let row of rows) {
+                            const badgeImgs=(row.equipped_badges||[]).map(bid=>{ const def=getBadgeDef(bid); return def?def.img:null; }).filter(Boolean);
+                            userDetails[row.username]={uid:row.uid,badges:badgeImgs};
                         }
-                        if (e.name === "n") {
-                            return { ...e, uid: "-999", badges: ["https://files.catbox.moe/z01zmz.png", "https://files.catbox.moe/zj2mlt.gif"] };
-                        }
-                        return e;
-                    });
-                    renderLeaderboard(entries);
+                    }
+                    userDetails["n"]={uid:"-999",badges:["https://files.catbox.moe/z01zmz.png","https://files.catbox.moe/zj2mlt.gif"]};
+                    renderLeaderboard(entries,userDetails);
                 } catch(e) { console.error(e); leaderboardList.innerHTML='<div class="leaderboard-empty">failed to load</div>'; }
             },150);
         }
 
-        function renderLeaderboard(entries) {
+        function renderLeaderboard(entries,userDetails) {
             if (!entries.length) { leaderboardList.innerHTML='<div class="leaderboard-empty">no entries yet</div>'; return; }
             const html=entries.map((entry,idx)=>{
+                const details=userDetails[entry.name]||{uid:"?",badges:[]};
                 const displayName=entry.name==="n"?"forgave.lol":entry.name;
-                const badgeHtml=(entry.badges||[]).slice(0,3).map(img=>`<div class="leaderboard-badge"><img src="${img}"></div>`).join("");
-                return `<div class="leaderboard-item"><div class="leaderboard-rank">${idx+1}.</div><div class="leaderboard-user-info"><div class="leaderboard-name"><a href="/${entry.name}" target="_blank">${displayName}</a></div><div class="leaderboard-badges">${badgeHtml}</div><div class="leaderboard-uid">uid: ${entry.uid}</div></div><div class="leaderboard-value">${formatNumber(entry.value)}</div></div>`;
+                const badgeHtml=details.badges.slice(0,3).map(img=>`<div class="leaderboard-badge"><img src="${img}"></div>`).join("");
+                return `<div class="leaderboard-item"><div class="leaderboard-rank">${idx+1}.</div><div class="leaderboard-user-info"><div class="leaderboard-name"><a href="/${entry.name}" target="_blank">${displayName}</a></div><div class="leaderboard-badges">${badgeHtml}</div><div class="leaderboard-uid">uid: ${details.uid}</div></div><div class="leaderboard-value">${formatNumber(entry.value)}</div></div>`;
             }).join("");
             leaderboardList.innerHTML=html;
         }
@@ -1642,10 +1652,7 @@
             }
             drawWords();
 
-            // ========================================================
-            // LIKES — patched to use /api/like instead of raw fetch
-            // to Supabase's likes table with the anon key.
-            // ========================================================
+            // Likes
             const likeBtn=document.getElementById("like-btn");
             const likeNum=document.getElementById("like-num");
             const likeKey="liked_"+likeId.replace(/\//g,"_");
@@ -1653,21 +1660,19 @@
             if (hasLiked) likeBtn.classList.add("liked");
             async function fetchLikes() {
                 try {
-                    const res = await fetch('/api/like?id=' + encodeURIComponent(likeId));
-                    const data = await res.json();
-                    likeNum.textContent = data.count || 0;
-                } catch(e) { likeNum.textContent="?"; }
+                    const res=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+                    const data=await res.json();
+                    if(!data[0]){await fetch(`${SUPA_URL}/rest/v1/likes`,{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({id:likeId,count:0})});likeNum.textContent=0;}else likeNum.textContent=data[0].count;
+                }catch(e){likeNum.textContent="?";}
             }
             async function updateLike(delta) {
                 try {
-                    const res = await fetch('/api/like', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ likeId, delta })
-                    });
-                    const data = await res.json();
-                    likeNum.textContent = data.count;
-                } catch(e) {}
+                    const res=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+                    const data=await res.json();
+                    const newCount=Math.max(0,(data[0]?.count||0)+delta);
+                    await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(likeId)}`,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({count:newCount})});
+                    likeNum.textContent=newCount;
+                }catch(e){}
             }
             likeBtn.onclick=()=>{ if(!hasLiked){hasLiked=true;localStorage.setItem(likeKey,"1");likeBtn.classList.add("liked");updateLike(1);}else{hasLiked=false;localStorage.removeItem(likeKey);likeBtn.classList.remove("liked");updateLike(-1);} };
             fetchLikes();
@@ -1786,125 +1791,165 @@
             content.appendChild(contentDiv);
         }
 
-        // ===== GUESTBOOK RENDER =====
-        let guestbookPage = 1;
-        const GUESTBOOK_LIMIT = 10;
+     // ===== GUESTBOOK RENDER – FINAL FIX (uses section.querySelector) =====
+let guestbookPage = 1;
+const GUESTBOOK_LIMIT = 10;
 
-        async function renderGuestbook(page = 1) {
-            try {
-                const mainMeta = document.getElementById('main-meta');
-                if (!mainMeta) return;
-                const existingGB = document.getElementById('guestbook-section');
-                if (existingGB) existingGB.remove();
-                if (!C || !C.guestbook_enabled) return;
+async function renderGuestbook(page = 1) {
+    try {
+        const mainMeta = document.getElementById('main-meta');
+        if (!mainMeta) {
+            console.warn('mainMeta not found');
+            return;
+        }
+        const existingGB = document.getElementById('guestbook-section');
+        if (existingGB) existingGB.remove();
 
-                const section = document.createElement('div');
-                section.id = 'guestbook-section';
-
-                const title = document.createElement('div');
-                title.style.cssText = 'font-size:.6rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:10px;';
-                title.textContent = 'Guest Book';
-                section.appendChild(title);
-
-                const data = await fetchGuestbook(slug, page, GUESTBOOK_LIMIT);
-                const entries = data.entries || [];
-                const total = data.total || 0;
-                const totalPages = Math.ceil(total / GUESTBOOK_LIMIT) || 1;
-
-                const container = document.createElement('div');
-                container.id = 'gb-entries';
-
-                if (data.error) {
-                    container.innerHTML = `<div class="guestbook-empty" style="color:rgba(255,100,100,.5);">Guestbook table not set up. Please ask the admin.</div>`;
-                } else if (entries.length === 0) {
-                    container.innerHTML = '<div class="guestbook-empty">No comments yet. Be the first!</div>';
-                } else {
-                    entries.forEach(entry => {
-                        const div = document.createElement('div');
-                        div.className = 'guestbook-entry';
-                        const avatarUrl = entry.visitor_avatar || '';
-                        div.innerHTML = `
-                            <img class="gb-avatar" src="${avatarUrl}" onerror="this.style.display='none'" alt="">
-                            <div class="gb-body">
-                                <div class="gb-name">${entry.visitor_name || 'Anonymous'} <span class="gb-time">${new Date(entry.created_at).toLocaleDateString()}</span></div>
-                                <div class="gb-text">${entry.text}</div>
-                            </div>
-                        `;
-                        container.appendChild(div);
-                    });
-                }
-                section.appendChild(container);
-
-                if (totalPages > 1 && !data.error) {
-                    const pagination = document.createElement('div');
-                    pagination.className = 'guestbook-pagination';
-                    pagination.innerHTML = `
-                        <button class="gb-prev" ${page <= 1 ? 'disabled' : ''}>‹</button>
-                        <span>${page} / ${totalPages}</span>
-                        <button class="gb-next" ${page >= totalPages ? 'disabled' : ''}>›</button>
-                    `;
-                    const prevBtn = pagination.querySelector('.gb-prev');
-                    const nextBtn = pagination.querySelector('.gb-next');
-                    if (prevBtn) prevBtn.onclick = () => { if (page > 1) renderGuestbook(page - 1); };
-                    if (nextBtn) nextBtn.onclick = () => { if (page < totalPages) renderGuestbook(page + 1); };
-                    section.appendChild(pagination);
-                }
-
-                if (session && !data.error) {
-                    const form = document.createElement('div');
-                    form.className = 'guestbook-form';
-                    const avatarUrl = session.avatar || '';
-                    form.innerHTML = `
-                        <div class="gb-user-info">
-                            <img src="${avatarUrl}" onerror="this.style.display='none'" alt="">
-                            <span>${session.username}</span>
-                        </div>
-                        <input type="text" id="gb-text-input" placeholder="Leave a comment..." maxlength="500">
-                        <button type="button" id="gb-submit-btn">Post</button>
-                    `;
-                    section.appendChild(form);
-
-                    const submitBtn = section.querySelector('#gb-submit-btn');
-                    if (submitBtn) {
-                        submitBtn.onclick = async function(e) {
-                            e.preventDefault();
-                            const textInput = section.querySelector('#gb-text-input');
-                            if (!textInput) return;
-                            const text = textInput.value.trim();
-                            if (!text) { alert('Please enter a comment.'); return; }
-                            this.disabled = true;
-                            this.textContent = 'Posting...';
-                            try {
-                                const result = await postGuestbook(slug, session.username, text);
-                                if (result) { textInput.value = ''; await renderGuestbook(1); }
-                                else { alert('Failed to post comment. Check console.'); }
-                            } catch (err) {
-                                console.error('Submit error:', err);
-                                alert('Error: ' + err.message);
-                            } finally {
-                                this.disabled = false;
-                                this.textContent = 'Post';
-                            }
-                        };
-                    }
-                } else if (session && data.error) {
-                    const msg = document.createElement('div');
-                    msg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);text-align:center;padding:8px 0;';
-                    msg.textContent = 'Guestbook is not available (table missing).';
-                    section.appendChild(msg);
-                } else if (!session && !data.error) {
-                    const msg = document.createElement('div');
-                    msg.style.cssText = 'font-size:.6rem;color:rgba(255,255,255,.2);text-align:center;padding:8px 0;';
-                    msg.textContent = 'Sign in to leave a comment.';
-                    section.appendChild(msg);
-                }
-
-                mainMeta.parentNode.insertBefore(section, mainMeta.nextSibling);
-            } catch (e) {
-                console.error('Guestbook render error:', e);
-            }
+        if (!C || !C.guestbook_enabled) {
+            console.log('Guestbook disabled or no C');
+            return;
         }
 
+        console.log('Rendering guestbook, page:', page);
+
+        const section = document.createElement('div');
+        section.id = 'guestbook-section';
+
+        const title = document.createElement('div');
+        title.style.cssText = 'font-size:.6rem;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:10px;';
+        title.textContent = 'Guest Book';
+        section.appendChild(title);
+
+        const data = await fetchGuestbook(slug, page, GUESTBOOK_LIMIT);
+        const entries = data.entries || [];
+        const total = data.total || 0;
+        const totalPages = Math.ceil(total / GUESTBOOK_LIMIT) || 1;
+
+        const container = document.createElement('div');
+        container.id = 'gb-entries';
+
+        if (data.error) {
+            container.innerHTML = `<div class="guestbook-empty" style="color:rgba(255,100,100,.5);">Guestbook table not set up. Please ask the admin.</div>`;
+        } else if (entries.length === 0) {
+            container.innerHTML = '<div class="guestbook-empty">No comments yet. Be the first!</div>';
+        } else {
+            entries.forEach(entry => {
+                const div = document.createElement('div');
+                div.className = 'guestbook-entry';
+                const avatarUrl = entry.visitor_avatar || '';
+                div.innerHTML = `
+                    <img class="gb-avatar" src="${avatarUrl}" onerror="this.style.display='none'" alt="">
+                    <div class="gb-body">
+                        <div class="gb-name">${entry.visitor_name || 'Anonymous'} <span class="gb-time">${new Date(entry.created_at).toLocaleDateString()}</span></div>
+                        <div class="gb-text">${entry.text}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        section.appendChild(container);
+
+        // Pagination
+        if (totalPages > 1 && !data.error) {
+            const pagination = document.createElement('div');
+            pagination.className = 'guestbook-pagination';
+            pagination.innerHTML = `
+                <button class="gb-prev" ${page <= 1 ? 'disabled' : ''}>‹</button>
+                <span>${page} / ${totalPages}</span>
+                <button class="gb-next" ${page >= totalPages ? 'disabled' : ''}>›</button>
+            `;
+            const prevBtn = pagination.querySelector('.gb-prev');
+            const nextBtn = pagination.querySelector('.gb-next');
+            if (prevBtn) {
+                prevBtn.onclick = () => { if (page > 1) renderGuestbook(page - 1); };
+            }
+            if (nextBtn) {
+                nextBtn.onclick = () => { if (page < totalPages) renderGuestbook(page + 1); };
+            }
+            section.appendChild(pagination);
+        }
+
+        // Comment form – only show if logged in and table exists
+        if (session && !data.error) {
+            const form = document.createElement('div');
+            form.className = 'guestbook-form';
+            const avatarUrl = session.avatar || '';
+            form.innerHTML = `
+                <div class="gb-user-info">
+                    <img src="${avatarUrl}" onerror="this.style.display='none'" alt="">
+                    <span>${session.username}</span>
+                </div>
+                <input type="text" id="gb-text-input" placeholder="Leave a comment..." maxlength="500">
+                <button type="button" id="gb-submit-btn">Post</button>
+            `;
+            section.appendChild(form);
+
+            // 🔥 Now the button is inside section – use section.querySelector
+            const submitBtn = section.querySelector('#gb-submit-btn');
+            if (submitBtn) {
+                submitBtn.onclick = null; // clear previous
+                submitBtn.onclick = async function(e) {
+                    e.preventDefault();
+                    console.log('🔘 Post button clicked!');
+                    const textInput = section.querySelector('#gb-text-input'); // also use section
+                    if (!textInput) {
+                        console.error('Input field not found');
+                        return;
+                    }
+                    const text = textInput.value.trim();
+                    if (!text) {
+                        alert('Please enter a comment.');
+                        return;
+                    }
+                    this.disabled = true;
+                    this.textContent = 'Posting...';
+                    try {
+                        const result = await postGuestbook(slug, session.username, text);
+                        console.log('Post result:', result);
+                        if (result) {
+                            textInput.value = '';
+                            await renderGuestbook(1);
+                        } else {
+                            alert('Failed to post comment. Check console.');
+                        }
+                    } catch (err) {
+                        console.error('Submit error:', err);
+                        alert('Error: ' + err.message);
+                    } finally {
+                        this.disabled = false;
+                        this.textContent = 'Post';
+                    }
+                };
+                console.log('✅ Click handler attached to Post button');
+            } else {
+                console.error('❌ Post button not found in section');
+            }
+        } else if (session && data.error) {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);text-align:center;padding:8px 0;';
+            msg.textContent = 'Guestbook is not available (table missing).';
+            section.appendChild(msg);
+        } else if (!session && !data.error) {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'font-size:.6rem;color:rgba(255,255,255,.2);text-align:center;padding:8px 0;';
+            msg.textContent = 'Sign in to leave a comment.';
+            section.appendChild(msg);
+        }
+
+        // Finally, insert the entire section into the DOM
+        mainMeta.parentNode.insertBefore(section, mainMeta.nextSibling);
+        console.log('✅ Guestbook section rendered and appended');
+    } catch (e) {
+        console.error('❌ Guestbook render error:', e);
+        const mainMeta = document.getElementById('main-meta');
+        if (mainMeta) {
+            const errMsg = document.createElement('div');
+            errMsg.style.cssText = 'font-size:.6rem;color:rgba(255,100,100,.4);padding:12px 0;';
+            errMsg.textContent = 'Guestbook failed to load.';
+            mainMeta.parentNode.insertBefore(errMsg, mainMeta.nextSibling);
+        }
+    }
+}
         // ===== AUTH UI =====
         const authModal=document.getElementById("auth-modal");
         const dashModal=document.getElementById("dash-modal");
@@ -1930,11 +1975,6 @@
             document.getElementById("tab-login").classList.toggle("active",tab==="login");
         }
 
-        // ========================================================
-        // USERNAME AVAILABILITY — patched to call
-        // /api/auth/check-username instead of querying users
-        // directly with the anon key.
-        // ========================================================
         let checkTimer=null;
         document.getElementById("su-username").addEventListener("input",e=>{
             let val=e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g,""); e.target.value=val;
@@ -1943,19 +1983,11 @@
             if(STATIC_USERS[val]||val==="chloryl"){hint.textContent="taken";hint.className="field-hint error";return;}
             hint.textContent="checking..."; hint.className="field-hint"; clearTimeout(checkTimer);
             checkTimer=setTimeout(async()=>{
-                try {
-                    const res = await fetch('/api/auth/check-username?username=' + encodeURIComponent(val));
-                    const data = await res.json();
-                    if (!data.available) { hint.textContent="taken"; hint.className="field-hint error"; }
-                    else { hint.textContent="available ✓"; hint.className="field-hint success"; }
-                } catch(e){hint.textContent="";}
+                try { const rows=await supa.get("users",`username=eq.${encodeURIComponent(val)}`); if(rows&&rows.length>0){hint.textContent="taken";hint.className="field-hint error";}else{hint.textContent="available ✓";hint.className="field-hint success";} }
+                catch(e){hint.textContent="";}
             },400);
         });
 
-        // ========================================================
-        // SIGNUP (modal version) — patched, same pattern as
-        // handleSignup() above.
-        // ========================================================
         document.getElementById("su-submit").onclick=async()=>{
             const btn=document.getElementById("su-submit");
             const username=document.getElementById("su-username").value.trim().toLowerCase();
@@ -1971,24 +2003,27 @@
             if(hint.classList.contains("error")){err.textContent="username taken";return;}
             btn.disabled=true; btn.textContent="creating...";
             try {
-                const res = await fetch('/api/auth/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password: pw })
+                const existing=await supa.get("users",`username=eq.${encodeURIComponent(username)}`);
+                if(existing&&existing.length>0){err.textContent="username already taken";btn.disabled=false;btn.textContent="create account";return;}
+                let nextUid=STATIC_UID_START;
+                try{const allUsers=await supa.get("users","order=uid.desc&limit=1");if(allUsers&&allUsers.length>0)nextUid=allUsers[0].uid+1;}catch(e){}
+                const hash=await hashPassword(pw);
+                const now=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+                const result=await supa.post("users",{
+                    username,password_hash:hash,uid:nextUid,lines:["","",""],discord:"",links:[],
+                    bg_video_urls:[],bg_video_opacity:0.45,bg_words:["</>","///"],last_change:now,
+                    aliases:[],equipped_badges:[],is_admin:false,card_style:"default",border_radius:18,
+                    card_opacity:0.58,parallax_enabled:true,cursor_effect:"ghost",custom_cursor:"",
+                    custom_font:"DM Mono",typewriter_line1:false,typewriter_line2:false,typewriter_line3:false,
+                    typewriter_speed:70,transparent_bg:false,disable_shadow:false,card_bg_color:"",
+                    border_color:"",views:0,avatar:"",guestbook_enabled:true,
+                    music_url:"",music_volume:0.4,music_autoplay:false
                 });
-                const data = await res.json();
-                if (!res.ok) { err.textContent = data.error || "something went wrong"; btn.disabled=false; btn.textContent="create account"; return; }
-                session = { username: data.username, uid: data.uid };
-                closeModal(authModal); updateAuthUI(); openDashboard();
-            }catch(e){console.error(e);err.textContent="error: "+e.message;}
+                if(result&&result[0]){await notifyDiscord(username,nextUid);saveSession({username,uid:nextUid});closeModal(authModal);updateAuthUI();openDashboard();}else{err.textContent="something went wrong";}
+            }catch(e){console.error(e);err.textContent=e.message?.includes("duplicate")?"username taken":"error: "+e.message;}
             btn.disabled=false; btn.textContent="create account";
         };
 
-        // ========================================================
-        // LOGIN — patched to call /api/auth/login. The server
-        // compares the password hash and sets an httpOnly cookie;
-        // the hash itself never reaches this script.
-        // ========================================================
         document.getElementById("li-submit").onclick=async()=>{
             const btn=document.getElementById("li-submit");
             const username=document.getElementById("li-username").value.trim().toLowerCase();
@@ -1998,14 +2033,11 @@
             if(!username||!pw){err.textContent="fill in all fields";return;}
             btn.disabled=true; btn.textContent="logging in...";
             try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password: pw })
-                });
-                const data = await res.json();
-                if (!res.ok) { err.textContent = data.error || "login failed"; btn.disabled=false; btn.textContent="log in"; return; }
-                session = { username: data.username, uid: data.uid };
+                const rows=await supa.get("users",`username=eq.${encodeURIComponent(username)}`);
+                if(!rows||rows.length===0){err.textContent="user not found";btn.disabled=false;btn.textContent="log in";return;}
+                const hash=await hashPassword(pw);
+                if(rows[0].password_hash!==hash){err.textContent="wrong password";btn.disabled=false;btn.textContent="log in";return;}
+                saveSession({username,uid:rows[0].uid});
                 closeModal(authModal);
                 updateAuthUI();
                 window.location.href = '/' + username;
@@ -2024,7 +2056,7 @@
         }
 
         document.getElementById("user-pill-settings").onclick=openDashboard;
-        document.getElementById("user-pill-logout").onclick=async()=>{ await doLogout(); updateAuthUI(); };
+        document.getElementById("user-pill-logout").onclick=()=>{ clearSession(); updateAuthUI(); };
 
         function injectAdminTab() {
             if (!isAdmin(session)) return;
@@ -2058,10 +2090,6 @@
 
         let dashEquipped=[];
 
-        // ========================================================
-        // OPEN DASHBOARD — patched to call /api/dashboard/me
-        // instead of supa.get("users", ...) with the anon key.
-        // ========================================================
         async function openDashboard() {
             if (!session) return;
             closeModal(authModal);
@@ -2072,10 +2100,9 @@
             document.querySelector('.dash-nav-btn[data-panel="bio"]').classList.add("active");
             document.getElementById("panel-bio").classList.add("active");
             try {
-                const res = await fetch('/api/dashboard/me');
-                if (!res.ok) return;
-                const { user: u } = await res.json();
-                if (u) {
+                const rows=await supa.get("users",`username=eq.${encodeURIComponent(session.username)}`);
+                if (rows&&rows[0]) {
+                    const u=rows[0];
                     document.getElementById("d-avatar").value=u.avatar||"";
                     document.getElementById("d-line1").value=u.lines?.[0]||"";
                     document.getElementById("d-line2").value=u.lines?.[1]||"";
@@ -2084,9 +2111,9 @@
                     document.getElementById("d-bgvideo").value=u.bg_video_urls?.[0]||"";
                     document.getElementById("d-bgwords").value=(u.bg_words||[]).join(", ");
                     renderDashLinks(u.links||[]);
-                    const likeRes = await fetch('/api/like?id=' + encodeURIComponent("forgave.lol/" + session.username));
-                    const likeData = await likeRes.json();
-                    const likeCount = likeData.count || 0;
+                    const likeRes=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/"+session.username)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+                    const likeData=await likeRes.json();
+                    const likeCount=likeData?.[0]?.count||0;
                     dashAliases=Array.isArray(u.aliases)?u.aliases.filter(a=>typeof a==="string"&&a.trim().length>0):[];
                     renderAliasList();
                     document.getElementById("d-card-style").value=u.card_style||"default";
@@ -2173,12 +2200,6 @@
         function closeAliasForm() { document.getElementById("alias-add-form").classList.remove("open"); renderAliasList(); }
         document.getElementById("alias-add-trigger").onclick=openAliasForm;
         document.getElementById("alias-cancel-btn").onclick=closeAliasForm;
-
-        // ========================================================
-        // ALIAS VERIFY — patched to call /api/aliases/verify instead
-        // of fetching the target user's password_hash to the
-        // browser and comparing it client-side.
-        // ========================================================
         document.getElementById("alias-verify-btn").onclick=async()=>{
             const btn=document.getElementById("alias-verify-btn"),hint=document.getElementById("alias-form-hint");
             const user=document.getElementById("alias-input-user").value.trim().toLowerCase(),pw=document.getElementById("alias-input-pw").value;
@@ -2188,16 +2209,13 @@
             if(user===session?.username){hint.className="alias-form-hint error";hint.textContent="that's your own account";return;}
             if(dashAliases.includes(user)){hint.className="alias-form-hint error";hint.textContent="already added";return;}
             if(dashAliases.length>=ALIAS_MAX){hint.className="alias-form-hint error";hint.textContent="max 3 aliases reached";return;}
-            if(STATIC_USERS[user]){hint.className="alias-form-hint error";hint.textContent="can't verify static profiles";return;}
             btn.disabled=true; btn.textContent="verifying...";
             try {
-                const res = await fetch('/api/aliases/verify', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user, password: pw })
-                });
-                const data = await res.json();
-                if (!res.ok || !data.valid) { hint.className="alias-form-hint error"; hint.textContent=data.error || "wrong password"; btn.disabled=false; btn.textContent="verify & add"; return; }
+                if(STATIC_USERS[user]){hint.className="alias-form-hint error";hint.textContent="can't verify static profiles";btn.disabled=false;btn.textContent="verify & add";return;}
+                const rows=await supa.get("users",`username=eq.${encodeURIComponent(user)}`);
+                if(!rows||rows.length===0){hint.className="alias-form-hint error";hint.textContent="account not found";btn.disabled=false;btn.textContent="verify & add";return;}
+                const hash=await hashPassword(pw);
+                if(rows[0].password_hash!==hash){hint.className="alias-form-hint error";hint.textContent="wrong password";btn.disabled=false;btn.textContent="verify & add";return;}
                 dashAliases.push(user); hint.className="alias-form-hint success"; hint.textContent="verified ✓";
                 setTimeout(()=>closeAliasForm(),700);
             }catch(e){console.error(e);hint.className="alias-form-hint error";hint.textContent="error — try again";}
@@ -2250,11 +2268,7 @@
             document.getElementById("typewriter-speed-val").textContent = this.value + 'ms';
         });
 
-        // ========================================================
-        // SAVE DASHBOARD — patched to call /api/dashboard/update,
-        // which derives the username from the session cookie
-        // server-side rather than trusting a client-supplied value.
-        // ========================================================
+        // ===== SAVE DASHBOARD =====
         async function saveDashboard(silent=false) {
             if (!session) return;
             const adminPanel=document.getElementById("panel-admin");
@@ -2296,12 +2310,7 @@
 
             const payload={lines,discord,links,bg_video_urls,bg_words,last_change:now,equipped_badges:[...dashEquipped],aliases:cleanAliases,card_style,border_radius,card_opacity,parallax_enabled,cursor_effect:"ghost",custom_cursor:"",custom_font,typewriter_line1,typewriter_line2,typewriter_line3,typewriter_speed,transparent_bg,disable_shadow,card_bg_color,border_color,avatar,guestbook_enabled};
             try {
-                const res = await fetch('/api/dashboard/update', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'save failed'); }
+                await supa.patch("users",`username=eq.${encodeURIComponent(session.username)}`,payload);
                 updateAliasRowOnCard(cleanAliases);
                 if (!silent){status.textContent="saved ✓";status.style.color="rgba(100,220,150,.5)";setTimeout(()=>{status.textContent="";},3000);if(slug===session.username)location.reload();}
                 else{if(slug===session.username)location.reload();}
@@ -2327,52 +2336,37 @@
         resetPwModal.onclick=e=>{ if(e.target===resetPwModal) closeModal(resetPwModal); };
         copyPwBtn.onclick=()=>{ resetPwValue.select(); navigator.clipboard.writeText(resetPwValue.value); copyPwBtn.textContent="copied!"; setTimeout(()=>copyPwBtn.textContent="copy to clipboard",2000); };
 
-        // ========================================================
-        // ADMIN PASSWORD RESET — patched to call
-        // /api/admin/reset-password. The server checks isAdmin
-        // via the session cookie before doing anything.
-        // ========================================================
         document.getElementById("admin-reset-pw-btn").onclick=async()=>{
-            if(!adminTarget){alert("no user selected");return;}
+            if(!isAdmin(session)||!adminTarget){alert("not authorised or no user selected");return;}
             const btn=document.getElementById("admin-reset-pw-btn"),status=document.getElementById("admin-pw-status");
             btn.disabled=true; status.textContent="generating..."; status.className="admin-status";
             try {
-                const res = await fetch('/api/admin/reset-password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: adminTarget.username })
-                });
-                const data = await res.json();
-                if (!res.ok) { status.textContent = "error: " + (data.error || "failed"); status.className = "admin-status err"; btn.disabled=false; return; }
-                resetPwValue.value=data.newPassword; openModal(resetPwModal); status.textContent="password reset ✓"; status.className="admin-status ok";
+                const newPassword=generateRandomPassword(8); const hash=await hashPassword(newPassword);
+                await supa.patch("users",`username=eq.${encodeURIComponent(adminTarget.username)}`,{password_hash:hash});
+                resetPwValue.value=newPassword; openModal(resetPwModal); status.textContent="password reset ✓"; status.className="admin-status ok";
             }catch(e){status.textContent="error: "+e.message;status.className="admin-status err";}
             btn.disabled=false;
         };
 
-        // ========================================================
-        // ADMIN PANEL — patched to call /api/admin/* routes.
-        // The server is the one enforcing isAdmin() now, via the
-        // session cookie — not this client-side check, which is
-        // only used to decide whether to show the admin tab at all.
-        // ========================================================
+        // ===== ADMIN PANEL =====
         let adminTarget=null,adminTargetEquipped=[];
         document.getElementById("admin-search-btn").onclick=adminSearch;
         document.getElementById("admin-search-input").addEventListener("keydown",e=>{ if(e.key==="Enter") adminSearch(); });
 
         async function adminSearch() {
+            if(!isAdmin(session)){alert("not authorised");return;}
             const q=document.getElementById("admin-search-input").value.trim().toLowerCase();
             if(!q) return;
             const card=document.getElementById("admin-user-card"),nf=document.getElementById("admin-not-found");
             card.classList.remove("visible"); nf.classList.remove("show"); clearAdminStatuses();
             try {
-                const res = await fetch('/api/admin/lookup?username=' + encodeURIComponent(q));
-                if (!res.ok) { nf.classList.add("show"); return; }
-                const { user } = await res.json();
-                adminTarget=user; adminTargetEquipped=user.equipped_badges?[...user.equipped_badges]:[];
+                const rows=await supa.get("users",`username=eq.${encodeURIComponent(q)}`);
+                if(!rows||rows.length===0){nf.classList.add("show");return;}
+                adminTarget=rows[0]; adminTargetEquipped=adminTarget.equipped_badges?[...adminTarget.equipped_badges]:[];
                 document.getElementById("admin-target-name").textContent=adminTarget.username;
                 document.getElementById("admin-target-uid").textContent=`uid ${adminTarget.uid}`;
                 document.getElementById("admin-uid-input").value=adminTarget.uid;
-                document.getElementById("admin-likes-input").value=user.likes||0;
+                try { const lr=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent("forgave.lol/"+adminTarget.username)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}}); const ld=await lr.json(); document.getElementById("admin-likes-input").value=ld?.[0]?.count||0; }catch(e){document.getElementById("admin-likes-input").value=0;}
                 document.getElementById("admin-views-input").value=adminTarget.views||0;
                 renderAdminBadges(); renderCustomBadgeList(); card.classList.add("visible");
             }catch(e){console.error(e);nf.classList.add("show");}
@@ -2421,139 +2415,67 @@
         };
 
         document.getElementById("admin-uid-btn").onclick=async()=>{
-            if(!adminTarget){alert("no user selected");return;}
+            if(!isAdmin(session)||!adminTarget){alert("not authorised");return;}
             const btn=document.getElementById("admin-uid-btn"),status=document.getElementById("admin-uid-status");
             const nu=parseInt(document.getElementById("admin-uid-input").value,10);
             if(isNaN(nu)){status.textContent="enter a valid number";status.className="admin-status err";return;}
             btn.disabled=true; status.textContent="saving..."; status.className="admin-status";
-            try {
-                const res = await fetch('/api/admin/update', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username: adminTarget.username, field: 'uid', value: nu }) });
-                if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
-                adminTarget.uid=nu;document.getElementById("admin-target-uid").textContent=`uid ${nu}`;status.textContent="uid updated ✓";status.className="admin-status ok";
-            }catch(e){status.textContent="error: "+e.message;status.className="admin-status err";}
+            try{await supa.patch("users",`username=eq.${encodeURIComponent(adminTarget.username)}`,{uid:nu});adminTarget.uid=nu;document.getElementById("admin-target-uid").textContent=`uid ${nu}`;status.textContent="uid updated ✓";status.className="admin-status ok";}
+            catch(e){status.textContent="error: "+e.message;status.className="admin-status err";}
             btn.disabled=false;
         };
 
         document.getElementById("admin-likes-btn").onclick=async()=>{
-            if(!adminTarget){alert("no user selected");return;}
+            if(!isAdmin(session)||!adminTarget){alert("not authorised");return;}
             const btn=document.getElementById("admin-likes-btn"),status=document.getElementById("admin-likes-status");
             const cnt=parseInt(document.getElementById("admin-likes-input").value,10);
             if(isNaN(cnt)||cnt<0){status.textContent="enter a valid number";status.className="admin-status err";return;}
             btn.disabled=true; status.textContent="saving..."; status.className="admin-status";
             try {
-                const res = await fetch('/api/admin/update-likes', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username: adminTarget.username, count: cnt }) });
-                if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
+                const lid="forgave.lol/"+adminTarget.username;
+                const res=await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(lid)}&select=count`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+                const ex=await res.json();
+                if(!ex||ex.length===0){await fetch(`${SUPA_URL}/rest/v1/likes`,{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({id:lid,count:cnt})});}
+                else{await fetch(`${SUPA_URL}/rest/v1/likes?id=eq.${encodeURIComponent(lid)}`,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({count:cnt})});}
                 status.textContent=`likes set to ${cnt} ✓`;status.className="admin-status ok";
             }catch(e){status.textContent="error: "+e.message;status.className="admin-status err";}
             btn.disabled=false;
         };
 
         document.getElementById("admin-views-btn").onclick=async()=>{
-            if(!adminTarget){alert("no user selected");return;}
+            if(!isAdmin(session)||!adminTarget){alert("not authorised");return;}
             const btn=document.getElementById("admin-views-btn"),status=document.getElementById("admin-views-status");
             const cnt=parseInt(document.getElementById("admin-views-input").value,10);
             if(isNaN(cnt)||cnt<0){status.textContent="enter a valid number";status.className="admin-status err";return;}
             btn.disabled=true; status.textContent="saving..."; status.className="admin-status";
-            try {
-                const res = await fetch('/api/admin/update', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username: adminTarget.username, field: 'views', value: cnt }) });
-                if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
-                adminTarget.views=cnt;status.textContent=`views set to ${cnt} ✓`;status.className="admin-status ok";
-            }catch(e){status.textContent="error: "+e.message;status.className="admin-status err";}
+            try{await supa.patch("users",`username=eq.${encodeURIComponent(adminTarget.username)}`,{views:cnt});adminTarget.views=cnt;status.textContent=`views set to ${cnt} ✓`;status.className="admin-status ok";}
+            catch(e){status.textContent="error: "+e.message;status.className="admin-status err";}
             btn.disabled=false;
         };
 
         document.getElementById("admin-save-badges-btn").onclick=async()=>{
-            if(!adminTarget){alert("no user selected");return;}
+            if(!isAdmin(session)||!adminTarget){alert("not authorised");return;}
             const btn=document.getElementById("admin-save-badges-btn"),status=document.getElementById("admin-badges-status");
             btn.disabled=true; status.textContent="saving..."; status.className="admin-status";
-            try {
-                const res = await fetch('/api/admin/update', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username: adminTarget.username, field: 'equipped_badges', value: [...adminTargetEquipped] }) });
-                if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
-                status.textContent="badges saved ✓";status.className="admin-status ok";
-            }catch(e){status.textContent="error: "+e.message;status.className="admin-status err";}
+            try{await supa.patch("users",`username=eq.${encodeURIComponent(adminTarget.username)}`,{equipped_badges:[...adminTargetEquipped]});status.textContent="badges saved ✓";status.className="admin-status ok";}
+            catch(e){status.textContent="error: "+e.message;status.className="admin-status err";}
             btn.disabled=false;
         };
 
-        // ===== SIGNUP NAVIGATION =====
-        document.getElementById('claim-btn').addEventListener('click',function(){
-            const username=document.getElementById('landing-username-input').value.trim().toLowerCase();
-            if(!username||username.length<3){ document.getElementById('landing-username-input').style.borderColor='rgba(255,100,100,0.5)'; setTimeout(()=>document.getElementById('landing-username-input').style.borderColor='',1500); return; }
-            document.getElementById('su-username-page').value=username;
-            document.getElementById('landing-page').style.display='none';
-            document.getElementById('signup-form-page').style.display='flex';
-            const event=new Event('input',{bubbles:true}); document.getElementById('su-username-page').dispatchEvent(event);
-        });
-        document.getElementById('back-to-landing').addEventListener('click',function(){
-            document.getElementById('landing-page').style.display='flex';
-            document.getElementById('signup-form-page').style.display='none';
-            document.getElementById('su-error-page').textContent='';
-        });
-        document.getElementById('landing-signin').addEventListener('click',function(){ openModal(authModal); });
-        document.getElementById('sw-to-login-page').addEventListener('click',function(e){ e.preventDefault(); openModal(authModal); });
-        document.getElementById('su-username-page').addEventListener('input',function(e){
-            let val=this.value.toLowerCase().replace(/[^a-z0-9_-]/g,""); this.value=val;
-            const hint=document.getElementById('su-username-hint-page');
-            if(!val||val.length<2){hint.textContent="";hint.className="field-hint";return;}
-            if(STATIC_USERS[val]||val==="chloryl"){hint.textContent="taken";hint.className="field-hint error";return;}
-            hint.textContent="checking..."; hint.className="field-hint"; clearTimeout(checkTimer);
-            checkTimer=setTimeout(async()=>{
-                try {
-                    const res = await fetch('/api/auth/check-username?username=' + encodeURIComponent(val));
-                    const data = await res.json();
-                    if (!data.available) { hint.textContent="taken"; hint.className="field-hint error"; }
-                    else { hint.textContent="available ✓"; hint.className="field-hint success"; }
-                } catch(e){hint.textContent="";}
-            },400);
-        });
-
-        // ===== GUESTBOOK ADMIN =====
-        async function renderGuestbookAdmin() {
-            const container=document.getElementById('guestbook-admin-list');
-            if(!container) return;
-            if(!session) return;
+        async function notifyDiscord(username,uid) {
             try {
-                const data = await fetchGuestbook(session.username, 1, 50);
-                const entries = data.entries || [];
-                if(data.error){
-                    container.innerHTML='<div style="font-size:.6rem;color:rgba(255,100,100,.5);">Guestbook table not set up.</div>';
-                    return;
-                }
-                if(entries.length===0){
-                    container.innerHTML='<div style="font-size:.6rem;color:rgba(255,255,255,.2);padding:12px 0;">No comments yet.</div>';
-                    return;
-                }
-                let html='';
-                entries.forEach(entry=>{
-                    html+=`
-                        <div class="guestbook-entry" style="display:flex;justify-content:space-between;align-items:center;">
-                            <div>
-                                <div class="gb-name">${entry.visitor_name||'Anonymous'} <span class="gb-time">${new Date(entry.created_at).toLocaleDateString()}</span></div>
-                                <div class="gb-text">${entry.text}</div>
-                            </div>
-                            <button class="gb-delete-btn" data-id="${entry.id}" style="background:none;border:none;color:rgba(255,100,100,.4);cursor:pointer;font-size:.8rem;">✕</button>
-                        </div>
-                    `;
-                });
-                container.innerHTML=html;
-                container.querySelectorAll('.gb-delete-btn').forEach(btn=>{
-                    btn.onclick=async function(){
-                        if(!confirm('Delete this comment?')) return;
-                        const id=this.dataset.id;
-                        const ok=await deleteGuestbookEntry(id);
-                        if(ok){renderGuestbookAdmin();}
-                        else{alert('Failed to delete.');}
-                    };
-                });
-            }catch(e){container.innerHTML='<div style="font-size:.6rem;color:rgba(255,100,100,.4);">Error loading comments.</div>';}
+                const webhookUrl="https://discord.com/api/webhooks/1515599322534908027/GqyFJK_Er3c36tVTjf7HEXdyq5vPU0tvVfassmY-TlHKbF5kCxMWmBqoHNfSo7-LYorj";
+                await fetch(webhookUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({embeds:[{title:"🎉 New User Joined",color:0x5865F2,fields:[{name:"Username",value:username,inline:true},{name:"UID",value:String(uid),inline:true}],timestamp:new Date().toISOString()}]})});
+            }catch(e){console.error("Webhook failed:",e);}
         }
 
-        // ===== STATS RENDER (dashboard own-profile view) =====
+        // ===== STATS RENDER =====
         async function renderStats() {
             if (!session) return;
             try {
-                const res = await fetch('/api/profile/' + encodeURIComponent(session.username));
-                if (!res.ok) return;
-                const { user } = await res.json();
+                const rows=await supa.get("users",`username=eq.${encodeURIComponent(session.username)}`);
+                if(!rows||rows.length===0)return;
+                const user=rows[0];
                 const linkStats=user.link_stats||{};
                 const dailyViews=user.daily_views||{};
                 const deviceStats=user.device_stats||{};
@@ -2643,24 +2565,86 @@
             }catch(e){console.error('Stats render error',e);}
         }
 
-        // ========================================================
-        // BOOT — patched to fetch session from the server first
-        // (await refreshSession()), before any UI that depends on
-        // it runs. Everything else runs in the same order as before.
-        // ========================================================
-        async function boot() {
-            await refreshSession();
-            initCursorEffect();
-            updateAuthUI();
-            await resolveRoute();
-            if (slug && slug !== "") {
+        // ===== GUESTBOOK ADMIN =====
+        async function renderGuestbookAdmin() {
+            const container=document.getElementById('guestbook-admin-list');
+            if(!container) return;
+            if(!session) return;
+            try {
+                const data = await fetchGuestbook(session.username, 1, 50);
+                const entries = data.entries || [];
+                if(data.error){
+                    container.innerHTML='<div style="font-size:.6rem;color:rgba(255,100,100,.5);">Guestbook table not set up.</div>';
+                    return;
+                }
+                if(entries.length===0){
+                    container.innerHTML='<div style="font-size:.6rem;color:rgba(255,255,255,.2);padding:12px 0;">No comments yet.</div>';
+                    return;
+                }
+                let html='';
+                entries.forEach(entry=>{
+                    html+=`
+                        <div class="guestbook-entry" style="display:flex;justify-content:space-between;align-items:center;">
+                            <div>
+                                <div class="gb-name">${entry.visitor_name||'Anonymous'} <span class="gb-time">${new Date(entry.created_at).toLocaleDateString()}</span></div>
+                                <div class="gb-text">${entry.text}</div>
+                            </div>
+                            <button class="gb-delete-btn" data-id="${entry.id}" style="background:none;border:none;color:rgba(255,100,100,.4);cursor:pointer;font-size:.8rem;">✕</button>
+                        </div>
+                    `;
+                });
+                container.innerHTML=html;
+                container.querySelectorAll('.gb-delete-btn').forEach(btn=>{
+                    btn.onclick=async function(){
+                        if(!confirm('Delete this comment?')) return;
+                        const id=this.dataset.id;
+                        const ok=await deleteGuestbookEntry(id);
+                        if(ok){renderGuestbookAdmin();}
+                        else{alert('Failed to delete.');}
+                    };
+                });
+            }catch(e){container.innerHTML='<div style="font-size:.6rem;color:rgba(255,100,100,.4);">Error loading comments.</div>';}
+        }
+
+        // ===== SIGNUP NAVIGATION =====
+        document.getElementById('claim-btn').addEventListener('click',function(){
+            const username=document.getElementById('landing-username-input').value.trim().toLowerCase();
+            if(!username||username.length<3){ document.getElementById('landing-username-input').style.borderColor='rgba(255,100,100,0.5)'; setTimeout(()=>document.getElementById('landing-username-input').style.borderColor='',1500); return; }
+            document.getElementById('su-username-page').value=username;
+            document.getElementById('landing-page').style.display='none';
+            document.getElementById('signup-form-page').style.display='flex';
+            const event=new Event('input',{bubbles:true}); document.getElementById('su-username-page').dispatchEvent(event);
+        });
+        document.getElementById('back-to-landing').addEventListener('click',function(){
+            document.getElementById('landing-page').style.display='flex';
+            document.getElementById('signup-form-page').style.display='none';
+            document.getElementById('su-error-page').textContent='';
+        });
+        document.getElementById('landing-signin').addEventListener('click',function(){ openModal(authModal); });
+        document.getElementById('sw-to-login-page').addEventListener('click',function(e){ e.preventDefault(); openModal(authModal); });
+        document.getElementById('su-username-page').addEventListener('input',function(e){
+            let val=this.value.toLowerCase().replace(/[^a-z0-9_-]/g,""); this.value=val;
+            const hint=document.getElementById('su-username-hint-page');
+            if(!val||val.length<2){hint.textContent="";hint.className="field-hint";return;}
+            if(STATIC_USERS[val]||val==="chloryl"){hint.textContent="taken";hint.className="field-hint error";return;}
+            hint.textContent="checking..."; hint.className="field-hint"; clearTimeout(checkTimer);
+            checkTimer=setTimeout(async()=>{
+                try{const rows=await supa.get("users",`username=eq.${encodeURIComponent(val)}`);if(rows&&rows.length>0){hint.textContent="taken";hint.className="field-hint error";}else{hint.textContent="available ✓";hint.className="field-hint success";}}
+                catch(e){hint.textContent="";}
+            },400);
+        });
+
+        // ===== BOOT =====
+        initCursorEffect();
+        updateAuthUI();
+        resolveRoute().then(()=>{ 
+            if(slug && slug!=="") {
                 renderCard();
                 const stack = document.getElementById('card-stack');
                 stack.classList.add('visible');
             }
             startTitleTypewriter();
-        }
-        boot();
+        });
     </script>
 </body>
 </html>
