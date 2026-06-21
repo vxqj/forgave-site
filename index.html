@@ -11,18 +11,41 @@
   body {
     min-height: 100vh;
     background: #000;
-    background-image: url('https://i.imgur.com/FmLnKqp.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     font-family: 'JetBrains Mono', monospace;
     overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Video Background */
+  #bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Overlay to darken video so text is readable */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 1;
+    pointer-events: none;
   }
 
   .panel {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -114,6 +137,7 @@
     letter-spacing: 2px;
     animation: fadeIn 1s 0.8s ease both;
     white-space: nowrap;
+    z-index: 2;
   }
 
   /* Mobile */
@@ -160,6 +184,15 @@
 </head>
 <body>
 
+<!-- Video Background -->
+<video id="bg-video" autoplay muted loop playsinline>
+  <source src="https://files.catbox.moe/7soj1p.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+<!-- Dark Overlay -->
+<div class="overlay"></div>
+
 <div class="panel">
   <div class="title">@59600</div>
   <div class="links">
@@ -188,6 +221,18 @@
 </div>
 
 <div class="watermark">forgave.lol</div>
+
+<script>
+  // Ensure video plays on mobile
+  document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('bg-video');
+    if (video) {
+      video.play().catch(function(error) {
+        console.log('Video autoplay failed:', error);
+      });
+    }
+  });
+</script>
 
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"fb02adeaf7084849bef8bc79218862fd","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
