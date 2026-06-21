@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>forgave.lol</title>
 <link href="https://fonts.googleapis.com/css2?family=Ephesis&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -15,8 +15,9 @@
     align-items: center;
     justify-content: flex-end;
     font-family: 'JetBrains Mono', monospace;
-    overflow-x: hidden;
+    overflow-y: auto;
     position: relative;
+    padding: 40px 0;
   }
 
   /* Video Background */
@@ -90,6 +91,7 @@
     animation: fadeIn 0.8s ease forwards;
     width: 100%;
     max-width: 460px;
+    margin: 20px 0;
   }
 
   @keyframes fadeIn {
@@ -139,6 +141,7 @@
   .link-btn:nth-child(2) { animation: slideIn 0.5s 0.35s ease both; }
   .link-btn:nth-child(3) { animation: slideIn 0.5s 0.5s ease both; }
   .link-btn:nth-child(4) { animation: slideIn 0.5s 0.65s ease both; }
+  .link-btn:nth-child(5) { animation: slideIn 0.5s 0.8s ease both; }
 
   @keyframes slideIn {
     from { opacity: 0; transform: translateX(30px); }
@@ -182,13 +185,15 @@
       justify-content: center;
       align-items: flex-start;
       padding-top: 60px;
+      padding-bottom: 40px;
       overflow-y: auto;
     }
 
     .panel {
       align-items: center;
-      padding: 0 20px 80px 20px;
+      padding: 0 20px 40px 20px;
       max-width: 100%;
+      margin: 0;
     }
 
     .title {
@@ -215,6 +220,11 @@
       transform: scale(0.97);
       background: rgba(70, 70, 70, 0.92);
     }
+
+    .watermark {
+      bottom: 12px;
+      font-size: 11px;
+    }
   }
 </style>
 </head>
@@ -227,7 +237,7 @@
 
 <!-- Video Background -->
 <video id="bg-video" muted loop playsinline>
-  <source src="https://files.catbox.moe/7soj1p.mp4" type="video/mp4">
+  <source src="" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
@@ -235,88 +245,175 @@
 <div class="overlay"></div>
 
 <div class="panel">
-  <div class="title">@59600</div>
-  <div class="links">
-
-    <a class="link-btn" href="https://forgave.lol" target="_blank" rel="noopener">
-      <img src="https://cdn.simpleicons.org/youtube/ffffff" alt="YouTube">
-      @59600
-    </a>
-
-    <a class="link-btn" href="https://forgave.lol" target="_blank" rel="noopener">
-      <img src="https://cdn.simpleicons.org/discord/ffffff" alt="Discord">
-      forgave.lol
-    </a>
-
-    <a class="link-btn" href="https://forgave.lol" target="_blank" rel="noopener">
-      <img src="https://cdn.simpleicons.org/roblox/ffffff" alt="Roblox">
-      forgave.lol
-    </a>
-
-    <a class="link-btn" href="https://forgave.lol" target="_blank" rel="noopener">
-      <img src="https://cdn.simpleicons.org/luau/ffffff" alt="Brainrot Police">
-      forgave.lol
-    </a>
-
-  </div>
+  <div class="title" id="page-title">@59600</div>
+  <div class="links" id="links-container"></div>
 </div>
 
-<div class="watermark">forgave.lol</div>
+<div class="watermark" id="watermark-text">forgave.lol</div>
 
 <script>
+// ============================================================
+//  🎯 CONFIG – EDIT THIS SECTION
+// ============================================================
+const CONFIG = {
+  // ===== TITLE =====
+  title: '@59600',
+
   // ===== VIDEO PLAYLIST =====
-  const videoUrls = [
+  // Add any number of video URLs – one will be chosen randomly on each refresh
+  videos: [
     'https://files.catbox.moe/7soj1p.mp4',
     'https://files.catbox.moe/ydn1qw.mp4',
     'https://files.catbox.moe/3sauin.mp4',
     'https://files.catbox.moe/5k3ear.mp4'
-  ];
+  ],
 
-  let currentVideoIndex = 0;
-  const video = document.getElementById('bg-video');
-  const enterOverlay = document.getElementById('enter-overlay');
+  // ===== LINKS =====
+  // Each link: { label: 'Display Text', icon: 'icon-name', url: 'https://...' }
+  // Icon names: youtube, discord, roblox, luau, twitter, instagram, tiktok, github, spotify, twitch
+  links: [
+    { label: '@59600', icon: 'youtube', url: 'https://forgave.lol' },
+    { label: 'forgave.lol', icon: 'discord', url: 'https://forgave.lol' },
+    { label: 'forgave.lol', icon: 'roblox', url: 'https://forgave.lol' },
+    { label: 'forgave.lol', icon: 'luau', url: 'https://forgave.lol' }
+  ],
 
-  // Function to load the next video
-  function loadNextVideo() {
-    currentVideoIndex = (currentVideoIndex + 1) % videoUrls.length;
-    video.src = videoUrls[currentVideoIndex];
-    video.load();
-    video.play().catch(function(error) {
-      console.log('Video play failed:', error);
+  // ===== WATERMARK =====
+  watermark: 'forgave.lol',
+
+  // ===== OVERLAY TEXT =====
+  overlayText: 'click to enter',
+
+  // ===== OVERLAY DARKNESS (0 = no darkening, 1 = completely dark) =====
+  overlayDarkness: 0.55,
+
+  // ===== VIDEO SETTINGS =====
+  randomOnRefresh: true, // Pick a random video on each refresh
+  bgColor: '#000' // Fallback background color
+};
+
+// ============================================================
+//  DO NOT EDIT BELOW THIS LINE – the code uses CONFIG above
+// ============================================================
+
+// ===== SET TITLE =====
+document.getElementById('page-title').textContent = CONFIG.title;
+
+// ===== SET WATERMARK =====
+document.getElementById('watermark-text').textContent = CONFIG.watermark;
+
+// ===== SET OVERLAY TEXT =====
+document.getElementById('enter-text').textContent = CONFIG.overlayText;
+
+// ===== SET OVERLAY DARKNESS =====
+document.querySelector('.overlay').style.background = `rgba(0, 0, 0, ${CONFIG.overlayDarkness})`;
+
+// ===== SET BACKGROUND COLOR =====
+document.body.style.background = CONFIG.bgColor;
+
+// ===== BUILD LINKS =====
+const iconMap = {
+  youtube: 'https://cdn.simpleicons.org/youtube/ffffff',
+  discord: 'https://cdn.simpleicons.org/discord/ffffff',
+  roblox: 'https://cdn.simpleicons.org/roblox/ffffff',
+  luau: 'https://cdn.simpleicons.org/luau/ffffff',
+  twitter: 'https://cdn.simpleicons.org/twitter/ffffff',
+  instagram: 'https://cdn.simpleicons.org/instagram/ffffff',
+  tiktok: 'https://cdn.simpleicons.org/tiktok/ffffff',
+  github: 'https://cdn.simpleicons.org/github/ffffff',
+  spotify: 'https://cdn.simpleicons.org/spotify/ffffff',
+  twitch: 'https://cdn.simpleicons.org/twitch/ffffff'
+};
+
+const linksContainer = document.getElementById('links-container');
+linksContainer.innerHTML = '';
+CONFIG.links.forEach((link, index) => {
+  const a = document.createElement('a');
+  a.className = 'link-btn';
+  a.href = link.url;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.style.animationDelay = `${0.15 * (index + 1)}s`;
+
+  const img = document.createElement('img');
+  img.src = iconMap[link.icon] || iconMap.youtube;
+  img.alt = link.icon;
+  img.width = 22;
+  img.height = 22;
+
+  const span = document.createElement('span');
+  span.textContent = link.label;
+
+  a.appendChild(img);
+  a.appendChild(span);
+  linksContainer.appendChild(a);
+});
+
+// ===== VIDEO PLAYLIST =====
+const video = document.getElementById('bg-video');
+const videoUrls = CONFIG.videos;
+
+// Pick a random video
+function getRandomVideo() {
+  const randomIndex = Math.floor(Math.random() * videoUrls.length);
+  return videoUrls[randomIndex];
+}
+
+// Set the video source
+function setVideoSource(url) {
+  video.src = url;
+  video.load();
+}
+
+// Load a random video on refresh
+if (CONFIG.randomOnRefresh && videoUrls.length > 0) {
+  const randomUrl = getRandomVideo();
+  setVideoSource(randomUrl);
+} else if (videoUrls.length > 0) {
+  setVideoSource(videoUrls[0]);
+}
+
+// ===== CLICK TO ENTER =====
+const enterOverlay = document.getElementById('enter-overlay');
+
+enterOverlay.addEventListener('click', function() {
+  // Unmute and play the video
+  video.muted = false;
+  video.play().catch(function(error) {
+    console.log('Autoplay with sound blocked:', error);
+    video.muted = true;
+    video.play().catch(function(e) {
+      console.log('Video play failed:', e);
+    });
+  });
+
+  this.classList.add('hidden');
+});
+
+// Preload video
+video.preload = 'auto';
+
+// ===== HANDLE VIDEO END =====
+// When one video ends, play another random one
+video.addEventListener('ended', function() {
+  if (videoUrls.length > 1) {
+    const randomUrl = getRandomVideo();
+    setVideoSource(randomUrl);
+    video.play().catch(function(e) {
+      console.log('Next video play failed:', e);
     });
   }
+});
 
-  // When the current video ends, load the next one
-  video.addEventListener('ended', loadNextVideo);
+// ===== RESPONSIVE VIDEO PLAY ON MOBILE =====
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden && video.paused && !enterOverlay.classList.contains('hidden')) {
+    // If the page becomes visible again and video is paused, keep it paused until user clicks
+  }
+});
 
-  // ===== CLICK TO ENTER =====
-  enterOverlay.addEventListener('click', function() {
-    // Unmute and play the video
-    video.muted = false;
-    video.play().catch(function(error) {
-      console.log('Autoplay with sound blocked:', error);
-      // If autoplay with sound is blocked, try muted first
-      video.muted = true;
-      video.play().catch(function(e) {
-        console.log('Video play failed:', e);
-      });
-    });
-
-    // Hide the overlay
-    this.classList.add('hidden');
-  });
-
-  // Preload video (starts loading in background)
-  video.preload = 'auto';
-
-  // Handle visibility change (if user switches tabs, video might pause)
-  document.addEventListener('visibilitychange', function() {
-    if (!document.hidden && video.paused && !enterOverlay.classList.contains('hidden')) {
-      // If the page becomes visible again and video is paused, keep it paused until user clicks
-    }
-  });
+console.log('🎬 forgave.lol loaded with config:', CONFIG);
 </script>
 
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"fb02adeaf7084849bef8bc79218862fd","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
