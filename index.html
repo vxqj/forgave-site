@@ -18,11 +18,11 @@
             background: #000;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-end;
             font-family: 'JetBrains Mono', monospace;
             overflow-y: auto;
             position: relative;
-            padding: 40px 20px;
+            padding: 40px 60px 40px 0;
         }
 
         /* ===== VIDEO BACKGROUND ===== */
@@ -95,13 +95,13 @@
             z-index: 2;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: flex-end;
             gap: 0;
             padding: 0;
             animation: fadeIn 0.8s ease forwards;
             width: 100%;
             max-width: 460px;
-            margin: 0 auto;
+            margin: 0;
         }
 
         @keyframes fadeIn {
@@ -123,7 +123,7 @@
             margin-bottom: 24px;
             text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
             animation: fadeIn 0.6s ease forwards;
-            text-align: center;
+            text-align: right;
         }
 
         .links {
@@ -212,15 +212,15 @@
         /* ===== RESPONSIVE ===== */
         @media (max-width: 600px) {
             body {
-                padding: 20px 16px 40px;
                 justify-content: center;
                 align-items: flex-start;
+                padding: 60px 20px 80px 20px;
+                overflow-y: auto;
             }
 
             .panel {
                 align-items: center;
                 max-width: 100%;
-                padding-top: 40px;
             }
 
             .title {
@@ -279,7 +279,7 @@
 
     <div class="overlay"></div>
 
-    <!-- ===== MAIN PANEL ===== -->
+    <!-- ===== RIGHT PANEL ===== -->
     <div class="panel">
         <div class="title" id="page-title">@59600</div>
         <div class="links" id="links-container"></div>
