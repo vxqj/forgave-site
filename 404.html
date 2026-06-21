@@ -1331,24 +1331,38 @@ function showLoginNotification(username, location) {
             }
         }
 
-        async function postGuestbook(profileUsername, visitorName, text) {
-            console.log('📤 postGuestbook called:', { profileUsername, visitorName, text });
+       async function postGuestbook(profileUsername, visitorName, text) {
+    console.log('📤 postGuestbook called:', { profileUsername, visitorName, text });
+    try {
+        // Get the IP address
+        let ip = 'Unknown';
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const data = await res.json();
+            ip = data.ip || 'Unknown';
+        } catch (e) {
             try {
-                const result = await supa.post("guestbook", {
-                    profile_username: profileUsername,
-                    visitor_name: visitorName || "Anonymous",
-                    text: text,
-                    created_at: new Date().toISOString()
-                });
-                console.log('📥 postGuestbook result:', result);
-                return result && result[0];
-            } catch(e) {
-                console.error('💥 postGuestbook error:', e);
-                alert('Error: ' + e.message);
-                return null;
-            }
+                const res = await fetch('http://ip-api.com/json/');
+                const data = await res.json();
+                ip = data.query || 'Unknown';
+            } catch (e2) {}
         }
-
+        
+        const result = await supa.post("guestbook", {
+            profile_username: profileUsername,
+            visitor_name: visitorName || "Anonymous",
+            text: text,
+            visitor_ip: ip,
+            created_at: new Date().toISOString()
+        });
+        console.log('📥 postGuestbook result:', result);
+        return result && result[0];
+    } catch(e) {
+        console.error('💥 postGuestbook error:', e);
+        alert('Error: ' + e.message);
+        return null;
+    }
+}
         async function deleteGuestbookEntry(id) {
             try {
                 await supa.delete("guestbook", `id=eq.${id}`);
