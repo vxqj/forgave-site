@@ -759,9 +759,103 @@
 
     <script>
         // ========== SUPABASE CONFIG ==========
-        const SUPA_URL = "https://xqqwyugfyntgbgohzqcz.supabase.co";
-        const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxcXd5dWdmeW50Z2Jnb2h6cWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MjI1NTQsImV4cCI6MjA5NTE5ODU1NH0.Y-Z5HawSgxraigCep2BHINLvev98b3m3BGsI1DT_LQY";
+const SUPA_URL = "https://xqqwyugfyntgbgohzqcz.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxcXd5dWdmeW50Z2Jnb2h6cWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MjI1NTQsImV4cCI6MjA5NTE5ODU1NH0.Y-Z5HawSgxraigCep2BHINLvev98b3m3BGsI1DT_LQY";
 
+// ===== GET USER LOCATION =====
+async function getUserLocation() {
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        if (!response.ok) throw new Error('Location fetch failed');
+        const data = await response.json();
+        return {
+            city: data.city || 'Unknown City',
+            region: data.region || 'Unknown Region',
+            country: data.country_name || 'Unknown Country',
+            ip: data.ip || 'Unknown IP',
+            timezone: data.timezone || 'Unknown'
+        };
+    } catch (e) {
+        console.warn('Location fetch failed:', e);
+        try {
+            const fallback = await fetch('http://ip-api.com/json/');
+            const data = await fallback.json();
+            if (data.status === 'success') {
+                return {
+                    city: data.city || 'Unknown City',
+                    region: data.regionName || 'Unknown Region',
+                    country: data.country || 'Unknown Country',
+                    ip: data.query || 'Unknown IP',
+                    timezone: data.timezone || 'Unknown'
+                };
+            }
+        } catch (e2) {
+            console.warn('Fallback location fetch also failed');
+        }
+        return null;
+    }
+}
+
+// ===== TOAST NOTIFICATION =====
+function showToast(message, duration = 4000) {
+    const existing = document.getElementById('login-toast');
+    if (existing) existing.remove();
+    
+    const toast = document.createElement('div');
+    toast.id = 'login-toast';
+    toast.style.cssText = `
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(10, 10, 12, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-top-color: rgba(255,255,255,0.25);
+        border-radius: 12px;
+        padding: 14px 24px;
+        color: rgba(255,255,255,0.9);
+        font-family: "DM Mono", monospace;
+        font-size: 0.8rem;
+        z-index: 9999;
+        box-shadow: 0 12px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.3);
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        pointer-events: none;
+        text-align: center;
+        max-width: 90vw;
+        letter-spacing: 0.5px;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+    });
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(-10px)';
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+
+// ===== SHOW LOGIN NOTIFICATION =====
+function showLoginNotification(username, location) {
+    if (!location) {
+        showToast(`Welcome back, ${username}! 👋`);
+        return;
+    }
+    const locationStr = [location.city, location.region, location.country]
+        .filter(Boolean)
+        .join(', ');
+    const message = `🔐 Login from ${locationStr}`;
+    showToast(message);
+    console.log(`[LOGIN] ${username} logged in from ${locationStr} (IP: ${location.ip})`);
+}
+        
         const supa = {
             async get(table, query) {
                 const res = await fetch(`${SUPA_URL}/rest/v1/${table}?${query}&select=*`, {
