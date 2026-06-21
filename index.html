@@ -13,11 +13,13 @@
     background: #000;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
     font-family: 'JetBrains Mono', monospace;
     overflow-y: auto;
     position: relative;
-    padding: 40px 0;
+    padding: 40px 20px;
+    gap: 40px;
+    flex-wrap: wrap;
   }
 
   /* Video Background */
@@ -80,6 +82,117 @@
     50% { opacity: 0.7; }
   }
 
+  /* ===== LEFT PROFILE CARD (guns.lol style) ===== */
+  .profile-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(10, 10, 12, 0.75);
+    backdrop-filter: blur(24px) saturate(140%) brightness(1.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-top-color: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 32px 28px 28px;
+    width: 100%;
+    max-width: 340px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 24px 64px rgba(0,0,0,0.7);
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 14px;
+    display: block;
+    border: 2px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .profile-name {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.92);
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+
+  .profile-username {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .profile-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.65rem;
+    color: rgba(100, 220, 150, 0.85);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border: 1px solid rgba(100, 220, 150, 0.2);
+    border-radius: 30px;
+    background: rgba(100, 220, 150, 0.06);
+    margin-bottom: 16px;
+  }
+
+  .profile-status .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #6f6;
+    animation: statusPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes statusPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .profile-bio {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+    margin-bottom: 16px;
+    padding: 0 4px;
+  }
+
+  .profile-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    margin: 14px 0 16px;
+  }
+
+  .profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+  }
+
+  .profile-stat {
+    text-align: center;
+  }
+
+  .profile-stat .number {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: -0.5px;
+  }
+
+  .profile-stat .label {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.2);
+    margin-top: 2px;
+  }
+
+  /* ===== RIGHT PANEL (links) ===== */
   .panel {
     position: relative;
     z-index: 2;
@@ -87,11 +200,11 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 0;
-    padding: 40px 60px 40px 0;
+    padding: 0;
     animation: fadeIn 0.8s ease forwards;
     width: 100%;
     max-width: 460px;
-    margin: 20px 0;
+    margin: 0;
   }
 
   @keyframes fadeIn {
@@ -107,6 +220,7 @@
     margin-bottom: 24px;
     text-shadow: 0 2px 20px rgba(0,0,0,0.8);
     animation: fadeIn 0.6s ease forwards;
+    text-align: right;
   }
 
   .links {
@@ -141,7 +255,6 @@
   .link-btn:nth-child(2) { animation: slideIn 0.5s 0.35s ease both; }
   .link-btn:nth-child(3) { animation: slideIn 0.5s 0.5s ease both; }
   .link-btn:nth-child(4) { animation: slideIn 0.5s 0.65s ease both; }
-  .link-btn:nth-child(5) { animation: slideIn 0.5s 0.8s ease both; }
 
   @keyframes slideIn {
     from { opacity: 0; transform: translateX(30px); }
@@ -179,26 +292,28 @@
     z-index: 2;
   }
 
-  /* Mobile */
-  @media (max-width: 600px) {
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
     body {
-      justify-content: center;
-      align-items: flex-start;
-      padding-top: 60px;
-      padding-bottom: 40px;
-      overflow-y: auto;
+      flex-direction: column;
+      padding: 20px 16px 40px;
+      gap: 24px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .profile-card {
+      max-width: 100%;
+      padding: 24px 20px 20px;
     }
 
     .panel {
       align-items: center;
-      padding: 0 20px 40px 20px;
       max-width: 100%;
-      margin: 0;
     }
 
     .title {
       font-size: 56px;
-      margin-bottom: 20px;
       text-align: center;
     }
 
@@ -226,6 +341,30 @@
       font-size: 11px;
     }
   }
+
+  @media (max-width: 400px) {
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+    }
+
+    .profile-name {
+      font-size: 0.95rem;
+    }
+
+    .profile-stats {
+      gap: 16px;
+    }
+
+    .title {
+      font-size: 44px;
+    }
+
+    .link-btn {
+      font-size: 13px;
+      padding: 14px 16px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -244,6 +383,22 @@
 <!-- Dark Overlay -->
 <div class="overlay"></div>
 
+<!-- ===== LEFT PROFILE CARD ===== -->
+<div class="profile-card" id="profile-card">
+  <img class="profile-avatar" id="profile-avatar" src="https://cdn.discordapp.com/avatars/1263468060317188097/your_avatar_hash.webp" alt="Avatar" onerror="this.style.display='none'">
+  <div class="profile-name" id="profile-name">59600</div>
+  <div class="profile-username" id="profile-username">@59600</div>
+  <div class="profile-status"><span class="dot"></span> Online</div>
+  <div class="profile-bio" id="profile-bio">creator of forgave.lol</div>
+  <div class="profile-divider"></div>
+  <div class="profile-stats">
+    <div class="profile-stat"><div class="number" id="stat-followers">0</div><div class="label">Followers</div></div>
+    <div class="profile-stat"><div class="number" id="stat-likes">0</div><div class="label">Likes</div></div>
+    <div class="profile-stat"><div class="number" id="stat-views">0</div><div class="label">Views</div></div>
+  </div>
+</div>
+
+<!-- ===== RIGHT PANEL (links) ===== -->
 <div class="panel">
   <div class="title" id="page-title">@59600</div>
   <div class="links" id="links-container"></div>
@@ -256,11 +411,22 @@
 //  🎯 CONFIG – EDIT THIS SECTION
 // ============================================================
 const CONFIG = {
+  // ===== PROFILE CARD =====
+  profile: {
+    name: '59600',
+    username: '@59600',
+    avatar: 'https://cdn.discordapp.com/avatars/1263468060317188097/your_avatar_hash.webp', // Replace with your Discord avatar URL
+    bio: 'creator of forgave.lol',
+    status: 'Online',
+    followers: 0,
+    likes: 0,
+    views: 0
+  },
+
   // ===== TITLE =====
   title: '@59600',
 
   // ===== VIDEO PLAYLIST =====
-  // Add any number of video URLs – one will be chosen randomly on each refresh
   videos: [
     'https://files.catbox.moe/7soj1p.mp4',
     'https://files.catbox.moe/ydn1qw.mp4',
@@ -269,8 +435,6 @@ const CONFIG = {
   ],
 
   // ===== LINKS =====
-  // Each link: { label: 'Display Text', icon: 'icon-name', url: 'https://...' }
-  // Icon names: youtube, discord, roblox, luau, twitter, instagram, tiktok, github, spotify, twitch
   links: [
     { label: '@59600', icon: 'youtube', url: 'https://forgave.lol' },
     { label: 'forgave.lol', icon: 'discord', url: 'https://forgave.lol' },
@@ -282,19 +446,42 @@ const CONFIG = {
   watermark: 'forgave.lol',
 
   // ===== OVERLAY TEXT =====
-  overlayText: 'enter',
+  overlayText: 'click to enter',
 
-  // ===== OVERLAY DARKNESS (0 = no darkening, 1 = completely dark) =====
+  // ===== OVERLAY DARKNESS =====
   overlayDarkness: 0.55,
 
   // ===== VIDEO SETTINGS =====
-  randomOnRefresh: true, // Pick a random video on each refresh
-  bgColor: '#000' // Fallback background color
+  randomOnRefresh: true,
+  bgColor: '#000'
 };
 
 // ============================================================
-//  DO NOT EDIT BELOW THIS LINE – the code uses CONFIG above
+//  DO NOT EDIT BELOW THIS LINE
 // ============================================================
+
+// ===== SET PROFILE CARD =====
+document.getElementById('profile-name').textContent = CONFIG.profile.name;
+document.getElementById('profile-username').textContent = CONFIG.profile.username;
+document.getElementById('profile-bio').textContent = CONFIG.profile.bio;
+document.getElementById('stat-followers').textContent = CONFIG.profile.followers;
+document.getElementById('stat-likes').textContent = CONFIG.profile.likes;
+document.getElementById('stat-views').textContent = CONFIG.profile.views;
+
+// Avatar
+const avatar = document.getElementById('profile-avatar');
+if (CONFIG.profile.avatar) {
+  avatar.src = CONFIG.profile.avatar;
+  avatar.style.display = 'block';
+} else {
+  avatar.style.display = 'none';
+}
+
+// Status
+const statusEl = document.querySelector('.profile-status');
+if (CONFIG.profile.status) {
+  statusEl.innerHTML = `<span class="dot"></span> ${CONFIG.profile.status}`;
+}
 
 // ===== SET TITLE =====
 document.getElementById('page-title').textContent = CONFIG.title;
@@ -307,8 +494,6 @@ document.getElementById('enter-text').textContent = CONFIG.overlayText;
 
 // ===== SET OVERLAY DARKNESS =====
 document.querySelector('.overlay').style.background = `rgba(0, 0, 0, ${CONFIG.overlayDarkness})`;
-
-// ===== SET BACKGROUND COLOR =====
 document.body.style.background = CONFIG.bgColor;
 
 // ===== BUILD LINKS =====
@@ -353,22 +538,17 @@ CONFIG.links.forEach((link, index) => {
 const video = document.getElementById('bg-video');
 const videoUrls = CONFIG.videos;
 
-// Pick a random video
 function getRandomVideo() {
-  const randomIndex = Math.floor(Math.random() * videoUrls.length);
-  return videoUrls[randomIndex];
+  return videoUrls[Math.floor(Math.random() * videoUrls.length)];
 }
 
-// Set the video source
 function setVideoSource(url) {
   video.src = url;
   video.load();
 }
 
-// Load a random video on refresh
 if (CONFIG.randomOnRefresh && videoUrls.length > 0) {
-  const randomUrl = getRandomVideo();
-  setVideoSource(randomUrl);
+  setVideoSource(getRandomVideo());
 } else if (videoUrls.length > 0) {
   setVideoSource(videoUrls[0]);
 }
@@ -377,42 +557,22 @@ if (CONFIG.randomOnRefresh && videoUrls.length > 0) {
 const enterOverlay = document.getElementById('enter-overlay');
 
 enterOverlay.addEventListener('click', function() {
-  // Unmute and play the video
   video.muted = false;
-  video.play().catch(function(error) {
-    console.log('Autoplay with sound blocked:', error);
+  video.play().catch(() => {
     video.muted = true;
-    video.play().catch(function(e) {
-      console.log('Video play failed:', e);
-    });
+    video.play().catch(() => {});
   });
-
   this.classList.add('hidden');
 });
 
-// Preload video
 video.preload = 'auto';
 
-// ===== HANDLE VIDEO END =====
-// When one video ends, play another random one
 video.addEventListener('ended', function() {
   if (videoUrls.length > 1) {
-    const randomUrl = getRandomVideo();
-    setVideoSource(randomUrl);
-    video.play().catch(function(e) {
-      console.log('Next video play failed:', e);
-    });
+    setVideoSource(getRandomVideo());
+    video.play().catch(() => {});
   }
 });
-
-// ===== RESPONSIVE VIDEO PLAY ON MOBILE =====
-document.addEventListener('visibilitychange', function() {
-  if (!document.hidden && video.paused && !enterOverlay.classList.contains('hidden')) {
-    // If the page becomes visible again and video is paused, keep it paused until user clicks
-  }
-});
-
-console.log('🎬 forgave.lol loaded with config:', CONFIG);
 </script>
 
 </body>
