@@ -2060,7 +2060,7 @@ async function renderGuestbook(page = 1) {
         }
 
         // Comment form – only show if logged in and table exists
-        if (session && !data.error) {
+        if (session && !data.error && session.username === slug) {
             const form = document.createElement('div');
             form.className = 'guestbook-form';
             const avatarUrl = session.avatar || '';
