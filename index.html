@@ -23,8 +23,6 @@
             overflow-y: auto;
             position: relative;
             padding: 40px 20px;
-            gap: 40px;
-            flex-wrap: wrap;
         }
 
         /* ===== VIDEO BACKGROUND ===== */
@@ -91,255 +89,19 @@
             }
         }
 
-        /* ===== LEFT PROFILE CARD (matching side buttons) ===== */
-        .profile-card {
-            position: relative;
-            z-index: 2;
-            background: rgba(45, 45, 45, 0.82);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1.5px solid rgba(255, 255, 255, 0.18);
-            border-radius: 10px;
-            padding: 24px 22px 22px;
-            width: 100%;
-            max-width: 340px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            flex-shrink: 0;
-            transition: background 0.18s, border-color 0.18s, transform 0.15s, box-shadow 0.18s;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .profile-card:hover {
-            background: rgba(70, 70, 70, 0.92);
-            border-color: rgba(255, 255, 255, 0.38);
-            transform: translateX(-4px);
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
-        }
-
-        /* ===== AVATAR ===== */
-        .profile-avatar-wrap {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 14px;
-        }
-
-        .profile-avatar-wrap::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #25F4EE, #FE2C55);
-            opacity: 0.3;
-            animation: spinGlow 4s linear infinite;
-        }
-
-        @keyframes spinGlow {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            display: block;
-            position: relative;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            background: #1a1a1a;
-        }
-
-        /* ===== NAME ===== */
-        .profile-name {
-            font-size: 1.05rem;
-            font-weight: 500;
-            color: #fff;
-            letter-spacing: -0.2px;
-            margin-bottom: 2px;
-        }
-
-        .profile-username {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.35);
-            letter-spacing: 0.9px;
-            margin-bottom: 10px;
-        }
-
-        /* ===== TIKTOK BADGE ===== */
-        .tiktok-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(37, 244, 238, 0.08);
-            border: 1px solid rgba(37, 244, 238, 0.15);
-            border-radius: 30px;
-            padding: 3px 12px 3px 8px;
-            margin-bottom: 12px;
-            font-size: 0.55rem;
-            color: rgba(37, 244, 238, 0.8);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        .tiktok-badge svg {
-            width: 12px;
-            height: 12px;
-            fill: currentColor;
-        }
-
-        /* ===== BIO ===== */
-        .profile-bio {
-            font-size: 0.72rem;
-            color: rgba(255, 255, 255, 0.48);
-            line-height: 1.65;
-            margin-bottom: 14px;
-            padding: 0 4px;
-        }
-
-        /* ===== DIVIDER ===== */
-        .profile-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
-            margin: 10px 0 14px;
-        }
-
-        /* ===== STATS ===== */
-        .profile-stats {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-        }
-
-        .profile-stat {
-            text-align: center;
-            cursor: default;
-        }
-
-        .profile-stat .number {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #fff;
-            letter-spacing: -0.3px;
-            transition: color 0.3s, transform 0.15s;
-            display: inline-block;
-        }
-
-        .profile-stat .number.pop {
-            color: #FE2C55;
-            transform: scale(1.1);
-        }
-
-        .profile-stat .number.pop-followers {
-            color: #25F4EE;
-            transform: scale(1.1);
-        }
-
-        .profile-stat .label {
-            font-size: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: rgba(255, 255, 255, 0.2);
-            margin-top: 2px;
-        }
-
-        /* ===== FOLLOW BUTTON (matching link-btn style) ===== */
-        .follow-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            width: 100%;
-            padding: 18px 22px;
-            margin-top: 14px;
-            background: rgba(45, 45, 45, 0.82);
-            border: 1.5px solid rgba(255, 255, 255, 0.18);
-            border-radius: 10px;
-            color: #fff;
-            text-decoration: none;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 15px;
-            letter-spacing: 2px;
-            cursor: pointer;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            transition: background 0.18s, border-color 0.18s, transform 0.15s, box-shadow 0.18s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .follow-btn:hover {
-            background: rgba(70, 70, 70, 0.92);
-            border-color: rgba(255, 255, 255, 0.38);
-            transform: translateX(-4px);
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
-        }
-
-        .follow-btn:active {
-            transform: translateX(-2px) scale(0.98);
-        }
-
-        .follow-btn svg {
-            width: 22px;
-            height: 22px;
-            flex-shrink: 0;
-            fill: #fff;
-        }
-
-        /* ===== LIVE INDICATOR ===== */
-        .live-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.55rem;
-            color: rgba(255, 255, 255, 0.2);
-            letter-spacing: 0.8px;
-            margin-top: 12px;
-            padding: 3px 10px;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .live-dot {
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: #25F4EE;
-            animation: livePulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes livePulse {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.2;
-                transform: scale(0.7);
-            }
-        }
-
         /* ===== RIGHT PANEL ===== */
         .panel {
             position: relative;
             z-index: 2;
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
+            align-items: center;
             gap: 0;
             padding: 0;
             animation: fadeIn 0.8s ease forwards;
             width: 100%;
             max-width: 460px;
-            margin: 0;
+            margin: 0 auto;
         }
 
         @keyframes fadeIn {
@@ -361,7 +123,7 @@
             margin-bottom: 24px;
             text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
             animation: fadeIn 0.6s ease forwards;
-            text-align: right;
+            text-align: center;
         }
 
         .links {
@@ -448,33 +210,17 @@
         }
 
         /* ===== RESPONSIVE ===== */
-        @media (max-width: 900px) {
+        @media (max-width: 600px) {
             body {
-                flex-direction: column;
                 padding: 20px 16px 40px;
-                gap: 24px;
-                align-items: center;
-                justify-content: flex-start;
-            }
-
-            .profile-card {
-                max-width: 100%;
-                padding: 20px 18px 18px;
-            }
-
-            .profile-avatar-wrap {
-                width: 72px;
-                height: 72px;
-            }
-
-            .profile-avatar {
-                width: 72px;
-                height: 72px;
+                justify-content: center;
+                align-items: flex-start;
             }
 
             .panel {
                 align-items: center;
                 max-width: 100%;
+                padding-top: 40px;
             }
 
             .title {
@@ -507,42 +253,11 @@
         }
 
         @media (max-width: 400px) {
-            .profile-card {
-                padding: 16px 14px 14px;
-            }
-
-            .profile-avatar-wrap {
-                width: 60px;
-                height: 60px;
-            }
-
-            .profile-avatar {
-                width: 60px;
-                height: 60px;
-            }
-
-            .profile-name {
-                font-size: 0.95rem;
-            }
-
-            .profile-stats {
-                gap: 16px;
-            }
-
-            .profile-stat .number {
-                font-size: 0.95rem;
-            }
-
             .title {
                 font-size: 44px;
             }
 
             .link-btn {
-                font-size: 13px;
-                padding: 14px 16px;
-            }
-
-            .follow-btn {
                 font-size: 13px;
                 padding: 14px 16px;
             }
@@ -564,50 +279,7 @@
 
     <div class="overlay"></div>
 
-    <!-- ===== LEFT PROFILE CARD ===== -->
-    <div class="profile-card" id="profile-card">
-        <div class="profile-avatar-wrap">
-            <img class="profile-avatar" id="profile-avatar" src="https://files.catbox.moe/upime5.jpeg" alt="Avatar" />
-        </div>
-
-        <div class="profile-name" id="profile-name">factor</div>
-        <div class="profile-username" id="profile-username">@factor</div>
-
-        <div class="tiktok-badge">
-            <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.78a4.85 4.85 0 0 1-1.01-.09z"/></svg>
-            TikTok
-        </div>
-
-        <div class="profile-bio" id="profile-bio">content creator • forgave.lol</div>
-        <div class="profile-divider"></div>
-
-        <div class="profile-stats">
-            <div class="profile-stat">
-                <span class="number" id="stat-following">39</span>
-                <div class="label">Following</div>
-            </div>
-            <div class="profile-stat">
-                <span class="number" id="stat-followers">76</span>
-                <div class="label">Followers</div>
-            </div>
-            <div class="profile-stat">
-                <span class="number" id="stat-likes">325</span>
-                <div class="label">Likes</div>
-            </div>
-        </div>
-
-        <a class="follow-btn" href="https://tiktok.com/@factor" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.78a4.85 4.85 0 0 1-1.01-.09z"/></svg>
-            Follow on TikTok
-        </a>
-
-        <div class="live-indicator">
-            <span class="live-dot"></span>
-            <span id="live-status">Live • updating...</span>
-        </div>
-    </div>
-
-    <!-- ===== RIGHT PANEL ===== -->
+    <!-- ===== MAIN PANEL ===== -->
     <div class="panel">
         <div class="title" id="page-title">@59600</div>
         <div class="links" id="links-container"></div>
@@ -620,17 +292,6 @@
         //  🎯 CONFIG – EDIT THIS SECTION
         // ============================================================
         const CONFIG = {
-            // ===== TIKTOK PROFILE =====
-            tiktok: {
-                username: 'factor',
-                displayName: 'factor',
-                avatar: 'https://files.catbox.moe/upime5.jpeg',
-                bio: 'content creator • forgave.lol',
-                following: 39,
-                followers: 76,
-                likes: 325
-            },
-
             // ===== TITLE =====
             title: '@59600',
 
@@ -661,26 +322,12 @@
 
             // ===== VIDEO SETTINGS =====
             randomOnRefresh: true,
-            bgColor: '#000',
-
-            // ===== LIVE UPDATE SETTINGS =====
-            liveUpdateInterval: 15000,
-            followerGrowthRate: 0.5
+            bgColor: '#000'
         };
 
         // ============================================================
         //  DO NOT EDIT BELOW THIS LINE
         // ============================================================
-
-        // ===== SET PROFILE =====
-        const profile = CONFIG.tiktok;
-        document.getElementById('profile-name').textContent = profile.displayName;
-        document.getElementById('profile-username').textContent = '@' + profile.username;
-        document.getElementById('profile-bio').textContent = profile.bio;
-        document.getElementById('profile-avatar').src = profile.avatar;
-        document.getElementById('stat-following').textContent = profile.following;
-        document.getElementById('stat-followers').textContent = profile.followers;
-        document.getElementById('stat-likes').textContent = profile.likes;
 
         // ===== SET TITLE =====
         document.getElementById('page-title').textContent = CONFIG.title;
@@ -769,65 +416,6 @@
             if (videoUrls.length > 1) {
                 setVideoSource(getRandomVideo());
                 video.play().catch(() => {});
-            }
-        });
-
-        // ============================================================
-        //  🔥 LIVE COUNTER WITH SIMULATED UPDATES
-        // ============================================================
-
-        const statFollowing = document.getElementById('stat-following');
-        const statFollowers = document.getElementById('stat-followers');
-        const statLikes = document.getElementById('stat-likes');
-        const liveStatus = document.getElementById('live-status');
-
-        let followers = profile.followers;
-        let likes = profile.likes;
-        let following = profile.following;
-
-        function formatNumber(num) {
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            return num.toString();
-        }
-
-        function animateNumber(element, newValue) {
-            element.textContent = formatNumber(newValue);
-            element.classList.remove('pop', 'pop-followers');
-            void element.offsetWidth;
-            element.classList.add('pop');
-            setTimeout(() => {
-                element.classList.remove('pop');
-            }, 600);
-        }
-
-        function updateStats() {
-            const newFollowers = Math.round(followers + (Math.random() * CONFIG.followerGrowthRate));
-            const newLikes = Math.round(likes + (Math.random() * 3));
-            const newFollowing = Math.round(following + (Math.random() * 1.5));
-
-            if (newFollowers !== followers) {
-                animateNumber(statFollowers, newFollowers);
-                followers = newFollowers;
-            }
-            if (newLikes !== likes) {
-                animateNumber(statLikes, newLikes);
-                likes = newLikes;
-            }
-            if (newFollowing !== following) {
-                animateNumber(statFollowing, newFollowing);
-                following = newFollowing;
-            }
-
-            liveStatus.textContent = `Live • ${new Date().toLocaleTimeString()}`;
-        }
-
-        liveStatus.textContent = `Live • ${new Date().toLocaleTimeString()}`;
-        setInterval(updateStats, CONFIG.liveUpdateInterval || 15000);
-
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                updateStats();
             }
         });
 
