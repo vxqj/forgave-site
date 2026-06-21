@@ -264,10 +264,32 @@
 <div class="watermark">forgave.lol</div>
 
 <script>
-  // ===== CLICK TO ENTER =====
-  const enterOverlay = document.getElementById('enter-overlay');
-  const video = document.getElementById('bg-video');
+  // ===== VIDEO PLAYLIST =====
+  const videoUrls = [
+    'https://files.catbox.moe/7soj1p.mp4',
+    'https://files.catbox.moe/ydn1qw.mp4',
+    'https://files.catbox.moe/3sauin.mp4',
+    'https://files.catbox.moe/5k3ear.mp4'
+  ];
 
+  let currentVideoIndex = 0;
+  const video = document.getElementById('bg-video');
+  const enterOverlay = document.getElementById('enter-overlay');
+
+  // Function to load the next video
+  function loadNextVideo() {
+    currentVideoIndex = (currentVideoIndex + 1) % videoUrls.length;
+    video.src = videoUrls[currentVideoIndex];
+    video.load();
+    video.play().catch(function(error) {
+      console.log('Video play failed:', error);
+    });
+  }
+
+  // When the current video ends, load the next one
+  video.addEventListener('ended', loadNextVideo);
+
+  // ===== CLICK TO ENTER =====
   enterOverlay.addEventListener('click', function() {
     // Unmute and play the video
     video.muted = false;
