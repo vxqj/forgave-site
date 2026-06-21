@@ -43,6 +43,42 @@
     pointer-events: none;
   }
 
+  /* ===== CLICK TO ENTER OVERLAY ===== */
+  #enter-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #enter-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  #enter-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    animation: pulse 2.4s ease-in-out infinite;
+    user-select: none;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.7; }
+  }
+
   .panel {
     position: relative;
     z-index: 2;
@@ -184,8 +220,13 @@
 </head>
 <body>
 
+<!-- ===== CLICK TO ENTER OVERLAY ===== -->
+<div id="enter-overlay">
+  <span id="enter-text">click to enter</span>
+</div>
+
 <!-- Video Background -->
-<video id="bg-video" autoplay muted loop playsinline>
+<video id="bg-video" muted loop playsinline>
   <source src="https://files.catbox.moe/7soj1p.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
@@ -223,13 +264,33 @@
 <div class="watermark">forgave.lol</div>
 
 <script>
-  // Ensure video plays on mobile
-  document.addEventListener('DOMContentLoaded', function() {
-    const video = document.getElementById('bg-video');
-    if (video) {
-      video.play().catch(function(error) {
-        console.log('Video autoplay failed:', error);
+  // ===== CLICK TO ENTER =====
+  const enterOverlay = document.getElementById('enter-overlay');
+  const video = document.getElementById('bg-video');
+
+  enterOverlay.addEventListener('click', function() {
+    // Unmute and play the video
+    video.muted = false;
+    video.play().catch(function(error) {
+      console.log('Autoplay with sound blocked:', error);
+      // If autoplay with sound is blocked, try muted first
+      video.muted = true;
+      video.play().catch(function(e) {
+        console.log('Video play failed:', e);
       });
+    });
+
+    // Hide the overlay
+    this.classList.add('hidden');
+  });
+
+  // Preload video (starts loading in background)
+  video.preload = 'auto';
+
+  // Handle visibility change (if user switches tabs, video might pause)
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && video.paused && !enterOverlay.classList.contains('hidden')) {
+      // If the page becomes visible again and video is paused, keep it paused until user clicks
     }
   });
 </script>
