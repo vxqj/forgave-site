@@ -91,44 +91,47 @@
             }
         }
 
-        /* ===== LEFT PROFILE CARD (Premium UI) ===== */
+        /* ===== LEFT PROFILE CARD (matching side buttons) ===== */
         .profile-card {
             position: relative;
             z-index: 2;
-            background: rgba(15, 15, 20, 0.85);
-            backdrop-filter: blur(32px) saturate(160%) brightness(1.05);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-top-color: rgba(255, 255, 255, 0.12);
-            border-radius: 24px;
-            padding: 34px 28px 28px;
+            background: rgba(45, 45, 45, 0.82);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1.5px solid rgba(255, 255, 255, 0.18);
+            border-radius: 10px;
+            padding: 24px 22px 22px;
             width: 100%;
-            max-width: 360px;
-            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 32px 80px rgba(0, 0, 0, 0.7);
+            max-width: 340px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
             text-align: center;
             flex-shrink: 0;
-            transition: border-color 0.3s, transform 0.3s;
+            transition: background 0.18s, border-color 0.18s, transform 0.15s, box-shadow 0.18s;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .profile-card:hover {
-            border-color: rgba(255, 255, 255, 0.12);
-            transform: translateY(-4px);
+            background: rgba(70, 70, 70, 0.92);
+            border-color: rgba(255, 255, 255, 0.38);
+            transform: translateX(-4px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
         }
 
         /* ===== AVATAR ===== */
         .profile-avatar-wrap {
             position: relative;
-            width: 88px;
-            height: 88px;
-            margin: 0 auto 16px;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 14px;
         }
 
         .profile-avatar-wrap::before {
             content: '';
             position: absolute;
-            inset: -3px;
+            inset: -2px;
             border-radius: 50%;
             background: linear-gradient(135deg, #25F4EE, #FE2C55);
-            opacity: 0.4;
+            opacity: 0.3;
             animation: spinGlow 4s linear infinite;
         }
 
@@ -142,29 +145,29 @@
         }
 
         .profile-avatar {
-            width: 88px;
-            height: 88px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             object-fit: cover;
             display: block;
             position: relative;
-            border: 3px solid rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             background: #1a1a1a;
         }
 
         /* ===== NAME ===== */
         .profile-name {
-            font-size: 1.35rem;
-            font-weight: 600;
+            font-size: 1.05rem;
+            font-weight: 500;
             color: #fff;
-            letter-spacing: -0.3px;
+            letter-spacing: -0.2px;
             margin-bottom: 2px;
         }
 
         .profile-username {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: rgba(255, 255, 255, 0.35);
-            letter-spacing: 1px;
+            letter-spacing: 0.9px;
             margin-bottom: 10px;
         }
 
@@ -176,42 +179,42 @@
             background: rgba(37, 244, 238, 0.08);
             border: 1px solid rgba(37, 244, 238, 0.15);
             border-radius: 30px;
-            padding: 4px 14px 4px 10px;
-            margin-bottom: 14px;
-            font-size: 0.6rem;
-            color: rgba(37, 244, 238, 0.85);
+            padding: 3px 12px 3px 8px;
+            margin-bottom: 12px;
+            font-size: 0.55rem;
+            color: rgba(37, 244, 238, 0.8);
             letter-spacing: 0.5px;
             text-transform: uppercase;
             font-weight: 500;
         }
 
         .tiktok-badge svg {
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             fill: currentColor;
         }
 
         /* ===== BIO ===== */
         .profile-bio {
-            font-size: 0.78rem;
-            color: rgba(255, 255, 255, 0.5);
-            line-height: 1.6;
-            margin-bottom: 18px;
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.48);
+            line-height: 1.65;
+            margin-bottom: 14px;
             padding: 0 4px;
         }
 
         /* ===== DIVIDER ===== */
         .profile-divider {
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
-            margin: 12px 0 18px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+            margin: 10px 0 14px;
         }
 
         /* ===== STATS ===== */
         .profile-stats {
             display: flex;
             justify-content: center;
-            gap: 32px;
+            gap: 24px;
         }
 
         .profile-stat {
@@ -220,10 +223,10 @@
         }
 
         .profile-stat .number {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 500;
             color: #fff;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
             transition: color 0.3s, transform 0.15s;
             display: inline-block;
         }
@@ -239,51 +242,54 @@
         }
 
         .profile-stat .label {
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             color: rgba(255, 255, 255, 0.2);
-            margin-top: 3px;
+            margin-top: 2px;
         }
 
-        /* ===== FOLLOW BUTTON ===== */
+        /* ===== FOLLOW BUTTON (matching link-btn style) ===== */
         .follow-btn {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 14px;
             width: 100%;
-            padding: 13px 0;
-            margin-top: 16px;
-            background: linear-gradient(135deg, rgba(37, 244, 238, 0.12), rgba(254, 44, 85, 0.12));
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            color: rgba(255, 255, 255, 0.8);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            font-weight: 500;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.25s;
+            padding: 18px 22px;
+            margin-top: 14px;
+            background: rgba(45, 45, 45, 0.82);
+            border: 1.5px solid rgba(255, 255, 255, 0.18);
+            border-radius: 10px;
+            color: #fff;
             text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: background 0.18s, border-color 0.18s, transform 0.15s, box-shadow 0.18s;
+            position: relative;
+            overflow: hidden;
         }
 
         .follow-btn:hover {
-            background: linear-gradient(135deg, rgba(37, 244, 238, 0.2), rgba(254, 44, 85, 0.2));
-            border-color: rgba(255, 255, 255, 0.15);
-            color: #fff;
-            transform: scale(1.01);
+            background: rgba(70, 70, 70, 0.92);
+            border-color: rgba(255, 255, 255, 0.38);
+            transform: translateX(-4px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
         }
 
         .follow-btn:active {
-            transform: scale(0.97);
+            transform: translateX(-2px) scale(0.98);
         }
 
         .follow-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            fill: #fff;
         }
 
         /* ===== LIVE INDICATOR ===== */
@@ -292,18 +298,18 @@
             align-items: center;
             gap: 6px;
             font-size: 0.55rem;
-            color: rgba(255, 255, 255, 0.15);
-            letter-spacing: 0.5px;
-            margin-top: 14px;
-            padding: 4px 14px;
-            border-radius: 20px;
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 0.8px;
+            margin-top: 12px;
+            padding: 3px 10px;
+            border-radius: 6px;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .live-dot {
-            width: 5px;
-            height: 5px;
+            width: 4px;
+            height: 4px;
             border-radius: 50%;
             background: #25F4EE;
             animation: livePulse 1.5s ease-in-out infinite;
@@ -382,6 +388,8 @@
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             transition: background 0.18s, border-color 0.18s, transform 0.15s, box-shadow 0.18s;
+            position: relative;
+            overflow: hidden;
         }
 
         .link-btn:nth-child(1) {
@@ -451,7 +459,7 @@
 
             .profile-card {
                 max-width: 100%;
-                padding: 24px 20px 20px;
+                padding: 20px 18px 18px;
             }
 
             .profile-avatar-wrap {
@@ -500,7 +508,7 @@
 
         @media (max-width: 400px) {
             .profile-card {
-                padding: 18px 14px 16px;
+                padding: 16px 14px 14px;
             }
 
             .profile-avatar-wrap {
@@ -514,7 +522,7 @@
             }
 
             .profile-name {
-                font-size: 1.1rem;
+                font-size: 0.95rem;
             }
 
             .profile-stats {
@@ -522,7 +530,7 @@
             }
 
             .profile-stat .number {
-                font-size: 1rem;
+                font-size: 0.95rem;
             }
 
             .title {
@@ -530,6 +538,11 @@
             }
 
             .link-btn {
+                font-size: 13px;
+                padding: 14px 16px;
+            }
+
+            .follow-btn {
                 font-size: 13px;
                 padding: 14px 16px;
             }
@@ -651,12 +664,12 @@
             bgColor: '#000',
 
             // ===== LIVE UPDATE SETTINGS =====
-            liveUpdateInterval: 15000, // Update every 15 seconds
-            followerGrowthRate: 0.5 // Simulate ~0-1 new followers per update
+            liveUpdateInterval: 15000,
+            followerGrowthRate: 0.5
         };
 
         // ============================================================
-        //  DO NOT EDIT BELOW THIS LINE (unless you know what you're doing)
+        //  DO NOT EDIT BELOW THIS LINE
         // ============================================================
 
         // ===== SET PROFILE =====
@@ -778,12 +791,10 @@
             return num.toString();
         }
 
-        function animateNumber(element, newValue, oldValue) {
-            if (newValue === oldValue) return;
+        function animateNumber(element, newValue) {
             element.textContent = formatNumber(newValue);
-            // Add pop animation
             element.classList.remove('pop', 'pop-followers');
-            void element.offsetWidth; // trigger reflow
+            void element.offsetWidth;
             element.classList.add('pop');
             setTimeout(() => {
                 element.classList.remove('pop');
@@ -791,38 +802,29 @@
         }
 
         function updateStats() {
-            // Simulate live changes
             const newFollowers = Math.round(followers + (Math.random() * CONFIG.followerGrowthRate));
             const newLikes = Math.round(likes + (Math.random() * 3));
             const newFollowing = Math.round(following + (Math.random() * 1.5));
 
-            // Only update if changed
             if (newFollowers !== followers) {
-                animateNumber(statFollowers, newFollowers, followers);
+                animateNumber(statFollowers, newFollowers);
                 followers = newFollowers;
             }
-
             if (newLikes !== likes) {
-                animateNumber(statLikes, newLikes, likes);
+                animateNumber(statLikes, newLikes);
                 likes = newLikes;
             }
-
             if (newFollowing !== following) {
-                animateNumber(statFollowing, newFollowing, following);
+                animateNumber(statFollowing, newFollowing);
                 following = newFollowing;
             }
 
-            // Update live status time
             liveStatus.textContent = `Live • ${new Date().toLocaleTimeString()}`;
         }
 
-        // Initial update
         liveStatus.textContent = `Live • ${new Date().toLocaleTimeString()}`;
-
-        // Update on interval
         setInterval(updateStats, CONFIG.liveUpdateInterval || 15000);
 
-        // Also update stats on page visibility change (so it updates when user comes back)
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
                 updateStats();
