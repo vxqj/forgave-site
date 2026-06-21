@@ -1,345 +1,668 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>factor | TikTok</title>
-    <style>
-        /* ===== RESET ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>forgave.lol</title>
+<link href="https://fonts.googleapis.com/css2?family=Ephesis&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            padding: 20px;
-        }
+  body {
+    min-height: 100vh;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    overflow-y: auto;
+    position: relative;
+    padding: 40px 20px;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
 
-        /* ===== TIKTOK PROFILE CARD ===== */
-        .profile-card {
-            max-width: 400px;
-            width: 100%;
-            background: #121212;
-            border-radius: 16px;
-            padding: 24px 20px 20px;
-            color: #fff;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            transition: transform 0.2s;
-        }
+  /* Video Background */
+  #bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+  }
 
-        .profile-card:hover {
-            transform: translateY(-2px);
-        }
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 1;
+    pointer-events: none;
+  }
 
-        /* ===== HEADER ===== */
-        .profile-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
+  /* ===== CLICK TO ENTER OVERLAY ===== */
+  #enter-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+    opacity: 1;
+    visibility: visible;
+  }
 
-        .profile-left {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
+  #enter-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
 
-        .profile-name {
-            font-size: 22px;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: -0.3px;
-        }
+  #enter-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    animation: pulse 2.4s ease-in-out infinite;
+    user-select: none;
+  }
 
-        .profile-username {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 400;
-        }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.7; }
+  }
 
-        .profile-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 6px;
-        }
+  /* ===== LEFT TIKTOK PROFILE CARD ===== */
+  .profile-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(10, 10, 12, 0.75);
+    backdrop-filter: blur(24px) saturate(140%) brightness(1.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-top-color: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 32px 28px 28px;
+    width: 100%;
+    max-width: 340px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 24px 64px rgba(0,0,0,0.7);
+    text-align: center;
+    flex-shrink: 0;
+    transition: border-color 0.3s;
+  }
 
-        .badge-icon {
-            width: 18px;
-            height: 18px;
-            background: #25F4EE;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 700;
-            color: #000;
-        }
+  .profile-card:hover {
+    border-color: rgba(255,255,255,0.18);
+  }
 
-        .badge-text {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 0.3px;
-        }
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 14px;
+    display: block;
+    border: 3px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    transition: border-color 0.3s;
+  }
 
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.08);
-            flex-shrink: 0;
-            background: #2a2a2a;
-        }
+  .profile-card:hover .profile-avatar {
+    border-color: rgba(255, 70, 100, 0.4);
+  }
 
-        /* ===== BIO ===== */
-        .profile-bio {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.5;
-            margin-bottom: 16px;
-            padding: 0 2px;
-            min-height: 20px;
-        }
+  .profile-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.95);
+    letter-spacing: -0.3px;
+    margin-bottom: 2px;
+  }
 
-        /* ===== STATS ===== */
-        .profile-stats {
-            display: flex;
-            gap: 28px;
-            margin-bottom: 20px;
-            padding: 0 2px;
-        }
+  .profile-username {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
 
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-        }
+  .tiktok-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 70, 100, 0.12);
+    border: 1px solid rgba(255, 70, 100, 0.2);
+    border-radius: 30px;
+    padding: 4px 14px 4px 10px;
+    margin-bottom: 14px;
+    font-size: 0.6rem;
+    color: rgba(255, 100, 130, 0.9);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
 
-        .stat-number {
-            font-size: 17px;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: -0.2px;
-        }
+  .tiktok-badge svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+  }
 
-        .stat-label {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.4);
-            text-transform: lowercase;
-            margin-top: 1px;
-        }
+  .profile-bio {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+    margin-bottom: 16px;
+    padding: 0 4px;
+  }
 
-        /* ===== FOLLOW BUTTON ===== */
-        .follow-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            padding: 12px 0;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, border-color 0.2s;
-            text-decoration: none;
-            font-family: inherit;
-        }
+  .profile-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    margin: 14px 0 16px;
+  }
 
-        .follow-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
+  .profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+  }
 
-        .follow-btn:active {
-            transform: scale(0.97);
-        }
+  .profile-stat {
+    text-align: center;
+  }
 
-        .follow-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: #fff;
-            flex-shrink: 0;
-        }
+  .profile-stat .number {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: -0.5px;
+    transition: color 0.3s;
+  }
 
-        /* ===== LIVE INDICATOR ===== */
-        .live-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            margin-top: 14px;
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.2);
-            letter-spacing: 0.3px;
-        }
+  .profile-stat .number.pop {
+    color: rgba(255, 70, 100, 0.9);
+  }
 
-        .live-dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: #25F4EE;
-            animation: livePulse 1.6s ease-in-out infinite;
-        }
+  .profile-stat .label {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.2);
+    margin-top: 2px;
+  }
 
-        @keyframes livePulse {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.3;
-                transform: scale(0.7);
-            }
-        }
+  .follow-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 0;
+    margin-top: 12px;
+    background: rgba(255, 70, 100, 0.15);
+    border: 1px solid rgba(255, 70, 100, 0.25);
+    border-radius: 10px;
+    color: rgba(255, 100, 130, 0.9);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-decoration: none;
+  }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 420px) {
-            .profile-card {
-                padding: 18px 14px 16px;
-            }
+  .follow-btn:hover {
+    background: rgba(255, 70, 100, 0.22);
+    border-color: rgba(255, 70, 100, 0.4);
+    color: #fff;
+    transform: scale(1.01);
+  }
 
-            .profile-name {
-                font-size: 19px;
-            }
+  .follow-btn:active {
+    transform: scale(0.97);
+  }
 
-            .profile-avatar {
-                width: 64px;
-                height: 64px;
-            }
+  .follow-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
 
-            .stat-number {
-                font-size: 15px;
-            }
+  .live-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.55rem;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 0.5px;
+    margin-top: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.03);
+  }
 
-            .stat-label {
-                font-size: 11px;
-            }
+  .live-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #ff4664;
+    animation: livePulse 1.5s ease-in-out infinite;
+  }
 
-            .follow-btn {
-                font-size: 14px;
-                padding: 10px 0;
-            }
-        }
-    </style>
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.8); }
+  }
+
+  /* ===== RIGHT PANEL ===== */
+  .panel {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
+    padding: 0;
+    animation: fadeIn 0.8s ease forwards;
+    width: 100%;
+    max-width: 460px;
+    margin: 0;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .title {
+    font-family: 'Ephesis', cursive;
+    font-size: 72px;
+    color: #fff;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+    animation: fadeIn 0.6s ease forwards;
+    text-align: right;
+  }
+
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 340px;
+  }
+
+  .link-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    background: rgba(45, 45, 45, 0.82);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    border-radius: 10px;
+    color: #fff;
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: background 0.18s, border-color 0.18s, transform 0.15s, box-shadow 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .link-btn:nth-child(1) { animation: slideIn 0.5s 0.2s ease both; }
+  .link-btn:nth-child(2) { animation: slideIn 0.5s 0.35s ease both; }
+  .link-btn:nth-child(3) { animation: slideIn 0.5s 0.5s ease both; }
+  .link-btn:nth-child(4) { animation: slideIn 0.5s 0.65s ease both; }
+  .link-btn:nth-child(5) { animation: slideIn 0.5s 0.8s ease both; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .link-btn:hover {
+    background: rgba(70, 70, 70, 0.92);
+    border-color: rgba(255,255,255,0.38);
+    transform: translateX(-4px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+
+  .link-btn:active {
+    transform: translateX(-2px) scale(0.98);
+  }
+
+  .link-btn img {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .watermark {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.55);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+    animation: fadeIn 1s 0.8s ease both;
+    white-space: nowrap;
+    z-index: 2;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    body {
+      flex-direction: column;
+      padding: 20px 16px 40px;
+      gap: 24px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .profile-card {
+      max-width: 100%;
+      padding: 24px 20px 20px;
+    }
+
+    .panel {
+      align-items: center;
+      max-width: 100%;
+    }
+
+    .title {
+      font-size: 56px;
+      text-align: center;
+    }
+
+    .links {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .link-btn {
+      font-size: 14px;
+      padding: 16px 18px;
+    }
+
+    .link-btn:hover {
+      transform: none;
+    }
+
+    .link-btn:active {
+      transform: scale(0.97);
+    }
+
+    .watermark {
+      bottom: 12px;
+      font-size: 11px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+    }
+
+    .profile-name {
+      font-size: 1rem;
+    }
+
+    .profile-stats {
+      gap: 16px;
+    }
+
+    .title {
+      font-size: 44px;
+    }
+
+    .link-btn {
+      font-size: 13px;
+      padding: 14px 16px;
+    }
+  }
+</style>
 </head>
 <body>
 
-    <div class="profile-card">
+<!-- ===== CLICK TO ENTER OVERLAY ===== -->
+<div id="enter-overlay">
+  <span id="enter-text">click to enter</span>
+</div>
 
-        <!-- ===== HEADER ===== -->
-        <div class="profile-header">
-            <div class="profile-left">
-                <div class="profile-name" id="display-name">factor</div>
-                <div class="profile-username" id="username">@factor</div>
-                <div class="profile-badge">
-                    <span class="badge-icon">✓</span>
-                    <span class="badge-text">TikTok</span>
-                </div>
-            </div>
-            <img class="profile-avatar" id="avatar" src="https://files.catbox.moe/upime5.jpeg" alt="Avatar" />
-        </div>
+<!-- Video Background -->
+<video id="bg-video" muted loop playsinline>
+  <source src="" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
-        <!-- ===== BIO ===== -->
-        <div class="profile-bio" id="bio">content creator • forgave.lol</div>
+<div class="overlay"></div>
 
-        <!-- ===== STATS ===== -->
-        <div class="profile-stats">
-            <div class="stat-item">
-                <span class="stat-number" id="stat-following">39</span>
-                <span class="stat-label">Following</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number" id="stat-followers">76</span>
-                <span class="stat-label">Followers</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number" id="stat-likes">325</span>
-                <span class="stat-label">Likes</span>
-            </div>
-        </div>
+<!-- ===== LEFT TIKTOK PROFILE CARD ===== -->
+<div class="profile-card" id="profile-card">
+  <img class="profile-avatar" id="profile-avatar" src="https://files.catbox.moe/upime5.jpeg" alt="TikTok Avatar">
+  <div class="profile-name" id="profile-name">factor</div>
+  <div class="profile-username" id="profile-username">@factor</div>
 
-        <!-- ===== FOLLOW BUTTON ===== -->
-        <a class="follow-btn" href="https://tiktok.com/@factor" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.78a4.85 4.85 0 0 1-1.01-.09z"/></svg>
-            Follow on TikTok
-        </a>
+  <div class="tiktok-badge">
+    <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.78a4.85 4.85 0 0 1-1.01-.09z"/></svg>
+    TikTok
+  </div>
 
-        <!-- ===== LIVE INDICATOR ===== -->
-        <div class="live-indicator">
-            <span class="live-dot"></span>
-            <span id="live-status">Live • updated just now</span>
-        </div>
+  <div class="profile-bio" id="profile-bio">content creator • forgave.lol</div>
+  <div class="profile-divider"></div>
 
+  <div class="profile-stats">
+    <div class="profile-stat">
+      <div class="number" id="stat-following">39</div>
+      <div class="label">Following</div>
     </div>
+    <div class="profile-stat">
+      <div class="number" id="stat-followers">76</div>
+      <div class="label">Followers</div>
+    </div>
+    <div class="profile-stat">
+      <div class="number" id="stat-likes">325</div>
+      <div class="label">Likes</div>
+    </div>
+  </div>
 
-    <script>
-        // ============================================================
-        //  🎯 CONFIG – EDIT THIS SECTION
-        // ============================================================
-        const CONFIG = {
-            // ===== PROFILE INFO =====
-            displayName: 'factor',
-            username: 'factor',
-            // 👇 Your avatar URL is already set to the image you provided
-            avatar: 'https://files.catbox.moe/upime5.jpeg',
-            bio: 'content creator • forgave.lol',
+  <a class="follow-btn" href="https://tiktok.com/@factor" target="_blank">
+    <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.78a4.85 4.85 0 0 1-1.01-.09z"/></svg>
+    Follow on TikTok
+  </a>
 
-            // ===== STATS (these update automatically) =====
-            following: 39,
-            followers: 76,
-            likes: 325
-        };
+  <div class="live-indicator">
+    <span class="live-dot"></span>
+    <span id="live-status">Live • updated just now</span>
+  </div>
+</div>
 
-        // ============================================================
-        //  DO NOT EDIT BELOW THIS LINE
-        // ============================================================
+<!-- ===== RIGHT PANEL ===== -->
+<div class="panel">
+  <div class="title" id="page-title">@59600</div>
+  <div class="links" id="links-container"></div>
+</div>
 
-        // Set profile data
-        document.getElementById('display-name').textContent = CONFIG.displayName;
-        document.getElementById('username').textContent = '@' + CONFIG.username;
-        document.getElementById('bio').textContent = CONFIG.bio;
+<div class="watermark" id="watermark-text">forgave.lol</div>
 
-        // Avatar
-        const avatarEl = document.getElementById('avatar');
-        if (CONFIG.avatar) {
-            avatarEl.src = CONFIG.avatar;
-            avatarEl.onerror = function() {
-                this.style.display = 'none';
-            };
-        } else {
-            avatarEl.style.display = 'none';
-        }
+<script>
+// ============================================================
+//  🎯 CONFIG – EDIT THIS SECTION
+// ============================================================
+const CONFIG = {
+  // ===== TIKTOK PROFILE =====
+  tiktok: {
+    username: 'factor',
+    displayName: 'factor',
+    avatar: 'https://files.catbox.moe/upime5.jpeg',
+    bio: 'content creator • forgave.lol',
+    following: 39,
+    followers: 76,
+    likes: 325
+  },
 
-        // Stats
-        document.getElementById('stat-following').textContent = CONFIG.following;
-        document.getElementById('stat-followers').textContent = CONFIG.followers;
-        document.getElementById('stat-likes').textContent = CONFIG.likes;
+  // ===== TITLE =====
+  title: '@59600',
 
-        // Live status update
-        const liveStatus = document.getElementById('live-status');
-        liveStatus.textContent = 'Live • ' + new Date().toLocaleTimeString();
+  // ===== VIDEO PLAYLIST =====
+  videos: [
+    'https://files.catbox.moe/7soj1p.mp4',
+    'https://files.catbox.moe/ydn1qw.mp4',
+    'https://files.catbox.moe/3sauin.mp4',
+    'https://files.catbox.moe/5k3ear.mp4'
+  ],
 
-        // Update every 30 seconds (just the time)
-        setInterval(() => {
-            liveStatus.textContent = 'Live • ' + new Date().toLocaleTimeString();
-        }, 30000);
+  // ===== LINKS =====
+  links: [
+    { label: '@59600', icon: 'youtube', url: 'https://forgave.lol' },
+    { label: 'forgave.lol', icon: 'discord', url: 'https://forgave.lol' },
+    { label: 'forgave.lol', icon: 'roblox', url: 'https://forgave.lol' },
+    { label: 'forgave.lol', icon: 'luau', url: 'https://forgave.lol' }
+  ],
 
-        console.log('🎬 TikTok profile loaded with config:', CONFIG);
-    </script>
+  // ===== WATERMARK =====
+  watermark: 'forgave.lol',
+
+  // ===== OVERLAY TEXT =====
+  overlayText: 'click to enter',
+
+  // ===== OVERLAY DARKNESS =====
+  overlayDarkness: 0.55,
+
+  // ===== VIDEO SETTINGS =====
+  randomOnRefresh: true,
+  bgColor: '#000'
+};
+
+// ============================================================
+//  DO NOT EDIT BELOW THIS LINE
+// ============================================================
+
+// ===== SET PROFILE =====
+document.getElementById('profile-name').textContent = CONFIG.tiktok.displayName;
+document.getElementById('profile-username').textContent = '@' + CONFIG.tiktok.username;
+document.getElementById('profile-bio').textContent = CONFIG.tiktok.bio;
+document.getElementById('profile-avatar').src = CONFIG.tiktok.avatar;
+document.getElementById('stat-following').textContent = CONFIG.tiktok.following;
+document.getElementById('stat-followers').textContent = CONFIG.tiktok.followers;
+document.getElementById('stat-likes').textContent = CONFIG.tiktok.likes;
+
+// ===== SET TITLE =====
+document.getElementById('page-title').textContent = CONFIG.title;
+
+// ===== SET WATERMARK =====
+document.getElementById('watermark-text').textContent = CONFIG.watermark;
+
+// ===== SET OVERLAY TEXT =====
+document.getElementById('enter-text').textContent = CONFIG.overlayText;
+
+// ===== SET OVERLAY DARKNESS =====
+document.querySelector('.overlay').style.background = `rgba(0, 0, 0, ${CONFIG.overlayDarkness})`;
+document.body.style.background = CONFIG.bgColor;
+
+// ===== BUILD LINKS =====
+const iconMap = {
+  youtube: 'https://cdn.simpleicons.org/youtube/ffffff',
+  discord: 'https://cdn.simpleicons.org/discord/ffffff',
+  roblox: 'https://cdn.simpleicons.org/roblox/ffffff',
+  luau: 'https://cdn.simpleicons.org/luau/ffffff',
+  twitter: 'https://cdn.simpleicons.org/twitter/ffffff',
+  instagram: 'https://cdn.simpleicons.org/instagram/ffffff',
+  tiktok: 'https://cdn.simpleicons.org/tiktok/ffffff',
+  github: 'https://cdn.simpleicons.org/github/ffffff',
+  spotify: 'https://cdn.simpleicons.org/spotify/ffffff',
+  twitch: 'https://cdn.simpleicons.org/twitch/ffffff'
+};
+
+const linksContainer = document.getElementById('links-container');
+linksContainer.innerHTML = '';
+CONFIG.links.forEach((link, index) => {
+  const a = document.createElement('a');
+  a.className = 'link-btn';
+  a.href = link.url;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.style.animationDelay = `${0.15 * (index + 1)}s`;
+
+  const img = document.createElement('img');
+  img.src = iconMap[link.icon] || iconMap.youtube;
+  img.alt = link.icon;
+  img.width = 22;
+  img.height = 22;
+
+  const span = document.createElement('span');
+  span.textContent = link.label;
+
+  a.appendChild(img);
+  a.appendChild(span);
+  linksContainer.appendChild(a);
+});
+
+// ===== VIDEO PLAYLIST =====
+const video = document.getElementById('bg-video');
+const videoUrls = CONFIG.videos;
+
+function getRandomVideo() {
+  return videoUrls[Math.floor(Math.random() * videoUrls.length)];
+}
+
+function setVideoSource(url) {
+  video.src = url;
+  video.load();
+}
+
+if (CONFIG.randomOnRefresh && videoUrls.length > 0) {
+  setVideoSource(getRandomVideo());
+} else if (videoUrls.length > 0) {
+  setVideoSource(videoUrls[0]);
+}
+
+// ===== CLICK TO ENTER =====
+const enterOverlay = document.getElementById('enter-overlay');
+
+enterOverlay.addEventListener('click', function() {
+  video.muted = false;
+  video.play().catch(() => {
+    video.muted = true;
+    video.play().catch(() => {});
+  });
+  this.classList.add('hidden');
+});
+
+video.preload = 'auto';
+video.addEventListener('ended', function() {
+  if (videoUrls.length > 1) {
+    setVideoSource(getRandomVideo());
+    video.play().catch(() => {});
+  }
+});
+
+// ===== LIVE STATUS =====
+const liveStatus = document.getElementById('live-status');
+liveStatus.textContent = 'Live • ' + new Date().toLocaleTimeString();
+setInterval(() => {
+  liveStatus.textContent = 'Live • ' + new Date().toLocaleTimeString();
+}, 30000);
+
+console.log('🎬 forgave.lol loaded with config:', CONFIG);
+</script>
 
 </body>
 </html>
