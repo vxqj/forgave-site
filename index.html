@@ -6,9 +6,8 @@
     <title>forgave.lol</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
     <style>
-        /* ===== RESET & BASE ===== */
         *{margin:0;padding:0;box-sizing:border-box}
-        html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono",monospace;color:#fff;cursor:none}
+        html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono",monospace;color:#fff}
         #bgvideo{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none;display:block}
         #trail{position:fixed;inset:0;z-index:5;pointer-events:none}
 
@@ -144,6 +143,11 @@
         .file-upload-wrap input[type="file"]{flex:1;min-width:120px;padding:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.8);font-size:.7rem}
         .file-upload-wrap button{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:8px 14px;color:rgba(255,255,255,.6);font-size:.65rem;cursor:pointer;transition:all .15s}
         .file-upload-wrap button:hover{background:rgba(255,255,255,.12);color:#fff}
+        .effect-preview{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+        .effect-preview .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.3);display:inline-block}
+        .effect-preview .trail-preview{display:flex;gap:2px}
+        .effect-preview .trail-preview span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.5);display:inline-block}
+        .effect-preview .sparkle-preview{font-size:1.2rem}
 
         @media(max-width:600px){.dash-sidebar{width:100%;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);padding:10px 12px;gap:4px;overflow-x:auto}.dash-sidebar .dash-nav-btn{padding:6px 10px;font-size:.52rem;flex:0 0 auto;width:auto}.dash-body{flex-direction:column;overflow-y:auto}.dash-panels{padding:14px 14px 16px;overflow-y:visible;max-height:60vh}.modal{width:100%;max-width:calc(100vw - 12px);padding:0;max-height:calc(100vh - 16px)}.dash-header{padding:14px 14px 12px;flex-wrap:wrap;gap:6px}}
         @media(max-width:400px){.field input,.field textarea,.field select{font-size:.58rem;padding:6px 8px}.dash-panels{padding:8px 10px 12px}.modal-btn{font-size:.55rem;padding:8px}}
@@ -195,6 +199,7 @@
                     <button class="dash-nav-btn" data-panel="badges"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>badges</button>
                     <button class="dash-nav-btn" data-panel="alias"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>alias</button>
                     <button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
+                    <button class="dash-nav-btn" data-panel="cursors"><svg viewBox="0 0 24 24"><path d="M13.64 21.97a1 1 0 0 1-1.27-.63l-2.09-6.22-6.22-2.09a1 1 0 0 1 0-1.9l16.97-5.83a1 1 0 0 1 1.27 1.27l-5.83 16.97a1 1 0 0 1-.95.6l.12-.17z"/></svg>cursors</button>
                 </nav>
                 <div class="dash-panels">
                     <!-- BIO -->
@@ -266,6 +271,34 @@
                         <div class="field"><label><input type="checkbox" id="d-transparent-bg" style="width:auto;margin:0;"> transparent background</label></div>
                         <div class="field"><label><input type="checkbox" id="d-disable-shadow" style="width:auto;margin:0;"> disable card shadow</label></div>
                     </div>
+                    <!-- CURSORS -->
+                    <div class="dash-panel" id="panel-cursors">
+                        <div class="dash-panel-title">cursors</div>
+                        <div class="field">
+                            <label>cursor image URL</label>
+                            <div class="file-upload-wrap">
+                                <input type="text" id="d-cursor-image" placeholder="https://files.catbox.moe/... or leave blank">
+                                <input type="file" id="cursor-upload" accept="image/*">
+                                <button id="upload-cursor-btn">Upload</button>
+                            </div>
+                            <div class="field-hint">upload a PNG with transparent background (recommended size: 32x32)</div>
+                        </div>
+                        <div class="field">
+                            <label>cursor effect</label>
+                            <select id="d-cursor-effect">
+                                <option value="ghost">Ghost (fading trail)</option>
+                                <option value="trail">Trail (long dots)</option>
+                                <option value="sparkle">Sparkle (particles)</option>
+                                <option value="simple">Simple (single dot)</option>
+                                <option value="none">None</option>
+                            </select>
+                            <div class="field-hint">choose a visual effect for your cursor</div>
+                            <div class="effect-preview" id="effect-preview">
+                                <span class="dot"></span>
+                                <span style="font-size:.6rem;color:rgba(255,255,255,.3);margin-left:6px;">preview</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="dash-footer">
@@ -309,7 +342,10 @@
             parallax: true,
             transparent_bg: false,
             disable_shadow: false,
-            card_style: 'default'
+            card_style: 'default',
+            // Cursor settings
+            cursorEffect: 'ghost',
+            cursorImage: ''
         };
 
         // ============================================================
@@ -379,12 +415,15 @@
         }
         video.preload = 'auto';
 
-        // ===== CURSOR TRAIL (Ghost effect) =====
+        // ===== CURSOR EFFECTS =====
         const trailCanvas = document.getElementById('trail');
         const ctx = trailCanvas.getContext('2d');
         let trailDots = [];
-        const MAX_DOTS = 20;
+        let particles = [];
+        const MAX_DOTS = 40;
         let mouseX = 0, mouseY = 0;
+        let cursorEffect = C.cursorEffect || 'ghost';
+        let cursorImage = C.cursorImage || '';
 
         function resizeTrail() {
             trailCanvas.width = window.innerWidth;
@@ -396,29 +435,117 @@
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
-            trailDots.push({ x: mouseX, y: mouseY, life: 1.0 });
-            if (trailDots.length > MAX_DOTS) trailDots.shift();
+            if (cursorEffect === 'trail') {
+                trailDots.push({ x: mouseX, y: mouseY, life: 1.0 });
+                if (trailDots.length > MAX_DOTS) trailDots.shift();
+            } else if (cursorEffect === 'sparkle') {
+                for (let i = 0; i < 3; i++) {
+                    particles.push({
+                        x: mouseX + (Math.random() - 0.5) * 10,
+                        y: mouseY + (Math.random() - 0.5) * 10,
+                        vx: (Math.random() - 0.5) * 3,
+                        vy: (Math.random() - 0.5) * 3 - 1,
+                        life: 0.8 + Math.random() * 0.4,
+                        size: 2 + Math.random() * 4,
+                        color: `hsl(${Math.random() * 60 + 20}, 100%, 70%)`
+                    });
+                }
+                if (particles.length > 150) particles.splice(0, 50);
+            } else if (cursorEffect === 'ghost') {
+                trailDots.push({ x: mouseX, y: mouseY, life: 1.0 });
+                if (trailDots.length > 20) trailDots.shift();
+            } else if (cursorEffect === 'simple') {
+                trailDots = [{ x: mouseX, y: mouseY, life: 1.0 }];
+            }
         });
 
-        function drawTrail() {
+        function drawCursor() {
             ctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
-            for (let i = 0; i < trailDots.length; i++) {
-                const d = trailDots[i];
-                const alpha = d.life * 0.4;
-                const size = 3 * d.life + 1;
-                ctx.beginPath();
-                ctx.arc(d.x, d.y, size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-                ctx.fill();
-                d.life -= 0.02;
-                if (d.life <= 0) {
-                    trailDots.splice(i, 1);
-                    i--;
+
+            if (cursorEffect === 'none') {
+                requestAnimationFrame(drawCursor);
+                return;
+            }
+
+            // Apply custom cursor image via CSS
+            if (cursorImage && cursorImage.trim()) {
+                document.body.style.cursor = `url('${cursorImage}') 0 0, auto`;
+            } else {
+                document.body.style.cursor = 'none';
+            }
+
+            if (cursorEffect === 'ghost') {
+                // Draw ghost trail (fading arrows)
+                for (let i = 0; i < trailDots.length; i++) {
+                    const d = trailDots[i];
+                    const alpha = d.life * 0.5;
+                    const size = 4 * d.life + 2;
+                    ctx.save();
+                    ctx.translate(d.x, d.y);
+                    ctx.globalAlpha = alpha;
+                    // Draw a little arrow shape
+                    ctx.beginPath();
+                    ctx.moveTo(0, -size);
+                    ctx.lineTo(-size * 0.6, size * 0.4);
+                    ctx.lineTo(0, size * 0.1);
+                    ctx.lineTo(size * 0.6, size * 0.4);
+                    ctx.closePath();
+                    ctx.fillStyle = '#fff';
+                    ctx.fill();
+                    ctx.restore();
+                    d.life -= 0.025;
+                    if (d.life <= 0) {
+                        trailDots.splice(i, 1);
+                        i--;
+                    }
+                }
+            } else if (cursorEffect === 'trail') {
+                // Long trail of dots
+                for (let i = 0; i < trailDots.length; i++) {
+                    const d = trailDots[i];
+                    const alpha = d.life * 0.6;
+                    const size = 3 * d.life + 1;
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                    ctx.fill();
+                    d.life -= 0.015;
+                    if (d.life <= 0) {
+                        trailDots.splice(i, 1);
+                        i--;
+                    }
+                }
+            } else if (cursorEffect === 'sparkle') {
+                // Sparkle particles
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color || `rgba(255, 200, 100, ${p.life * 0.8})`;
+                    ctx.fill();
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.05;
+                    p.life -= 0.02;
+                    p.size *= 0.98;
+                    if (p.life <= 0.02) {
+                        particles.splice(i, 1);
+                    }
+                }
+            } else if (cursorEffect === 'simple') {
+                // Single dot
+                if (trailDots.length) {
+                    const d = trailDots[0];
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                    ctx.fill();
                 }
             }
-            requestAnimationFrame(drawTrail);
+
+            requestAnimationFrame(drawCursor);
         }
-        drawTrail();
+        drawCursor();
 
         // ===== PARALLAX =====
         function initParallax() {
@@ -447,7 +574,6 @@
             bioEl.textContent = C.bio;
             watermark.textContent = C.watermark || 'forgave.lol';
 
-            // Avatar
             if (C.avatar && C.avatar.trim()) {
                 avatarEl.src = C.avatar.trim();
                 avatarEl.style.display = 'block';
@@ -455,7 +581,6 @@
                 avatarEl.style.display = 'none';
             }
 
-            // Badges
             badgeRow.innerHTML = '';
             (C.badges || []).forEach(url => {
                 if (!url) return;
@@ -468,7 +593,6 @@
                 badgeRow.appendChild(span);
             });
 
-            // Links
             linksContainer.innerHTML = '';
             const iconMap = {
                 youtube: 'https://cdn.simpleicons.org/youtube/ffffff',
@@ -498,12 +622,15 @@
                 linksContainer.appendChild(a);
             });
 
-            // Views
             viewEl.textContent = formatNumber(C.views || 0);
 
             // Apply card styles
             applyCardStyles();
             if (C.parallax) initParallax();
+
+            // Update cursor settings
+            cursorEffect = C.cursorEffect || 'ghost';
+            cursorImage = C.cursorImage || '';
         }
 
         function applyCardStyles() {
@@ -589,7 +716,6 @@
             document.querySelector('.dash-nav-btn[data-panel="bio"]').classList.add('active');
             document.getElementById('panel-bio').classList.add('active');
 
-            // Populate fields from C
             document.getElementById('d-avatar').value = C.avatar || '';
             document.getElementById('d-name').value = C.displayName || '';
             document.getElementById('d-username').value = C.username || '';
@@ -611,6 +737,12 @@
             document.getElementById('border-radius-val').textContent = (C.border_radius !== undefined ? C.border_radius : 0) + 'px';
             document.getElementById('card-opacity-val').textContent = (C.card_opacity !== undefined ? C.card_opacity : 0.75).toFixed(2);
             renderBadges(C.equipped_badges || []);
+            // Cursor fields
+            document.getElementById('d-cursor-effect').value = C.cursorEffect || 'ghost';
+            document.getElementById('d-cursor-image').value = C.cursorImage || '';
+            // Update preview
+            updateEffectPreview();
+
             openModal(dashModal);
         }
 
@@ -621,11 +753,77 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                const dataUrl = e.target.result;
-                document.getElementById('d-avatar').value = dataUrl;
+                document.getElementById('d-avatar').value = e.target.result;
             };
             reader.readAsDataURL(file);
         });
+
+        // ===== CURSOR UPLOAD =====
+        document.getElementById('upload-cursor-btn').addEventListener('click', function() {
+            const fileInput = document.getElementById('cursor-upload');
+            const file = fileInput.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('d-cursor-image').value = e.target.result;
+                // Immediately preview?
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // ===== EFFECT PREVIEW =====
+        function updateEffectPreview() {
+            const preview = document.getElementById('effect-preview');
+            const effect = document.getElementById('d-cursor-effect').value;
+            preview.innerHTML = '';
+            const label = document.createElement('span');
+            label.style.fontSize = '.6rem';
+            label.style.color = 'rgba(255,255,255,.3)';
+            label.style.marginLeft = '6px';
+            if (effect === 'ghost') {
+                for (let i = 0; i < 5; i++) {
+                    const dot = document.createElement('span');
+                    dot.className = 'dot';
+                    dot.style.opacity = 0.2 + i * 0.15;
+                    dot.style.transform = 'scale(' + (0.6 + i * 0.1) + ')';
+                    preview.appendChild(dot);
+                }
+                label.textContent = 'fading trail';
+            } else if (effect === 'trail') {
+                for (let i = 0; i < 8; i++) {
+                    const dot = document.createElement('span');
+                    dot.className = 'dot';
+                    dot.style.opacity = 0.3 + i * 0.08;
+                    dot.style.width = (6 - i * 0.4) + 'px';
+                    dot.style.height = (6 - i * 0.4) + 'px';
+                    preview.appendChild(dot);
+                }
+                label.textContent = 'long trail';
+            } else if (effect === 'sparkle') {
+                const spark = document.createElement('span');
+                spark.textContent = '✨';
+                spark.style.fontSize = '1.4rem';
+                preview.appendChild(spark);
+                label.textContent = 'particles';
+            } else if (effect === 'simple') {
+                const dot = document.createElement('span');
+                dot.className = 'dot';
+                dot.style.width = '10px';
+                dot.style.height = '10px';
+                dot.style.background = 'rgba(255,255,255,0.8)';
+                preview.appendChild(dot);
+                label.textContent = 'single dot';
+            } else {
+                const span = document.createElement('span');
+                span.textContent = '✕';
+                span.style.color = 'rgba(255,255,255,.2)';
+                preview.appendChild(span);
+                label.textContent = 'none';
+            }
+            preview.appendChild(label);
+        }
+
+        document.getElementById('d-cursor-effect').addEventListener('change', updateEffectPreview);
 
         // ===== LINKS =====
         function renderDashLinks(links) {
@@ -747,7 +945,7 @@
             if (dashAliases.length >= ALIAS_MAX) { hint.className = 'alias-form-hint error'; hint.textContent = 'max 3 aliases reached'; return; }
             btn.disabled = true;
             btn.textContent = 'verifying...';
-            // Local-only verification: check if the user exists in localStorage
+            // Local-only verification
             const stored = localStorage.getItem('forgave_profile');
             if (stored) {
                 try {
@@ -768,7 +966,6 @@
                     }
                 } catch(e) {}
             }
-            // Fallback: simulate verification
             if (user === 'test' && pw === 'test') {
                 dashAliases.push(user);
                 hint.className = 'alias-form-hint success';
@@ -809,6 +1006,8 @@
             const disable_shadow = document.getElementById('d-disable-shadow').checked;
             const card_bg_color = document.getElementById('d-card-bg-color').value;
             const border_color = document.getElementById('d-border-color').value;
+            const cursorEffect = document.getElementById('d-cursor-effect').value;
+            const cursorImage = document.getElementById('d-cursor-image').value.trim();
 
             const linkRows = document.querySelectorAll('.dash-link-row');
             const links = [];
@@ -840,10 +1039,11 @@
                 transparent_bg,
                 disable_shadow,
                 card_bg_color,
-                border_color
+                border_color,
+                cursorEffect,
+                cursorImage
             };
 
-            // Merge with existing C
             C = { ...C, ...updated };
             saveProfile(C);
             renderCard();
