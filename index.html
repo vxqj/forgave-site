@@ -4,30 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
     <title>forgave.lol</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="https://files.catbox.moe/beu5f0.png">
     <style>
         /* ===== RESET & BASE ===== */
-        *{box-sizing:border-box;margin:0;padding:0}
-        html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono","Courier New",monospace;color:#fff}
-        #bgvideo{display:none;position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
+        *{margin:0;padding:0;box-sizing:border-box}
+        html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono",monospace;color:#fff;cursor:none}
+        #bgvideo{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none;display:block}
+        #trail{position:fixed;inset:0;z-index:5;pointer-events:none}
 
         /* ===== OVERLAY ===== */
-        #overlay{position:fixed;inset:0;z-index:100;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity 0.15s ease;pointer-events:auto}
+        #overlay{position:fixed;inset:0;z-index:100;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity 0.15s;pointer-events:auto}
         #overlay.hide{opacity:0;pointer-events:none}
         #overlay-text{font-size:.7rem;color:rgba(255,255,255,.2);letter-spacing:3.5px;text-transform:uppercase;animation:pulse 2.8s ease-in-out infinite}
         @keyframes pulse{0%,100%{opacity:.2}50%{opacity:.6}}
 
         /* ===== EDIT BUTTON ===== */
-        #edit-btn{position:fixed;top:20px;right:22px;z-index:50;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.45);width:34px;height:34px;border-radius:9px;cursor:pointer;backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;transition:all .2s;padding:0}
+        #edit-btn{position:fixed;top:20px;right:22px;z-index:50;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.45);width:34px;height:34px;border-radius:9px;cursor:pointer;backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;transition:all .2s;padding:0;z-index:60}
         #edit-btn:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2)}
         #edit-btn svg{width:17px;height:17px;fill:currentColor;display:block;margin:auto}
 
         /* ===== CARD ===== */
-        #card-container{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;width:420px;max-width:90vw;opacity:0;transition:opacity 0.4s ease}
+        #card-container{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);z-index:10;width:420px;max-width:90vw;opacity:0;transition:opacity 0.4s ease, transform 0.1s;will-change:transform}
         #card-container.visible{opacity:1}
-        #card{background:rgba(10,10,12,0.75);backdrop-filter:blur(24px) saturate(140%) brightness(1.04);border:1px solid rgba(255,255,255,0.08);border-top-color:rgba(255,255,255,0.15);border-radius:0;padding:28px 30px 24px;box-shadow:0 0 0 1px rgba(0,0,0,0.6),0 24px 64px rgba(0,0,0,0.7);text-align:center}
+        #card{background:rgba(10,10,12,0.75);backdrop-filter:blur(24px) saturate(140%) brightness(1.04);border:1px solid rgba(255,255,255,0.08);border-top-color:rgba(255,255,255,0.15);border-radius:0;padding:28px 30px 24px;box-shadow:0 0 0 1px rgba(0,0,0,0.6),0 24px 64px rgba(0,0,0,0.7);text-align:center;transition:border-color 0.2s, box-shadow 0.2s}
         .avatar-wrap{width:80px;height:80px;margin:0 auto 14px;position:relative}
         .avatar-wrap img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;border:2px solid rgba(255,255,255,0.08);background:#1a1a1a}
         .avatar-wrap .status-dot{position:absolute;bottom:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#23a55a;border:2px solid rgba(10,10,12,0.9)}
@@ -47,7 +46,7 @@
         .link-btn:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.15)}
         .link-btn img{width:20px;height:20px;flex-shrink:0;opacity:.7}
         .link-btn:hover img{opacity:1}
-        #watermark{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:2px;z-index:2}
+        #watermark{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:2px;z-index:2;font-family:"DM Mono",monospace}
 
         /* ===== DASHBOARD MODAL ===== */
         .modal-bg{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease}
@@ -127,9 +126,6 @@
         .slider-value{width:32px;font-size:.58rem;text-align:right;color:rgba(255,255,255,.4)}
         .reset-btn-sm{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:5px 10px;font-size:.58rem;cursor:pointer;margin-left:8px;transition:all .15s}
         .reset-btn-sm:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
-        .font-input-wrap{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-        .font-input-wrap input{flex:1;min-width:120px}
-        .font-input-wrap .font-preview{font-size:.6rem;color:rgba(255,255,255,.25);padding:4px 8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
         .dash-links-list{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
         .dash-link-row{display:flex;flex-direction:column;gap:5px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);padding:10px 12px}
         .dash-link-row-top{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -144,6 +140,10 @@
         .dash-add-link:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.5)}
         .dash-section{margin-bottom:22px}
         .dash-section-label{font-size:.56rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.16);margin-bottom:9px}
+        .file-upload-wrap{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+        .file-upload-wrap input[type="file"]{flex:1;min-width:120px;padding:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.8);font-size:.7rem}
+        .file-upload-wrap button{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:8px 14px;color:rgba(255,255,255,.6);font-size:.65rem;cursor:pointer;transition:all .15s}
+        .file-upload-wrap button:hover{background:rgba(255,255,255,.12);color:#fff}
 
         @media(max-width:600px){.dash-sidebar{width:100%;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);padding:10px 12px;gap:4px;overflow-x:auto}.dash-sidebar .dash-nav-btn{padding:6px 10px;font-size:.52rem;flex:0 0 auto;width:auto}.dash-body{flex-direction:column;overflow-y:auto}.dash-panels{padding:14px 14px 16px;overflow-y:visible;max-height:60vh}.modal{width:100%;max-width:calc(100vw - 12px);padding:0;max-height:calc(100vh - 16px)}.dash-header{padding:14px 14px 12px;flex-wrap:wrap;gap:6px}}
         @media(max-width:400px){.field input,.field textarea,.field select{font-size:.58rem;padding:6px 8px}.dash-panels{padding:8px 10px 12px}.modal-btn{font-size:.55rem;padding:8px}}
@@ -154,6 +154,7 @@
 <body>
 
     <video id="bgvideo" loop playsinline></video>
+    <canvas id="trail"></canvas>
     <div id="overlay"><span id="overlay-text">click to enter</span></div>
 
     <button id="edit-btn" title="edit profile"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.06 7.06 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54a7.4 7.4 0 0 0-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.36 1.04.67 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54a7.4 7.4 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.03-1.58zM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2z"/></svg></button>
@@ -199,7 +200,15 @@
                     <!-- BIO -->
                     <div class="dash-panel active" id="panel-bio">
                         <div class="dash-panel-title">bio lines</div>
-                        <div class="field"><label>profile picture URL</label><input type="text" id="d-avatar" placeholder="https://files.catbox.moe/..."><div class="field-hint">upload at <a href="https://catbox.moe/" target="_blank">catbox.moe</a></div></div>
+                        <div class="field">
+                            <label>profile picture</label>
+                            <div class="file-upload-wrap">
+                                <input type="text" id="d-avatar" placeholder="https://files.catbox.moe/...">
+                                <input type="file" id="avatar-upload" accept="image/*">
+                                <button id="upload-avatar-btn">Upload</button>
+                            </div>
+                            <div class="field-hint">paste URL or upload image (PNG, JPG, GIF)</div>
+                        </div>
                         <div class="field"><label>display name</label><input type="text" id="d-name" maxlength="40"></div>
                         <div class="field"><label>username</label><input type="text" id="d-username" maxlength="30"></div>
                         <div class="field"><label>bio</label><input type="text" id="d-bio" maxlength="120"></div>
@@ -215,8 +224,17 @@
                     <!-- BACKGROUND -->
                     <div class="dash-panel" id="panel-background">
                         <div class="dash-panel-title">background</div>
-                        <div class="dash-section"><div class="dash-section-label">video url</div><div class="field"><input type="text" id="d-bgvideo" placeholder="https://files.catbox.moe/....mp4"><div class="field-hint">upload at <a href="https://catbox.moe/" target="_blank">catbox.moe</a></div></div></div>
-                        <div class="dash-section"><div class="dash-section-label">floating words</div><div class="field"><input type="text" id="d-bgwords" placeholder="word1, word2, </>"></div></div>
+                        <div class="dash-section">
+                            <div class="dash-section-label">video url</div>
+                            <div class="field">
+                                <input type="text" id="d-bgvideo" placeholder="https://files.catbox.moe/....mp4">
+                                <div class="field-hint">upload at <a href="https://catbox.moe/" target="_blank">catbox.moe</a></div>
+                            </div>
+                        </div>
+                        <div class="dash-section">
+                            <div class="dash-section-label">floating words</div>
+                            <div class="field"><input type="text" id="d-bgwords" placeholder="word1, word2, </>"></div>
+                        </div>
                     </div>
                     <!-- BADGES -->
                     <div class="dash-panel" id="panel-badges">
@@ -284,7 +302,6 @@
             ],
             overlayText: 'click to enter',
             randomOnRefresh: true,
-            // Card settings
             border_radius: 0,
             card_opacity: 0.75,
             card_bg_color: '#0a0a0c',
@@ -324,6 +341,7 @@
         // ===== DOM REFS =====
         const overlay = document.getElementById('overlay');
         const cardContainer = document.getElementById('card-container');
+        const card = document.getElementById('card');
         const avatarEl = document.getElementById('avatar');
         const displayNameEl = document.getElementById('display-name');
         const usernameEl = document.getElementById('username');
@@ -332,6 +350,95 @@
         const linksContainer = document.getElementById('links-container');
         const viewEl = document.getElementById('view-count');
         const watermark = document.getElementById('watermark');
+
+        // ===== VIDEO BACKGROUND =====
+        const video = document.getElementById('bgvideo');
+        const videoUrls = C.videos || [];
+
+        function getRandomVideo() {
+            return videoUrls[Math.floor(Math.random() * videoUrls.length)];
+        }
+
+        function setVideoSource(url) {
+            if (!url) return;
+            video.src = url;
+            video.load();
+        }
+
+        if (C.randomOnRefresh !== false && videoUrls.length > 0) {
+            setVideoSource(getRandomVideo());
+        } else if (videoUrls.length > 0) {
+            setVideoSource(videoUrls[0]);
+        }
+
+        if (videoUrls.length > 1) {
+            video.addEventListener('ended', function() {
+                setVideoSource(getRandomVideo());
+                video.play().catch(() => {});
+            });
+        }
+        video.preload = 'auto';
+
+        // ===== CURSOR TRAIL (Ghost effect) =====
+        const trailCanvas = document.getElementById('trail');
+        const ctx = trailCanvas.getContext('2d');
+        let trailDots = [];
+        const MAX_DOTS = 20;
+        let mouseX = 0, mouseY = 0;
+
+        function resizeTrail() {
+            trailCanvas.width = window.innerWidth;
+            trailCanvas.height = window.innerHeight;
+        }
+        resizeTrail();
+        window.addEventListener('resize', resizeTrail);
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            trailDots.push({ x: mouseX, y: mouseY, life: 1.0 });
+            if (trailDots.length > MAX_DOTS) trailDots.shift();
+        });
+
+        function drawTrail() {
+            ctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+            for (let i = 0; i < trailDots.length; i++) {
+                const d = trailDots[i];
+                const alpha = d.life * 0.4;
+                const size = 3 * d.life + 1;
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                ctx.fill();
+                d.life -= 0.02;
+                if (d.life <= 0) {
+                    trailDots.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(drawTrail);
+        }
+        drawTrail();
+
+        // ===== PARALLAX =====
+        function initParallax() {
+            if (!C.parallax) return;
+            document.addEventListener('mousemove', (e) => {
+                const rect = cardContainer.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const cx = rect.width / 2;
+                const cy = rect.height / 2;
+                const rotX = ((y - cy) / cy) * -4;
+                const rotY = ((x - cx) / cx) * 4;
+                const tX = ((x - cx) / cx) * 6;
+                const tY = ((y - cy) / cy) * 6;
+                cardContainer.style.transform = `translate(-50%, -50%) perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateX(${tX}px) translateY(${tY}px)`;
+            });
+            document.addEventListener('mouseleave', () => {
+                cardContainer.style.transform = 'translate(-50%, -50%)';
+            });
+        }
 
         // ===== RENDER CARD =====
         function renderCard() {
@@ -396,10 +503,10 @@
 
             // Apply card styles
             applyCardStyles();
+            if (C.parallax) initParallax();
         }
 
         function applyCardStyles() {
-            const card = document.getElementById('card');
             const radius = C.border_radius !== undefined ? C.border_radius : 0;
             const opacity = C.card_opacity !== undefined ? C.card_opacity : 0.75;
             const bgColor = C.transparent_bg ? 'transparent' :
@@ -439,34 +546,6 @@
             viewEl.textContent = formatNumber(C.views);
             saveProfile(C);
         }
-
-        // ===== VIDEO BACKGROUND =====
-        const video = document.getElementById('bgvideo');
-        const videoUrls = C.videos || [];
-
-        function getRandomVideo() {
-            return videoUrls[Math.floor(Math.random() * videoUrls.length)];
-        }
-
-        function setVideoSource(url) {
-            if (!url) return;
-            video.src = url;
-            video.load();
-        }
-
-        if (C.randomOnRefresh !== false && videoUrls.length > 0) {
-            setVideoSource(getRandomVideo());
-        } else if (videoUrls.length > 0) {
-            setVideoSource(videoUrls[0]);
-        }
-
-        if (videoUrls.length > 1) {
-            video.addEventListener('ended', function() {
-                setVideoSource(getRandomVideo());
-                video.play().catch(() => {});
-            });
-        }
-        video.preload = 'auto';
 
         // ===== OVERLAY =====
         overlay.addEventListener('click', function() {
@@ -534,6 +613,19 @@
             renderBadges(C.equipped_badges || []);
             openModal(dashModal);
         }
+
+        // ===== AVATAR UPLOAD =====
+        document.getElementById('upload-avatar-btn').addEventListener('click', function() {
+            const fileInput = document.getElementById('avatar-upload');
+            const file = fileInput.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                document.getElementById('d-avatar').value = dataUrl;
+            };
+            reader.readAsDataURL(file);
+        });
 
         // ===== LINKS =====
         function renderDashLinks(links) {
@@ -661,7 +753,6 @@
                 try {
                     const data = JSON.parse(stored);
                     if (data.username && data.username.replace('@', '') === user) {
-                        // Check password (stored in plaintext for demo – you'd hash it)
                         if (data.password && data.password === pw) {
                             dashAliases.push(user);
                             hint.className = 'alias-form-hint success';
