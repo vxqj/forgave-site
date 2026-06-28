@@ -10,6 +10,7 @@
         html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"DM Mono",monospace;color:#fff}
         #bgvideo{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none;display:block}
         #trail{position:fixed;inset:0;z-index:5;pointer-events:none}
+        #audio-player{display:none}
 
         /* ===== OVERLAY ===== */
         #overlay{position:fixed;inset:0;z-index:100;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity 0.15s;pointer-events:auto}
@@ -143,11 +144,12 @@
         .file-upload-wrap input[type="file"]{flex:1;min-width:120px;padding:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.8);font-size:.7rem}
         .file-upload-wrap button{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:8px 14px;color:rgba(255,255,255,.6);font-size:.65rem;cursor:pointer;transition:all .15s}
         .file-upload-wrap button:hover{background:rgba(255,255,255,.12);color:#fff}
-        .effect-preview{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+        .theme-presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+        .theme-presets button{padding:6px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-size:.65rem;cursor:pointer;transition:all .15s}
+        .theme-presets button:hover{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)}
+        .effect-preview{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center}
         .effect-preview .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.3);display:inline-block}
-        .effect-preview .trail-preview{display:flex;gap:2px}
-        .effect-preview .trail-preview span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.5);display:inline-block}
-        .effect-preview .sparkle-preview{font-size:1.2rem}
+        #custom-css-textarea{width:100%;min-height:80px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);padding:9px 12px;color:rgba(255,255,255,.8);font-family:"DM Mono",monospace;font-size:.72rem;outline:none;resize:vertical}
 
         @media(max-width:600px){.dash-sidebar{width:100%;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);padding:10px 12px;gap:4px;overflow-x:auto}.dash-sidebar .dash-nav-btn{padding:6px 10px;font-size:.52rem;flex:0 0 auto;width:auto}.dash-body{flex-direction:column;overflow-y:auto}.dash-panels{padding:14px 14px 16px;overflow-y:visible;max-height:60vh}.modal{width:100%;max-width:calc(100vw - 12px);padding:0;max-height:calc(100vh - 16px)}.dash-header{padding:14px 14px 12px;flex-wrap:wrap;gap:6px}}
         @media(max-width:400px){.field input,.field textarea,.field select{font-size:.58rem;padding:6px 8px}.dash-panels{padding:8px 10px 12px}.modal-btn{font-size:.55rem;padding:8px}}
@@ -159,6 +161,7 @@
 
     <video id="bgvideo" loop playsinline></video>
     <canvas id="trail"></canvas>
+    <audio id="audio-player" loop></audio>
     <div id="overlay"><span id="overlay-text">click to enter</span></div>
 
     <button id="edit-btn" title="edit profile"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.06 7.06 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54a7.4 7.4 0 0 0-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.36 1.04.67 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54a7.4 7.4 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.03-1.58zM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2z"/></svg></button>
@@ -200,6 +203,9 @@
                     <button class="dash-nav-btn" data-panel="alias"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>alias</button>
                     <button class="dash-nav-btn" data-panel="card"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/></svg>card</button>
                     <button class="dash-nav-btn" data-panel="cursors"><svg viewBox="0 0 24 24"><path d="M13.64 21.97a1 1 0 0 1-1.27-.63l-2.09-6.22-6.22-2.09a1 1 0 0 1 0-1.9l16.97-5.83a1 1 0 0 1 1.27 1.27l-5.83 16.97a1 1 0 0 1-.95.6l.12-.17z"/></svg>cursors</button>
+                    <button class="dash-nav-btn" data-panel="music"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>music</button>
+                    <button class="dash-nav-btn" data-panel="theme"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.77.58-3.41 1.56-4.73l11.17 11.17C15.41 19.42 13.77 20 12 20zm6.44-3.27L7.27 5.56C8.59 4.58 10.23 4 12 4c4.41 0 8 3.59 8 8 0 1.77-.58 3.41-1.56 4.73z"/></svg>theme</button>
+                    <button class="dash-nav-btn" data-panel="customcss"><svg viewBox="0 0 24 24"><path d="M9.93 13.5h4.14L12 7.98 9.93 13.5zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-4.05 16.5l-1.14-3.05h-5.62l-1.14 3.05H5.17l5.12-13.1h3.42l5.12 13.1h-1.88z"/></svg>custom css</button>
                 </nav>
                 <div class="dash-panels">
                     <!-- BIO -->
@@ -275,28 +281,83 @@
                     <div class="dash-panel" id="panel-cursors">
                         <div class="dash-panel-title">cursors</div>
                         <div class="field">
-                            <label>cursor image URL</label>
+                            <label>custom cursor image</label>
                             <div class="file-upload-wrap">
-                                <input type="text" id="d-cursor-image" placeholder="https://files.catbox.moe/... or leave blank">
+                                <input type="text" id="d-cursor-image" placeholder="https://files.catbox.moe/... or data:image">
                                 <input type="file" id="cursor-upload" accept="image/*">
                                 <button id="upload-cursor-btn">Upload</button>
                             </div>
-                            <div class="field-hint">upload a PNG with transparent background (recommended size: 32x32)</div>
+                            <div class="field-hint">upload a PNG with transparent background (will be drawn at cursor)</div>
                         </div>
                         <div class="field">
                             <label>cursor effect</label>
                             <select id="d-cursor-effect">
-                                <option value="ghost">Ghost (fading trail)</option>
-                                <option value="trail">Trail (long dots)</option>
+                                <option value="ghost">Ghost (fading arrows)</option>
+                                <option value="trail">Trail (dots)</option>
                                 <option value="sparkle">Sparkle (particles)</option>
                                 <option value="simple">Simple (single dot)</option>
                                 <option value="none">None</option>
                             </select>
-                            <div class="field-hint">choose a visual effect for your cursor</div>
-                            <div class="effect-preview" id="effect-preview">
-                                <span class="dot"></span>
-                                <span style="font-size:.6rem;color:rgba(255,255,255,.3);margin-left:6px;">preview</span>
+                            <div class="field-hint">visual effect around the cursor</div>
+                            <div class="effect-preview" id="effect-preview"></div>
+                        </div>
+                        <div class="field">
+                            <label>cursor size</label>
+                            <div class="slider-container">
+                                <label>🔍</label>
+                                <input type="range" id="d-cursor-size" min="16" max="64" step="1" value="32">
+                                <span class="slider-value" id="cursor-size-val">32px</span>
                             </div>
+                        </div>
+                    </div>
+                    <!-- MUSIC -->
+                    <div class="dash-panel" id="panel-music">
+                        <div class="dash-panel-title">background music</div>
+                        <div class="field">
+                            <label>audio URL</label>
+                            <input type="text" id="d-music-url" placeholder="https://files.catbox.moe/....mp3 or .m4a">
+                            <div class="field-hint">upload to catbox or use any direct audio link</div>
+                        </div>
+                        <div class="field">
+                            <label>volume</label>
+                            <div class="slider-container">
+                                <label>🔊</label>
+                                <input type="range" id="d-music-volume" min="0" max="1" step="0.01" value="0.4">
+                                <span class="slider-value" id="music-volume-val">0.40</span>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label><input type="checkbox" id="d-music-autoplay" style="width:auto;margin:0;"> autoplay after click</label>
+                        </div>
+                        <div class="field">
+                            <label><input type="checkbox" id="d-music-loop" style="width:auto;margin:0;" checked> loop</label>
+                        </div>
+                    </div>
+                    <!-- THEME -->
+                    <div class="dash-panel" id="panel-theme">
+                        <div class="dash-panel-title">theme presets</div>
+                        <div class="theme-presets">
+                            <button data-theme="dark">Dark</button>
+                            <button data-theme="neon">Neon</button>
+                            <button data-theme="terminal">Terminal</button>
+                            <button data-theme="minimal">Minimal</button>
+                            <button data-theme="light">Light</button>
+                        </div>
+                        <div class="field-hint">click a preset to apply – then save.</div>
+                        <div style="margin-top:16px;">
+                            <div class="field"><label>card background color</label><input type="color" id="d-theme-bg" value="#0a0a0c"></div>
+                            <div class="field"><label>text color</label><input type="color" id="d-theme-text" value="#ffffff"></div>
+                            <div class="field"><label>accent color</label><input type="color" id="d-theme-accent" value="#0ff"></div>
+                            <div class="field"><label>border color</label><input type="color" id="d-theme-border" value="#ffffff"></div>
+                        </div>
+                    </div>
+                    <!-- CUSTOM CSS -->
+                    <div class="dash-panel" id="panel-customcss">
+                        <div class="dash-panel-title">custom CSS</div>
+                        <div class="field">
+                            <label>inject custom styles</label>
+                            <textarea id="custom-css-textarea" placeholder="/* add your custom CSS here */&#10;.display-name { font-size: 2rem; }"></textarea>
+                            <div class="field-hint">will be injected as a style tag – use with care.</div>
                         </div>
                     </div>
                 </div>
@@ -343,9 +404,15 @@
             transparent_bg: false,
             disable_shadow: false,
             card_style: 'default',
-            // Cursor settings
             cursorEffect: 'ghost',
-            cursorImage: ''
+            cursorImage: '',
+            cursorSize: 32,
+            musicUrl: '',
+            musicVolume: 0.4,
+            musicAutoplay: false,
+            musicLoop: true,
+            theme: { bg: '#0a0a0c', text: '#ffffff', accent: '#0ff', border: '#ffffff' },
+            customCSS: ''
         };
 
         // ============================================================
@@ -386,6 +453,9 @@
         const linksContainer = document.getElementById('links-container');
         const viewEl = document.getElementById('view-count');
         const watermark = document.getElementById('watermark');
+        const audioPlayer = document.getElementById('audio-player');
+        const trailCanvas = document.getElementById('trail');
+        const ctx = trailCanvas.getContext('2d');
 
         // ===== VIDEO BACKGROUND =====
         const video = document.getElementById('bgvideo');
@@ -415,15 +485,38 @@
         }
         video.preload = 'auto';
 
-        // ===== CURSOR EFFECTS =====
-        const trailCanvas = document.getElementById('trail');
-        const ctx = trailCanvas.getContext('2d');
+        // ===== AUDIO PLAYER =====
+        if (C.musicUrl) {
+            audioPlayer.src = C.musicUrl;
+            audioPlayer.volume = C.musicVolume || 0.4;
+            audioPlayer.loop = C.musicLoop !== false;
+            if (C.musicAutoplay) {
+                audioPlayer.autoplay = true;
+            }
+        }
+
+        // ===== CURSOR SYSTEM (canvas based) =====
         let trailDots = [];
         let particles = [];
         const MAX_DOTS = 40;
         let mouseX = 0, mouseY = 0;
         let cursorEffect = C.cursorEffect || 'ghost';
         let cursorImage = C.cursorImage || '';
+        let cursorSize = C.cursorSize || 32;
+        let cursorImageObj = null;
+        let cursorImageLoaded = false;
+
+        // Load cursor image if exists
+        if (cursorImage) {
+            cursorImageObj = new Image();
+            cursorImageObj.onload = function() {
+                cursorImageLoaded = true;
+            };
+            cursorImageObj.onerror = function() {
+                cursorImageLoaded = false;
+            };
+            cursorImageObj.src = cursorImage;
+        }
 
         function resizeTrail() {
             trailCanvas.width = window.innerWidth;
@@ -467,15 +560,14 @@
                 return;
             }
 
-            // Apply custom cursor image via CSS
-            if (cursorImage && cursorImage.trim()) {
-                document.body.style.cursor = `url('${cursorImage}') 0 0, auto`;
-            } else {
-                document.body.style.cursor = 'none';
+            // Draw custom cursor image if loaded
+            if (cursorImageLoaded && cursorImageObj) {
+                const half = cursorSize / 2;
+                ctx.drawImage(cursorImageObj, mouseX - half, mouseY - half, cursorSize, cursorSize);
             }
 
+            // Draw effect
             if (cursorEffect === 'ghost') {
-                // Draw ghost trail (fading arrows)
                 for (let i = 0; i < trailDots.length; i++) {
                     const d = trailDots[i];
                     const alpha = d.life * 0.5;
@@ -483,7 +575,6 @@
                     ctx.save();
                     ctx.translate(d.x, d.y);
                     ctx.globalAlpha = alpha;
-                    // Draw a little arrow shape
                     ctx.beginPath();
                     ctx.moveTo(0, -size);
                     ctx.lineTo(-size * 0.6, size * 0.4);
@@ -494,13 +585,9 @@
                     ctx.fill();
                     ctx.restore();
                     d.life -= 0.025;
-                    if (d.life <= 0) {
-                        trailDots.splice(i, 1);
-                        i--;
-                    }
+                    if (d.life <= 0) { trailDots.splice(i, 1); i--; }
                 }
             } else if (cursorEffect === 'trail') {
-                // Long trail of dots
                 for (let i = 0; i < trailDots.length; i++) {
                     const d = trailDots[i];
                     const alpha = d.life * 0.6;
@@ -510,13 +597,9 @@
                     ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
                     ctx.fill();
                     d.life -= 0.015;
-                    if (d.life <= 0) {
-                        trailDots.splice(i, 1);
-                        i--;
-                    }
+                    if (d.life <= 0) { trailDots.splice(i, 1); i--; }
                 }
             } else if (cursorEffect === 'sparkle') {
-                // Sparkle particles
                 for (let i = particles.length - 1; i >= 0; i--) {
                     const p = particles[i];
                     ctx.beginPath();
@@ -528,12 +611,9 @@
                     p.vy += 0.05;
                     p.life -= 0.02;
                     p.size *= 0.98;
-                    if (p.life <= 0.02) {
-                        particles.splice(i, 1);
-                    }
+                    if (p.life <= 0.02) { particles.splice(i, 1); }
                 }
             } else if (cursorEffect === 'simple') {
-                // Single dot
                 if (trailDots.length) {
                     const d = trailDots[0];
                     ctx.beginPath();
@@ -631,6 +711,42 @@
             // Update cursor settings
             cursorEffect = C.cursorEffect || 'ghost';
             cursorImage = C.cursorImage || '';
+            cursorSize = C.cursorSize || 32;
+            if (cursorImage) {
+                cursorImageObj = new Image();
+                cursorImageObj.onload = function() { cursorImageLoaded = true; };
+                cursorImageObj.onerror = function() { cursorImageLoaded = false; };
+                cursorImageObj.src = cursorImage;
+            } else {
+                cursorImageLoaded = false;
+            }
+
+            // Music
+            if (C.musicUrl) {
+                audioPlayer.src = C.musicUrl;
+                audioPlayer.volume = C.musicVolume || 0.4;
+                audioPlayer.loop = C.musicLoop !== false;
+                if (C.musicAutoplay && !audioPlayer.paused) {
+                    audioPlayer.play().catch(() => {});
+                }
+            }
+
+            // Custom CSS
+            if (C.customCSS) {
+                let styleTag = document.getElementById('custom-css-inject');
+                if (!styleTag) {
+                    styleTag = document.createElement('style');
+                    styleTag.id = 'custom-css-inject';
+                    document.head.appendChild(styleTag);
+                }
+                styleTag.textContent = C.customCSS;
+            } else {
+                const styleTag = document.getElementById('custom-css-inject');
+                if (styleTag) styleTag.remove();
+            }
+
+            // Theme
+            applyTheme();
         }
 
         function applyCardStyles() {
@@ -659,6 +775,17 @@
             }
         }
 
+        function applyTheme() {
+            const theme = C.theme || CONFIG.theme;
+            if (theme) {
+                card.style.background = theme.bg || '#0a0a0c';
+                card.style.color = theme.text || '#ffffff';
+                // accent color for borders or highlights
+                const accent = theme.accent || '#0ff';
+                // We can apply accent to border or other elements, but we keep it simple
+            }
+        }
+
         // ===== VIEWS =====
         function formatNumber(num) {
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -681,6 +808,9 @@
             setTimeout(() => { this.style.display = 'none'; }, 150);
             if (video && video.style.display !== 'none') {
                 video.play().catch(() => {});
+            }
+            if (audioPlayer.src && C.musicAutoplay) {
+                audioPlayer.play().catch(() => {});
             }
             cardContainer.classList.add('visible');
         });
@@ -716,6 +846,7 @@
             document.querySelector('.dash-nav-btn[data-panel="bio"]').classList.add('active');
             document.getElementById('panel-bio').classList.add('active');
 
+            // Populate fields
             document.getElementById('d-avatar').value = C.avatar || '';
             document.getElementById('d-name').value = C.displayName || '';
             document.getElementById('d-username').value = C.username || '';
@@ -740,8 +871,25 @@
             // Cursor fields
             document.getElementById('d-cursor-effect').value = C.cursorEffect || 'ghost';
             document.getElementById('d-cursor-image').value = C.cursorImage || '';
-            // Update preview
+            document.getElementById('d-cursor-size').value = C.cursorSize || 32;
+            document.getElementById('cursor-size-val').textContent = (C.cursorSize || 32) + 'px';
             updateEffectPreview();
+            // Music
+            document.getElementById('d-music-url').value = C.musicUrl || '';
+            document.getElementById('d-music-volume').value = C.musicVolume || 0.4;
+            document.getElementById('music-volume-val').textContent = (C.musicVolume || 0.4).toFixed(2);
+            document.getElementById('d-music-autoplay').checked = C.musicAutoplay || false;
+            document.getElementById('d-music-loop').checked = C.musicLoop !== false;
+            // Theme
+            const theme = C.theme || CONFIG.theme;
+            if (theme) {
+                document.getElementById('d-theme-bg').value = theme.bg || '#0a0a0c';
+                document.getElementById('d-theme-text').value = theme.text || '#ffffff';
+                document.getElementById('d-theme-accent').value = theme.accent || '#0ff';
+                document.getElementById('d-theme-border').value = theme.border || '#ffffff';
+            }
+            // Custom CSS
+            document.getElementById('custom-css-textarea').value = C.customCSS || '';
 
             openModal(dashModal);
         }
@@ -766,7 +914,6 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById('d-cursor-image').value = e.target.result;
-                // Immediately preview?
             };
             reader.readAsDataURL(file);
         });
@@ -824,6 +971,37 @@
         }
 
         document.getElementById('d-cursor-effect').addEventListener('change', updateEffectPreview);
+
+        // ===== THEME PRESETS =====
+        document.querySelectorAll('.theme-presets button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const theme = this.dataset.theme;
+                let colors;
+                switch(theme) {
+                    case 'dark':
+                        colors = { bg: '#0a0a0c', text: '#ffffff', accent: '#0ff', border: '#ffffff' };
+                        break;
+                    case 'neon':
+                        colors = { bg: '#0a0a0c', text: '#00ffcc', accent: '#ff00ff', border: '#00ffcc' };
+                        break;
+                    case 'terminal':
+                        colors = { bg: '#000000', text: '#00ff00', accent: '#00ff00', border: '#00ff00' };
+                        break;
+                    case 'minimal':
+                        colors = { bg: '#ffffff', text: '#000000', accent: '#000000', border: '#000000' };
+                        break;
+                    case 'light':
+                        colors = { bg: '#f0f0f0', text: '#000000', accent: '#0000ff', border: '#000000' };
+                        break;
+                    default:
+                        colors = { bg: '#0a0a0c', text: '#ffffff', accent: '#0ff', border: '#ffffff' };
+                }
+                document.getElementById('d-theme-bg').value = colors.bg;
+                document.getElementById('d-theme-text').value = colors.text;
+                document.getElementById('d-theme-accent').value = colors.accent;
+                document.getElementById('d-theme-border').value = colors.border;
+            });
+        });
 
         // ===== LINKS =====
         function renderDashLinks(links) {
@@ -1008,6 +1186,18 @@
             const border_color = document.getElementById('d-border-color').value;
             const cursorEffect = document.getElementById('d-cursor-effect').value;
             const cursorImage = document.getElementById('d-cursor-image').value.trim();
+            const cursorSize = parseInt(document.getElementById('d-cursor-size').value, 10) || 32;
+            const musicUrl = document.getElementById('d-music-url').value.trim();
+            const musicVolume = parseFloat(document.getElementById('d-music-volume').value) || 0.4;
+            const musicAutoplay = document.getElementById('d-music-autoplay').checked;
+            const musicLoop = document.getElementById('d-music-loop').checked;
+            const customCSS = document.getElementById('custom-css-textarea').value.trim();
+            const theme = {
+                bg: document.getElementById('d-theme-bg').value,
+                text: document.getElementById('d-theme-text').value,
+                accent: document.getElementById('d-theme-accent').value,
+                border: document.getElementById('d-theme-border').value
+            };
 
             const linkRows = document.querySelectorAll('.dash-link-row');
             const links = [];
@@ -1041,7 +1231,14 @@
                 card_bg_color,
                 border_color,
                 cursorEffect,
-                cursorImage
+                cursorImage,
+                cursorSize,
+                musicUrl,
+                musicVolume,
+                musicAutoplay,
+                musicLoop,
+                customCSS,
+                theme
             };
 
             C = { ...C, ...updated };
@@ -1068,6 +1265,12 @@
         });
         document.getElementById('d-card-opacity').addEventListener('input', function() {
             document.getElementById('card-opacity-val').textContent = parseFloat(this.value).toFixed(2);
+        });
+        document.getElementById('d-cursor-size').addEventListener('input', function() {
+            document.getElementById('cursor-size-val').textContent = this.value + 'px';
+        });
+        document.getElementById('d-music-volume').addEventListener('input', function() {
+            document.getElementById('music-volume-val').textContent = parseFloat(this.value).toFixed(2);
         });
 
         // ===== INIT =====
